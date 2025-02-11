@@ -16,18 +16,18 @@ public class Review {
     private String comment;
     private Date date;
     @ManyToOne
-    private Person person;
+    private Player reviewer;
     @ManyToOne
     private Game game;
 
     protected Review() {
     }
 
-    public Review(int rating, String comment, Date date, Person person, Game game) {
+    public Review(int rating, String comment, Date date, Player reviewer, Game game) {
         this.rating = rating;
         this.comment = comment;
         this.date = date;
-        this.person = person;
+        this.reviewer = reviewer;
         this.game = game;
     }
 
@@ -47,11 +47,51 @@ public class Review {
         return date;
     }
 
-    public Person getPerson() {
-        return person;
+    public Player getReviewer() {
+        return reviewer;
     }
 
     public Game getGame() {
         return game;
     }
+
+    public boolean setId(int aId) {
+        id = aId;
+        return true;
+    }
+    public boolean setComment(String aComment) {
+        comment = aComment;
+        return true;
+    }
+    public boolean setDate(Date aDate) {
+        date = aDate;
+        return true;
+    }
+    public boolean setReviewer(Player aReviewer) {
+        reviewer = aReviewer;
+        return true;
+    }
+    public boolean setGame(Game aGame) {
+        game = aGame;
+        return true;
+    }
+    public boolean setRating(int aRating) {
+        rating = aRating;
+        return true;
+    } 
+
+    public String toString() {
+    return super.toString() + "[" +
+            "id" + ":" + getId() + "," +
+            "rating" + ":" + getRating() + "," +
+            "comment" + ":" + getComment() + "," +
+            "reviewer" + ":" + getReviewer() + "," +
+            "game" + ":" + getGame() + "]"
+            + System.getProperties().getProperty("line.separator")
+            +
+            "  " + "date" + "="
+            + (getDate() != null ? !getDate().equals(this) ? getDate().toString().replaceAll("  ", "    ") : "this"
+                    : "null");
+    }
+    
 }
