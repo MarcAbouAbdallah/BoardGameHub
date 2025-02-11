@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.mcgill.ecse321.boardgamehub.model.Person;
+import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.Review;
 
@@ -21,22 +21,23 @@ public class ReviewRepositoryTests {
     private ReviewRepository reviewRepo;
 
     @Autowired
-    private PersonRepository personRepo;
+    private PlayerRepository playerRepo;
 
     @Autowired
     private GameRepository gameRepo;
 
-    private Person john;
+    private Player john;
     
     private Game monopoly;
 
     @BeforeEach
     public void setup() {
-        john = new Person(
+        john = new Player(
                             "John",
                             "john@email.com",
-                            "johnnyboy123");
-        personRepo.save(john);
+                            "johnnyboy123",
+                            true);
+        playerRepo.save(john);
         monopoly = new Game(); //This will have to be edited when game gets implemented
         gameRepo.save(monopoly);
     }
@@ -44,7 +45,7 @@ public class ReviewRepositoryTests {
     @AfterEach
     public void clearDataBase() {
         reviewRepo.deleteAll();
-        personRepo.deleteAll();
+        playerRepo.deleteAll();
         gameRepo.deleteAll();
     }
 
@@ -70,7 +71,7 @@ public class ReviewRepositoryTests {
 		assertEquals(monopolyReview.getRating(), monopolyReviewFromDb.getRating());
 		assertEquals(monopolyReview.getComment(), monopolyReviewFromDb.getComment());
 		assertEquals(monopolyReview.getDate(), monopolyReviewFromDb.getDate());
-		assertEquals(monopolyReview.getPerson().getId(), monopolyReviewFromDb.getPerson().getId()); // For this and next test, unpredictable behaviour of assertequals on objects,
+		assertEquals(monopolyReview.getReviewer().getId(), monopolyReviewFromDb.getReviewer().getId()); // For this and next test, unpredictable behaviour of assertequals on objects,
         assertEquals(monopolyReview.getGame().getId(), monopolyReviewFromDb.getGame().getId());     // asserted Id instead. What do?
     }
 }

@@ -7,24 +7,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.mcgill.ecse321.boardgamehub.model.Person;
+import ca.mcgill.ecse321.boardgamehub.model.Player;
 
 @SpringBootTest
-public class PersonRepositoryTests {
+public class PlayerRepositoryTests {
     @Autowired
-    private PersonRepository personRepository;
+    private PlayerRepository playerRepository;
 
     @Test
-    public void testCreateAndReadPerson() {
+    public void testCreateAndReadPlayer() {
         //Arrange
         String name = "John";
         String email = "john@gmail.com";
         String password = "John@123";
-        Person John = new Person(name, email, password);
-        John = personRepository.save(John);
+        boolean isGameOwner = true;
+        Player John = new Player(name, email, password, isGameOwner);
+        John = playerRepository.save(John);
 
         //Act
-        Person JohnFromDb = personRepository.findPersonById(John.getId());
+        Player JohnFromDb = playerRepository.findPlayerById(John.getId());
         
 
         //Assert
@@ -33,6 +34,7 @@ public class PersonRepositoryTests {
         assertEquals(John.getEmail(), JohnFromDb.getEmail());
         assertEquals(John.getPassword(), JohnFromDb.getPassword());
         assertEquals(John.getId(), JohnFromDb.getId());
+        assertEquals(John.getIsGameOwner(), JohnFromDb.getIsGameOwner());
 
     }
 }
