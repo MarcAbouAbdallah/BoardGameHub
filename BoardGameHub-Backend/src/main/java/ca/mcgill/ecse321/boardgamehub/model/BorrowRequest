@@ -24,9 +24,6 @@ public class BorrowRequest {
 
     private LocalDateTime requestDate;
 
-    public enum Status {
-        PENDING, APPROVED, REJECTED
-    }
 
     // Constructor
     public BorrowRequest() {
@@ -42,8 +39,6 @@ public class BorrowRequest {
     public Player getRequester() { return requester; }
 
     public Game getGame() { return game; }
-
-    public Status getStatus() { return status; }
 
     public LocalDateTime getRequestDate() { return requestDate; }
 
