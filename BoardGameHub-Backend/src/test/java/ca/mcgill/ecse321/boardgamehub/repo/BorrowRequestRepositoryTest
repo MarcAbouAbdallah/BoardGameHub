@@ -1,0 +1,52 @@
+package ca.mcgill.ecse321.boardgamehub.repo;
+
+import ca.mcgill.ecse321.boardgamehub.model.*;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+
+@DataJpaTest
+public class BorrowRequestRepositoryTest {
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
+
+    @Autowired
+    private PlayerRepository playerRepo;
+
+    @Autowired
+    private GameRepository gameRepo;
+
+    @Autowired
+    private GameOwnerRepository gameOwnerRepo;
+
+    @Test
+    public void testPersistAndRetrieveBorrowRequest() {
+        // Create sample data
+        GameOwner owner = new GameOwner();
+        owner.setName("Alice");
+        gameOwnerRepo.save(owner);
+
+        Player player = new Player();
+        player.setName("Bob");
+        playerRepo.save(player);
+
+        Game game = new Game();
+        game.setTitle("Catan");
+        game.setOwner(owner);
+        gameRepo.save(game);
+
+        BorrowRequest request = new BorrowRequest();
+        request.setOwner(owner);
+        request.setRequester(player);
+        request.setGame(game);
+        borrowRequestRepo.save(request);
+
+        // Retrieve data and validate
+        List<BorrowRequest> requests = borrowRequestRepo.findByOwnerId(owner.getId());
+        assertEquals(1, requests.size());
+        assertEquals("Bob", requests.get(0).getRequester().getName());
+    }
+}
