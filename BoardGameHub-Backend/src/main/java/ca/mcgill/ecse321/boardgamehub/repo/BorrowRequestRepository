@@ -1,0 +1,12 @@
+package ca.mcgill.ecse321.boardgamehub.repo;
+
+import ca.mcgill.ecse321.boardgamehub.model.BorrowRequest;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+@Repository
+public interface BorrowRequestRepository extends CrudRepository<BorrowRequest, Long> {
+    List<BorrowRequest> findByOwnerId(Long ownerId);
+    List<BorrowRequest> findByRequesterId(Long requesterId);
+}
