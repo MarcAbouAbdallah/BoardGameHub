@@ -3,6 +3,8 @@ package ca.mcgill.ecse321.boardgamehub.repo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.sql.Date;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,11 +41,12 @@ public class RegistirationRepositoryTests {
                                  true);
         john = personRepo.save(john);
 
+        Date evenDate = Date.valueOf("2025-02-20");
         Event hanging = new Event("hanging",
-                                  null, 
-                                  null, 
-                                  null, 
-                                  1, 
+                                  "McGill", 
+                                  "spend some time", 
+                                  evenDate, 
+                                  3, 
                                   john, 
                                   null);
         hanging = eventRepo.save(hanging);
@@ -58,7 +61,7 @@ public class RegistirationRepositoryTests {
         //Assert
         assertNotNull(RegistrationFromDb);
         assertNotNull(RegistrationFromDb.getKey());
-        assertNotNull(RegistrationFromDb.getKey().getRegistrant().getId());
+        assertNotNull(RegistrationFromDb.getKey().getRegistrant());
         assertEquals(john.getId(), RegistrationFromDb.getKey().getRegistrant().getId());
         assertNotNull(RegistrationFromDb.getKey().getRegisteredEvent());
         assertEquals(hanging.getId(), RegistrationFromDb.getKey().getRegisteredEvent().getId());
