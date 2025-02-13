@@ -1,61 +1,86 @@
 package ca.mcgill.ecse321.boardgamehub.model;
 
+import java.io.Serializable;
+import java.util.Objects;
+
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Registration {
-    @Id
-    @GeneratedValue
-    /* private int EventID;
-    private int PlayerID; */
-    private int id;
-    @ManyToOne
-    private Player registrant;
-    @ManyToOne
-    private Event registeredEvent;
+    @EmbeddedId
+    private Key key;
 
-    protected Registration() {
+    @SuppressWarnings("unused")
+    private Registration() {
     }
 
-    public Registration(Player registrant, Event registeredEvent) {
-        this.registrant = registrant;
-        this.registeredEvent = registeredEvent;
+    public Registration(Key key) {
+        this.key = key;
     }
 
-    public int getId() {
-        return id;
+    public Key getKey() {
+        return key;
     }
 
-    public Player getRegistrant() {
-        return registrant;
-    }
-
-    public Event getRegisteredEvent() {
-        return registeredEvent;
-    }
-
-    public void setId(int aId) {
-        id = aId;
+    public void setKey(Key key) {
+        this.key = key;
     }
     
-    public void setRegistrant(Player aRegistrant) {
-        registrant = aRegistrant;
-    }
+    @Embeddable
+    public static class Key implements Serializable {
+        @ManyToOne
+        private Player registrant;
+        @ManyToOne
+        private Event registeredEvent;
+        
+        public Key() {
+        }
 
-    public void setRegisteredEvent(Event aRegisteredEvent) {
-        registeredEvent = aRegisteredEvent;
-    }
+        public Key(Player registrant, Event registeredEvent) {
+            this.registrant = registrant;
+            this.registeredEvent = registeredEvent;
+        }
 
-    public String toString() {
-        return super.toString() + "[" +
-                "id" + ":" + getId() + "," +
-                "registrant" + ":" + getRegistrant() + "," +
-                "event" + ":" + getRegisteredEvent() + "," +
-                "]";
+        public Player getRegistrant() {
+            return registrant;
+        }
+
+        public Event getRegisteredEvent() {
+            return registeredEvent;
+        }
+
+        public void setRegistrant(Player aRegistrant) {
+            registrant = aRegistrant;
+        }
+
+        public void setRegisteredEvent(Event aRegisteredEvent) {
+            registeredEvent = aRegisteredEvent;
+        }
+
+        public String toString() {
+            return super.toString() + "[" +
+                    "registrant" + ":" + getRegistrant() + "," +
+                    "event" + ":" + getRegisteredEvent() + "," +
+                    "]";
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Key)) {
+                return false;
+            }
+            Key other = (Key) obj;
+            return this.getRegistrant().getId() == other.getRegistrant().getId()
+                    && this.getRegisteredEvent().getId() == other.getRegisteredEvent().getId();
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.getRegistrant().getId(), this.getRegisteredEvent().getId());
+        }
     }
 }
-
 
