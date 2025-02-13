@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.boardgamehub.model;
 
+import java.util.UUID;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
@@ -8,7 +10,7 @@ import jakarta.persistence.GeneratedValue;
 public class Player {
     @Id
     @GeneratedValue
-    private int id;
+    private UUID id;
     private String name;
     private String email;
     private String password;
@@ -24,7 +26,7 @@ public class Player {
         this.isGameOwner = isGameOwner;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -44,7 +46,7 @@ public class Player {
         return isGameOwner;
     }
 
-    public boolean setId(int aId) {
+    public boolean setId(UUID aId) {
         id = aId;
         return true;
     }
