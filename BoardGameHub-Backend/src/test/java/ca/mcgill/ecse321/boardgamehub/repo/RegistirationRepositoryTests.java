@@ -28,8 +28,8 @@ public class RegistirationRepositoryTests {
     @AfterEach
     public void clearDatabase() {
         registrationRepo.deleteAll();
-        personRepo.deleteAll();
         eventRepo.deleteAll();
+        personRepo.deleteAll();
     }
 
     @Test
@@ -48,7 +48,7 @@ public class RegistirationRepositoryTests {
                                   evenDate, 
                                   3, 
                                   john, 
-                                  null);
+                                  null); //Change this when GameCopy gets implemented
         hanging = eventRepo.save(hanging);
 
         Registration.Key key = new Registration.Key(john, hanging);
