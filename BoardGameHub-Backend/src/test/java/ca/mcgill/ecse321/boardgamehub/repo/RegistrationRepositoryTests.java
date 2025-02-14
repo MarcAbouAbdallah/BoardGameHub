@@ -16,7 +16,7 @@ import ca.mcgill.ecse321.boardgamehub.model.Event;
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
 
 @SpringBootTest
-public class RegistirationRepositoryTests {
+public class RegistrationRepositoryTests {
     @Autowired
     private RegistrationRepository registrationRepo;
     @Autowired
@@ -41,11 +41,11 @@ public class RegistirationRepositoryTests {
                                  true);
         john = personRepo.save(john);
 
-        Date evenDate = Date.valueOf("2025-02-20");
+        Date eventDate = Date.valueOf("2025-02-20");
         Event hanging = new Event("hanging",
                                   "McGill", 
                                   "spend some time", 
-                                  evenDate, 
+                                  eventDate, 
                                   3, 
                                   john, 
                                   null); //Change this when GameCopy gets implemented
