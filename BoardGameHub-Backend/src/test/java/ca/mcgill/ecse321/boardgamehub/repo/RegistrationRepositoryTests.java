@@ -16,7 +16,7 @@ import ca.mcgill.ecse321.boardgamehub.model.Event;
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
 
 @SpringBootTest
-public class RegistirationRepositoryTests {
+public class RegistrationRepositoryTests {
     @Autowired
     private RegistrationRepository registrationRepo;
     @Autowired
