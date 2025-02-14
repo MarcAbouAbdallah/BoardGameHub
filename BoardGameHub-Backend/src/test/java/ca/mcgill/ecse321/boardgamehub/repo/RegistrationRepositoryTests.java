@@ -41,11 +41,11 @@ public class RegistrationRepositoryTests {
                                  true);
         john = personRepo.save(john);
 
-        Date evenDate = Date.valueOf("2025-02-20");
+        Date eventDate = Date.valueOf("2025-02-20");
         Event hanging = new Event("hanging",
                                   "McGill", 
                                   "spend some time", 
-                                  evenDate, 
+                                  eventDate, 
                                   3, 
                                   john, 
                                   null); //Change this when GameCopy gets implemented
