@@ -1,0 +1,61 @@
+package ca.mcgill.ecse321.boardgamehub.repo;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import ca.mcgill.ecse321.boardgamehub.model.Game;
+import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
+import ca.mcgill.ecse321.boardgamehub.model.Player;
+
+@SpringBootTest
+public class GameCopyRepositoryTests {
+
+    @Autowired
+    private GameCopyRepository gameCopyRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
+
+    @Autowired
+    private PlayerRepository playerRepository;
+
+    private Game chess;
+    private GameCopy chessCopy;
+
+    @BeforeEach
+    public void setup() {
+        chess = new Game("Chess", 2, 2, "A strategic board game");
+        chess = gameRepository.save(chess);
+
+        Player Sleepy = new Player("Sleepy", "IWasSleepy@gmail.com" , "password", true);
+        Sleepy = playerRepository.save(Sleepy);
+
+        chessCopy = new GameCopy(true, chess, Sleepy);
+        chessCopy = gameCopyRepository.save(chessCopy);
+    }
+
+    @AfterEach
+    public void clearDatabase() {
+        gameCopyRepository.deleteAll();
+        gameRepository.deleteAll();
+    }
+
+    @Test
+    public void testCreateAndReadGameCopy() {
+        // Act
+        GameCopy chessCopyFromDb = gameCopyRepository.findById(chessCopy.getId()).orElse(null);
+
+        // Assert
+        assertNotNull(chessCopyFromDb);
+        assertEquals(chessCopy.getId(), chessCopyFromDb.getId());
+        assertEquals(chessCopy.getIsAvailable(), chessCopyFromDb.getIsAvailable());
+        assertEquals(chessCopy.getGame().getId(), chessCopyFromDb.getGame().getId());
+        assertEquals(chessCopy.getOwner().getId(), chessCopyFromDb.getOwner().getId());
+    }
+}

@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
+import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.model.Review;
 
 @SpringBootTest
@@ -42,7 +42,7 @@ public class ReviewRepositoryTests {
                             "johnnyboy123",
                             true);
         playerRepo.save(john);
-        monopoly = new Game(); //This will have to be edited when game gets implemented
+        monopoly = new Game("Monopoly", 8, 2, "multiplayer economics-themed board game"); //This will have to be edited when game gets implemented
         gameRepo.save(monopoly);
     }
 
