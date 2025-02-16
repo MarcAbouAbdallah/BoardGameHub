@@ -21,8 +21,9 @@ Intro here
 **Mubeen Mohammed**\
 Intro here
 
-**Raphael Verger**\
-Intro here
+**Raphaël Verger**\
+Raphaël is a third year computer engineering student. He is mainly focused on machine learning, data analysis and software development. Outside of the classroom, he enjoys traveling and taking pictures!
+
 ### Deliverable 1
 The scope of this deliverable contained the modelling and database setup for the semester's project. First we had to create a requirements model for the application comprising 12 funcional requirements and 3 non-functional requirements. We moved on to use cases for the next part of the requirement model. We started by making two [use case diagrams](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Use-Case-Diagrams) describing how users can interact with the application. We finished our requirement model by creating a detailed description for [7 of the most important use cases](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Use-Cases) for our diagrams. The second part of the project was the [exploratory domain model](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Class-Diagram). We created a class diagram that reflects the interactions between different parts of the program. The third part was the code implementation along with the persistence layer. We created the code which corresponds to the domain model and connected it to our persistence layer through Spring & Hibernate. We did all this while properly applying and documenting the engineering design process we went through. Whether it is [meeting minutes](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Meeting-minutes) or [design decisions](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report), every step of our journey is documented in the [wiki](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki). Information on our roles and division of tasks can be found in the table below.\
 [Project report](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report)  |  [Meeting minutes](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Meeting-minutes)\
@@ -36,4 +37,4 @@ The scope of this deliverable contained the modelling and database setup for the
 |Jerome Courtemanche|Written report director, developper|Setting up the repository, implementing the "Review" class, persistence and tests and documenting the README.md & wiki.|~12hrs|
 |Bora Denizasan||||
 |Mubeen Mohammed||||
-|Raphael Verger||||
+|Raphaël Verger|Developer, documentation specialist| Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions in the wiki.|~9hrs|
