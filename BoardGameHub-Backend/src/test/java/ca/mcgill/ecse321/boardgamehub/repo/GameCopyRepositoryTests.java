@@ -2,6 +2,9 @@ package ca.mcgill.ecse321.boardgamehub.repo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,5 +88,24 @@ public class GameCopyRepositoryTests {
         chessCopyFromDb = gameCopyRepository.findGameCopyById(chessCopy.getId());
 
         assertEquals(null, chessCopyFromDb);
+    }
+
+    @Test
+    public void testFindGameCopyByGame() {
+        chessCopy = new GameCopy(true, chess, Sleepy);
+        chessCopy = gameCopyRepository.save(chessCopy);
+
+        List<GameCopy> game_list = gameCopyRepository.findByGame(chess);
+
+        assertFalse(game_list.isEmpty());
+        assertEquals(1, game_list.size());
+
+        GameCopy chessCopyFromDb = game_list.get(0);
+
+        assertNotNull(chessCopyFromDb);
+        assertEquals(chessCopy.getId(), chessCopyFromDb.getId());
+        assertEquals(chessCopy.getIsAvailable(), chessCopyFromDb.getIsAvailable());
+        assertEquals(chessCopy.getGame().getId(), chessCopyFromDb.getGame().getId());
+        assertEquals(chessCopy.getOwner().getId(), chessCopyFromDb.getOwner().getId());
     }
 }

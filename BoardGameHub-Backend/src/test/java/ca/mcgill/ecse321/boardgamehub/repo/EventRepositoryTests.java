@@ -2,8 +2,10 @@ package ca.mcgill.ecse321.boardgamehub.repo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.sql.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -150,5 +152,28 @@ public class EventRepositoryTests {
         assertNull(monopolyEventFromDb);
     }
 
+    @Test
+    public void findByOrganizer() {
+        Date today = Date.valueOf("2025-02-13");
+        String name = "Monopoly Event";
+        String location = "McGill";
+        String description = "Playing Monopoly";
+        int maxParticipants = 9;
+
+        Event monopolyEvent = new Event(name,location,description,today,maxParticipants,john,monopolyCopy);
+        
+        monopolyEvent = EventRepo.save(monopolyEvent);
+
+        List<Event> playerEvent = EventRepo.findByOrganizer(john);
+
+        assertFalse(playerEvent.isEmpty());
+        assertEquals(1, playerEvent.size());
+
+        Event monopolyEventFromDb = playerEvent.get(0);
+
+        assertNotNull(monopolyEventFromDb);
+        assertEquals(monopolyEvent.getOrganizer().getId(), monopolyEventFromDb.getOrganizer().getId());
+        assertEquals(monopolyEvent.getGame().getId(), monopolyEventFromDb.getGame().getId());
+    }
 
 }
