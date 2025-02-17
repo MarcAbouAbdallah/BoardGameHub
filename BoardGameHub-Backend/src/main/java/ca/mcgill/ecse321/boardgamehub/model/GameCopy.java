@@ -68,11 +68,10 @@ public class GameCopy {
 
     @Override
     public String toString() {
-        return "GameCopy{" +
-                "id=" + id +
-                ", isAvailable=" + isAvailable +
-                ", game= " + (game != null ? game.getName() : "null") +
-                ", owner= " + (owner != null ? owner.getName() : "null") +
-                '}';
+        return super.toString() + "[" +
+            "id" + ":" + getId() + "," +
+            "isAvailable" + ":" + getIsAvailable() + "," +
+            "game" + ":" + (game != null ? game.getName() : "null") + "," +
+            "owner" + ":" + (owner != null ? owner.getName() : "null") + "]";
     }
 }
