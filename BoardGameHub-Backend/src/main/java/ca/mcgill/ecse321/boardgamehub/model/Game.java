@@ -3,8 +3,6 @@ package ca.mcgill.ecse321.boardgamehub.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.util.List;
 
 @Entity
 public class Game {
@@ -16,9 +14,6 @@ public class Game {
     private int minPlayers;
     private String description;
 
-    @OneToMany
-    private List<GameCopy> copies;
-
     protected Game(){
     }
 
@@ -28,8 +23,6 @@ public class Game {
         this. minPlayers =  minPlayers;
         this.description = description;
     }
-
-    //Getters
 
     public int getId() {
         return id;
@@ -50,12 +43,6 @@ public class Game {
     public String getDescription(){
         return description;
     }
-
-    public List<GameCopy> getCopies(){
-        return copies;
-    }
-
-    //Setters
 
     public boolean setId(int aId) {
         this.id = aId;
@@ -82,11 +69,6 @@ public class Game {
         return true;
     }
 
-    public void setCopies(List<GameCopy> copies){
-        this.copies = copies;
-    }
-
-    //toString
     @Override
     public String toString() {
         return super.toString() + "[" +
@@ -95,7 +77,7 @@ public class Game {
         "maxPlayers" + ":" + getMaxPlayers() + "," +
         "minPlayers" + ":" + getMinPlayers() + "," +
         "description" + ":" + getDescription() + "," +
-        "copies" + ":" + (copies != null ? copies.size() : 0) + " copies" + "]";
+        "]";
     }
 
 }

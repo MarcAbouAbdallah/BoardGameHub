@@ -27,13 +27,14 @@ public class GameCopyRepositoryTests {
 
     private Game chess;
     private GameCopy chessCopy;
+    private Player Sleepy;
 
     @BeforeEach
     public void setup() {
         chess = new Game("Chess", 2, 2, "A strategic board game");
         chess = gameRepository.save(chess);
 
-        Player Sleepy = new Player("Sleepy", "IWasSleepy@gmail.com" , "password", true);
+        Sleepy = new Player("Sleepy", "IWasSleepy@gmail.com" , "password", true);
         Sleepy = playerRepository.save(Sleepy);
     }
 

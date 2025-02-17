@@ -28,8 +28,6 @@ public class GameCopy {
         this.owner = owner;
     }
 
-    //Getters
-
     public int getId(){
         return id;
     }
@@ -45,8 +43,6 @@ public class GameCopy {
     public Player getOwner(){
         return owner;
     }
-
-    //Setters
 
     public boolean setId(int aId){
         this.id = aId;

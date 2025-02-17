@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.boardgamehub.repo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.sql.Date;
 
@@ -92,4 +93,62 @@ public class EventRepositoryTests {
         assertEquals(john.getId(), monopolyEventFromDb.getOrganizer().getId());
         assertEquals(monopolyCopy.getId(), monopolyEventFromDb.getGame().getId());
     }
+
+    @Test
+    public void testUpdateEvent() {
+        Date today = Date.valueOf("2025-02-13");
+        String name = "Monopoly Event";
+        String location = "McGill";
+        String description = "Playing Monopoly";
+        int maxParticipants = 9;
+
+        Event monopolyEvent = new Event(name,location,description,today,maxParticipants,john,monopolyCopy);
+        
+        monopolyEvent = EventRepo.save(monopolyEvent);
+
+        String newName = "Monopoly Event 2";
+        String newLocation = "Concordia";
+        String newDescription = "Playing Monopoly 2";
+        Date newDate = Date.valueOf("2025-02-14");
+        int newMaxParticipants = 10;
+    
+        monopolyEvent.setName(newName);
+        monopolyEvent.setLocation(newLocation);
+        monopolyEvent.setDescription(newDescription);
+        monopolyEvent.setDate(newDate);
+        monopolyEvent.setMaxParticipants(newMaxParticipants);
+        monopolyEvent = EventRepo.save(monopolyEvent);
+
+        Event monopolyEventFromDb = EventRepo.findEventById(monopolyEvent.getId());
+
+        assertNotNull(monopolyEventFromDb);
+
+        assertEquals(monopolyEvent.getId(), monopolyEventFromDb.getId());
+		assertEquals(newName, monopolyEventFromDb.getName());
+        assertEquals(newLocation, monopolyEventFromDb.getLocation());
+        assertEquals(newDescription, monopolyEventFromDb.getDescription());
+        assertEquals(newDate, monopolyEventFromDb.getDate());
+        assertEquals(newMaxParticipants, monopolyEventFromDb.getMaxParticipants());
+    }
+
+    @Test
+    public void deleteEvent() {
+        Date today = Date.valueOf("2025-02-13");
+        String name = "Monopoly Event";
+        String location = "McGill";
+        String description = "Playing Monopoly";
+        int maxParticipants = 9;
+
+        Event monopolyEvent = new Event(name,location,description,today,maxParticipants,john,monopolyCopy);
+        
+        monopolyEvent = EventRepo.save(monopolyEvent);
+
+        EventRepo.delete(monopolyEvent);
+
+        //Assert
+        Event monopolyEventFromDb = EventRepo.findEventById(monopolyEvent.getId());
+        assertNull(monopolyEventFromDb);
+    }
+
+
 }

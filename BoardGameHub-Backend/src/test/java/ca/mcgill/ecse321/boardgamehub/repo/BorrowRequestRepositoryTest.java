@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-//@ActiveProfiles("test")
 public class BorrowRequestRepositoryTest {
 
     @Autowired
@@ -29,6 +28,7 @@ public class BorrowRequestRepositoryTest {
 
     private Player requester;
     private Player requestee;
+    private Game game;
     private GameCopy gameCopy;
     private BorrowRequest borrowRequest;
 
@@ -40,21 +40,11 @@ public class BorrowRequestRepositoryTest {
         requestee = new Player("Bob", "bob@example.com", "securePass", true);
         playerRepository.save(requestee);
 
-        game = ("Chess", 2, 2, "A strategic board game");
+        game = new Game("Chess", 2, 2, "A strategic board game");
         gameRepository.save(game);
 
         gameCopy = new GameCopy(true, game, requestee);
         gameCopyRepository.save(gameCopy);
-
-        /*
-        borrowRequest = new BorrowRequest(
-            requester, requestee, gameCopy, 
-            "I want to borrow this game", 
-            Date.valueOf("2025-02-15"), 
-            Date.valueOf("2025-02-20")
-        );
-        borrowRequestRepository.save(borrowRequest);
-        */
     }
 
     @AfterEach
@@ -81,7 +71,7 @@ public class BorrowRequestRepositoryTest {
         borrowRequestRepository.save(borrowRequest);
 
         //Act 
-        BorrowRequest foundRequest = borrowRequestRepository.findById(borrowRequest.getId());
+        BorrowRequest foundRequest = borrowRequestRepository.findBorrowRequestById(borrowRequest.getId());
 
         //Assert
         assertNotNull(foundRequest);
@@ -116,7 +106,7 @@ public class BorrowRequestRepositoryTest {
         borrowRequestRepository.delete(borrowRequest);
 
         //Assert
-        BorrowRequest foundRequest = borrowRequestRepository.findById(borrowRequest.getId());
+        BorrowRequest foundRequest = borrowRequestRepository.findBorrowRequestById(borrowRequest.getId());
         assertNull(foundRequest);
     }
 
@@ -137,7 +127,7 @@ public class BorrowRequestRepositoryTest {
         borrowRequest.setStatus(BorrowStatus.ACCEPTED);
         borrowRequestRepository.save(borrowRequest);
 
-        BorrowRequest foundRequest = borrowRequestRepository.findById(borrowRequest.getId());
+        BorrowRequest foundRequest = borrowRequestRepository.findBorrowRequestById(borrowRequest.getId());
 
         assertNotNull(foundRequest);
         assertEquals(BorrowStatus.ACCEPTED, foundRequest.getStatus()); // Updated borrow status
