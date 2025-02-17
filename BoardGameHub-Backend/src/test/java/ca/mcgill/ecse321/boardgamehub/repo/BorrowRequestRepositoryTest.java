@@ -9,10 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import java.util.List;
 
 @SpringBootTest
-//@ActiveProfiles("test")
 public class BorrowRequestRepositoryTest {
 
     @Autowired
@@ -29,6 +28,7 @@ public class BorrowRequestRepositoryTest {
 
     private Player requester;
     private Player requestee;
+    private Game game;
     private GameCopy gameCopy;
     private BorrowRequest borrowRequest;
 
@@ -40,21 +40,11 @@ public class BorrowRequestRepositoryTest {
         requestee = new Player("Bob", "bob@example.com", "securePass", true);
         playerRepository.save(requestee);
 
-        game = ("Chess", 2, 2, "A strategic board game");
+        game = new Game("Chess", 2, 2, "A strategic board game");
         gameRepository.save(game);
 
         gameCopy = new GameCopy(true, game, requestee);
         gameCopyRepository.save(gameCopy);
-
-        /*
-        borrowRequest = new BorrowRequest(
-            requester, requestee, gameCopy, 
-            "I want to borrow this game", 
-            Date.valueOf("2025-02-15"), 
-            Date.valueOf("2025-02-20")
-        );
-        borrowRequestRepository.save(borrowRequest);
-        */
     }
 
     @AfterEach
@@ -81,7 +71,7 @@ public class BorrowRequestRepositoryTest {
         borrowRequestRepository.save(borrowRequest);
 
         //Act 
-        BorrowRequest foundRequest = borrowRequestRepository.findById(borrowRequest.getId());
+        BorrowRequest foundRequest = borrowRequestRepository.findBorrowRequestById(borrowRequest.getId());
 
         //Assert
         assertNotNull(foundRequest);
@@ -98,7 +88,7 @@ public class BorrowRequestRepositoryTest {
     }
 
     @Test
-    public void deleteBorrowRequest() {
+    public void testDeleteBorrowRequest() {
         // Arrange
         Date startDate = Date.valueOf("2025-02-15");
         Date endDate = Date.valueOf("2025-02-20");
@@ -116,7 +106,7 @@ public class BorrowRequestRepositoryTest {
         borrowRequestRepository.delete(borrowRequest);
 
         //Assert
-        BorrowRequest foundRequest = borrowRequestRepository.findById(borrowRequest.getId());
+        BorrowRequest foundRequest = borrowRequestRepository.findBorrowRequestById(borrowRequest.getId());
         assertNull(foundRequest);
     }
 
@@ -137,9 +127,61 @@ public class BorrowRequestRepositoryTest {
         borrowRequest.setStatus(BorrowStatus.ACCEPTED);
         borrowRequestRepository.save(borrowRequest);
 
-        BorrowRequest foundRequest = borrowRequestRepository.findById(borrowRequest.getId());
+        BorrowRequest foundRequest = borrowRequestRepository.findBorrowRequestById(borrowRequest.getId());
 
         assertNotNull(foundRequest);
         assertEquals(BorrowStatus.ACCEPTED, foundRequest.getStatus()); // Updated borrow status
+    }
+
+    @Test
+    public void testFindBorrowRequestByRequestee() {
+        Date startDate = Date.valueOf("2025-02-15");
+        Date endDate = Date.valueOf("2025-02-20");
+        String comment = "I want to borrow this game";
+
+        borrowRequest = new BorrowRequest(
+            requester, requestee, gameCopy, 
+            comment, 
+            startDate, 
+            endDate
+        );
+        borrowRequestRepository.save(borrowRequest);
+
+        List<BorrowRequest> requestee_list = borrowRequestRepository.findByRequestee(requestee);
+
+        assertFalse(requestee_list.isEmpty());
+        assertEquals(1, requestee_list.size());
+
+        BorrowRequest foundRequest = requestee_list.get(0);
+
+        assertNotNull(foundRequest);
+        assertEquals(borrowRequest.getId(), foundRequest.getId());
+        assertEquals(borrowRequest.getRequestee().getId(), foundRequest.getRequestee().getId());
+    }
+
+    @Test
+    public void testFindBorrowRequestByRequester() {
+        Date startDate = Date.valueOf("2025-02-15");
+        Date endDate = Date.valueOf("2025-02-20");
+        String comment = "I want to borrow this game";
+
+        borrowRequest = new BorrowRequest(
+            requester, requestee, gameCopy, 
+            comment, 
+            startDate, 
+            endDate
+        );
+        borrowRequestRepository.save(borrowRequest);
+
+        List<BorrowRequest> requester_list = borrowRequestRepository.findByRequester(requester);
+
+        assertFalse(requester_list.isEmpty());
+        assertEquals(1, requester_list.size());
+
+        BorrowRequest foundRequest = requester_list.get(0);
+
+        assertNotNull(foundRequest);
+        assertEquals(borrowRequest.getId(), foundRequest.getId());
+        assertEquals(borrowRequest.getRequester().getId(), foundRequest.getRequester().getId());
     }
 }

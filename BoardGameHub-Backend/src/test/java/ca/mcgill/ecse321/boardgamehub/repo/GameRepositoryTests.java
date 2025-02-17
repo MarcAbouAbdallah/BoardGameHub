@@ -29,7 +29,7 @@ public class GameRepositoryTests {
         chess = new Game("Chess", 2, 2, "A strategic board game");
         chess = gameRepository.save(chess);
         
-        Game chessFromDb = gameRepository.findById(chess.getId()).orElse(null);
+        Game chessFromDb = gameRepository.findGameById(chess.getId());
 
         assertNotNull(chessFromDb);
         assertEquals(chess.getId(), chessFromDb.getId());
@@ -37,5 +37,35 @@ public class GameRepositoryTests {
         assertEquals(chess.getMaxPlayers(), chessFromDb.getMaxPlayers());
         assertEquals(chess.getMinPlayers(), chessFromDb.getMinPlayers());
         assertEquals(chess.getDescription(), chessFromDb.getDescription());
+    }
+
+    @Test
+    public void testUpdateGame() {
+        chess = new Game("Chess", 2, 2, "A strategic board game");
+        chess = gameRepository.save(chess);
+        
+        chess.setName("Chess 2.0");
+        chess.setDescription("A strategic board game for 2 players");
+        chess = gameRepository.save(chess);
+
+        Game chessFromDb = gameRepository.findGameById(chess.getId());
+
+        assertNotNull(chessFromDb);
+        assertEquals(chess.getId(), chessFromDb.getId());
+        assertEquals("Chess 2.0", chessFromDb.getName());
+        assertEquals("A strategic board game for 2 players", chessFromDb.getDescription());
+    }
+
+    @Test
+    public void testDeleteGame() {
+        chess = new Game("Chess", 2, 2, "A strategic board game");
+        chess = gameRepository.save(chess);
+
+        Game chessFromDb = gameRepository.findGameById(chess.getId());
+        gameRepository.delete(chess);
+
+        chessFromDb = gameRepository.findGameById(chess.getId());
+
+        assertEquals(null, chessFromDb);
     }
 }
