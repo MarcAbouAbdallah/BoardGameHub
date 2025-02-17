@@ -73,8 +73,6 @@ public class RegistrationRepositoryTests {
         Registration registration = new Registration(key);
         registration = registrationRepo.save(registration);
 
-        System.out.println("Saved Registration: " + registrationRepo.findAll());
-
         //Act
         Registration RegistrationFromDb = registrationRepo.findRegistrationByKey(key);
 
