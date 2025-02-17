@@ -89,14 +89,13 @@ public class Game {
     //toString
     @Override
     public String toString() {
-        return "Game{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", maxPlayers=" + maxPlayers +
-                ", minPlayers=" + minPlayers +
-                ", description='" + description + '\'' +
-                ", copies=" + (copies != null ? copies.size() : 0) + " copies" +
-                '}';
+        return super.toString() + "[" +
+        "id" + ":" + getId() + "," +
+        "name" + ":" + getName() + "," +
+        "maxPlayers" + ":" + getMaxPlayers() + "," +
+        "minPlayers" + ":" + getMinPlayers() + "," +
+        "description" + ":" + getDescription() + "," +
+        "copies" + ":" + (copies != null ? copies.size() : 0) + " copies" + "]";
     }
 
 }
