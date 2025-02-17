@@ -40,7 +40,6 @@ public class RegistrationRepositoryTests {
 
     @BeforeEach
     public void setup() {
-        //Arrange
         john = new Player("John",
                           "john@gmail.com", 
                           "John@123",
@@ -65,10 +64,6 @@ public class RegistrationRepositoryTests {
                             john, 
                             hangmanCopy);
         hanging = eventRepo.save(hanging);
-
-        key = new Registration.Key(john, hanging);
-        registration = new Registration(key);
-        registration = registrationRepo.save(registration);
     }
 
     @AfterEach
@@ -83,6 +78,11 @@ public class RegistrationRepositoryTests {
 
     @Test
     public void testCreateAndReadRegistration() {
+        //Arrange
+        key = new Registration.Key(john, hanging);
+        registration = new Registration(key);
+        registration = registrationRepo.save(registration);
+      
         //Act
         Registration RegistrationFromDb = registrationRepo.findRegistrationByKey(key);
 
@@ -93,15 +93,18 @@ public class RegistrationRepositoryTests {
         assertEquals(john.getId(), RegistrationFromDb.getKey().getRegistrant().getId());
         assertNotNull(RegistrationFromDb.getKey().getRegisteredEvent());
         assertEquals(hanging.getId(), RegistrationFromDb.getKey().getRegisteredEvent().getId());
+
     }
 
     @Test
     public void testDeleteRegistration() {
-        //Act
+        key = new Registration.Key(john, hanging);
+        registration = new Registration(key);
+        registration = registrationRepo.save(registration);
+      
         registrationRepo.delete(registration);
         Registration RegistrationFromDb = registrationRepo.findRegistrationByKey(registration.getKey());
 
-        //Assert
         assertNull(RegistrationFromDb);
     }
 
