@@ -26,10 +26,8 @@ public class BorrowRequest {
     private Date startDate;
     private Date endDate;
 
-    // Constructor
     protected BorrowRequest() {}
 
-    // Constructor with fields
     public BorrowRequest(Player requester, Player requestee, GameCopy game, String comment, Date startDate, Date endDate) {
         this.requester = requester;
         this.requestee = requestee;
@@ -40,7 +38,6 @@ public class BorrowRequest {
         this.status = BorrowStatus.PENDING; // Default status
     }
 
-    // Getters
     public int getId() { return id; }
 
     public Player getRequester() { return requester; }
@@ -57,7 +54,8 @@ public class BorrowRequest {
 
     public BorrowStatus getStatus() { return status; }
 
-    // Setters
+    public void setId(int id) { this.id = id; }
+
     public void setRequester(Player requester) { this.requester = requester; }
 
     public void setRequestee(Player requestee) { this.requestee = requestee; }

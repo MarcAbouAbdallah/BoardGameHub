@@ -35,23 +35,22 @@ public class GameCopyRepositoryTests {
 
         Player Sleepy = new Player("Sleepy", "IWasSleepy@gmail.com" , "password", true);
         Sleepy = playerRepository.save(Sleepy);
-
-        chessCopy = new GameCopy(true, chess, Sleepy);
-        chessCopy = gameCopyRepository.save(chessCopy);
     }
 
     @AfterEach
     public void clearDatabase() {
         gameCopyRepository.deleteAll();
         gameRepository.deleteAll();
+        playerRepository.deleteAll();
     }
 
     @Test
     public void testCreateAndReadGameCopy() {
-        // Act
+        chessCopy = new GameCopy(true, chess, Sleepy);
+        chessCopy = gameCopyRepository.save(chessCopy);
+        
         GameCopy chessCopyFromDb = gameCopyRepository.findById(chessCopy.getId()).orElse(null);
 
-        // Assert
         assertNotNull(chessCopyFromDb);
         assertEquals(chessCopy.getId(), chessCopyFromDb.getId());
         assertEquals(chessCopy.getIsAvailable(), chessCopyFromDb.getIsAvailable());

@@ -67,12 +67,14 @@ public class EventRepositoryTests {
 
         //Assert
         assertNotNull(monopolyEventFromDb);
+
         assertEquals(monopolyEvent.getId(), monopolyEventFromDb.getId());
 		assertEquals(name, monopolyEventFromDb.getName());
         assertEquals(location, monopolyEventFromDb.getLocation());
         assertEquals(description, monopolyEventFromDb.getDescription());
         assertEquals(today, monopolyEventFromDb.getDate());
         assertEquals(maxParticipants, monopolyEventFromDb.getMaxParticipants());
+        
         assertEquals(john.getId(), monopolyEventFromDb.getOrganizer().getId());
         assertEquals(monopoly.getId(), monopolyEventFromDb.getGame().getId());
     }

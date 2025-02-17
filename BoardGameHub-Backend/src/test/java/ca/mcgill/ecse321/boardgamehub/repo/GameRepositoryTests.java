@@ -19,12 +19,6 @@ public class GameRepositoryTests {
 
     private Game chess;
 
-    @BeforeEach
-    public void setup() {
-        chess = new Game("Chess", 2, 2, "A strategic board game");
-        chess = gameRepository.save(chess);
-    }
-
     @AfterEach
     public void clearDatabase() {
         gameRepository.deleteAll();
@@ -32,10 +26,11 @@ public class GameRepositoryTests {
 
     @Test
     public void testCreateAndReadGame() {
-        // Act
+        chess = new Game("Chess", 2, 2, "A strategic board game");
+        chess = gameRepository.save(chess);
+        
         Game chessFromDb = gameRepository.findById(chess.getId()).orElse(null);
 
-        // Assert
         assertNotNull(chessFromDb);
         assertEquals(chess.getId(), chessFromDb.getId());
         assertEquals(chess.getName(), chessFromDb.getName());
