@@ -111,7 +111,7 @@ public class ReviewRepositoryTests {
     }
 
     @Test
-    public void deleteReview() {
+    public void testDeleteReview() {
         //Arrange
         Date today = Date.valueOf("2025-02-07");
         
@@ -132,7 +132,7 @@ public class ReviewRepositoryTests {
     }
 
     @Test
-    public void nonExistentReview() {
+    public void testNonExistentReview() {
         //Arrange
         //(done in before each)
 
@@ -144,7 +144,7 @@ public class ReviewRepositoryTests {
     }
 
     @Test
-    public void findByPlayer() {
+    public void testFindReviewByPlayer() {
         //Arrange
         Date today = Date.valueOf("2025-02-07");
         
@@ -175,7 +175,7 @@ public class ReviewRepositoryTests {
     }
 
     @Test
-    public void findByGame() {
+    public void testFindReviewByGame() {
         //Arrange
         Date today = Date.valueOf("2025-02-07");
         
@@ -206,7 +206,7 @@ public class ReviewRepositoryTests {
     }
 
     @Test
-    public void findByPlayerAndGame() {
+    public void testFindReviewByPlayerAndGame() {
         //Arrange
         Date today = Date.valueOf("2025-02-07");
         
@@ -237,7 +237,7 @@ public class ReviewRepositoryTests {
     }
 
     @Test
-    public void multipleReviews() {
+    public void testMultipleReviews() {
         //Arrange
         Date today = Date.valueOf("2025-02-07");
         Review monopolyReview = new Review(

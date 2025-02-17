@@ -108,4 +108,23 @@ public class GameCopyRepositoryTests {
         assertEquals(chessCopy.getGame().getId(), chessCopyFromDb.getGame().getId());
         assertEquals(chessCopy.getOwner().getId(), chessCopyFromDb.getOwner().getId());
     }
+
+    @Test
+    public void testFindGameCopyByOwner() {
+        chessCopy = new GameCopy(true, chess, Sleepy);
+        chessCopy = gameCopyRepository.save(chessCopy);
+
+        List<GameCopy> game_list = gameCopyRepository.findByOwner(Sleepy);
+
+        assertFalse(game_list.isEmpty());
+        assertEquals(1, game_list.size());
+
+        GameCopy chessCopyFromDb = game_list.get(0);
+
+        assertNotNull(chessCopyFromDb);
+        assertEquals(chessCopy.getId(), chessCopyFromDb.getId());
+        assertEquals(chessCopy.getIsAvailable(), chessCopyFromDb.getIsAvailable());
+        assertEquals(chessCopy.getGame().getId(), chessCopyFromDb.getGame().getId());
+        assertEquals(chessCopy.getOwner().getId(), chessCopyFromDb.getOwner().getId());
+    }
 }

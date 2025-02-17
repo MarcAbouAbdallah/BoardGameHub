@@ -134,7 +134,7 @@ public class EventRepositoryTests {
     }
 
     @Test
-    public void deleteEvent() {
+    public void testDeleteEvent() {
         Date today = Date.valueOf("2025-02-13");
         String name = "Monopoly Event";
         String location = "McGill";
@@ -153,7 +153,7 @@ public class EventRepositoryTests {
     }
 
     @Test
-    public void findByOrganizer() {
+    public void TestFindEventByOrganizer() {
         Date today = Date.valueOf("2025-02-13");
         String name = "Monopoly Event";
         String location = "McGill";
