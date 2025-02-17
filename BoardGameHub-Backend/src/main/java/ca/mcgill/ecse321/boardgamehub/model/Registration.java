@@ -73,8 +73,8 @@ public class Registration {
                 return false;
             }
             Key other = (Key) obj;
-            return this.getRegistrant().getId() == other.getRegistrant().getId()
-                    && this.getRegisteredEvent().getId() == other.getRegisteredEvent().getId();
+            return Objects.equals(this.getRegistrant().getId(), other.getRegistrant().getId())
+                    && Objects.equals(this.getRegisteredEvent().getId(),other.getRegisteredEvent().getId());
         }
 
         @Override

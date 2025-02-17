@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
+import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.Event;
 
 @SpringBootTest
@@ -26,9 +27,14 @@ public class EventRepositoryTests {
     @Autowired
     private GameCopyRepository gameCopyRepo;
 
+    @Autowired
+    private GameRepository gameRepo;
+
     private Player john;
     
-    private GameCopy monopoly;
+    private Game monopoly;
+
+    private GameCopy monopolyCopy;
 
     @BeforeEach
     public void setup() {
@@ -38,15 +44,23 @@ public class EventRepositoryTests {
                             "johnnyboy123",
                             true);
         playerRepo.save(john);
-        monopoly = new GameCopy(); // This will have to be edited when game gets implemented !!!!!!
-        gameCopyRepo.save(monopoly);
+        monopoly = new Game(                    
+                            "Monopoly", 
+                            8, 
+                            2, 
+                            "multiplayer economics-themed board game");
+        gameRepo.save(monopoly);
+
+        monopolyCopy = new GameCopy(true, monopoly, john);
+        monopolyCopy = gameCopyRepo.save(monopolyCopy);
     }
 
     @AfterEach
     public void clearDataBase() {
         EventRepo.deleteAll();
-        playerRepo.deleteAll();
         gameCopyRepo.deleteAll();
+        playerRepo.deleteAll();
+        gameRepo.deleteAll();
     }
 
     @Test
@@ -58,7 +72,7 @@ public class EventRepositoryTests {
         String description = "Playing Monopoly";
         int maxParticipants = 9;
 
-        Event monopolyEvent = new Event(name,location,description,today,maxParticipants,john,monopoly);
+        Event monopolyEvent = new Event(name,location,description,today,maxParticipants,john,monopolyCopy);
         
         monopolyEvent = EventRepo.save(monopolyEvent);
 
@@ -74,6 +88,6 @@ public class EventRepositoryTests {
         assertEquals(today, monopolyEventFromDb.getDate());
         assertEquals(maxParticipants, monopolyEventFromDb.getMaxParticipants());
         assertEquals(john.getId(), monopolyEventFromDb.getOrganizer().getId());
-        assertEquals(monopoly.getId(), monopolyEventFromDb.getGame().getId());
+        assertEquals(monopolyCopy.getId(), monopolyEventFromDb.getGame().getId());
     }
 }
