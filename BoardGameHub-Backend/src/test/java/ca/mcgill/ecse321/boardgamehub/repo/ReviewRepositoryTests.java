@@ -42,7 +42,7 @@ public class ReviewRepositoryTests {
                             "johnnyboy123",
                             true);
         playerRepo.save(john);
-        monopoly = new Game("Monopoly", 8, 2, "multiplayer economics-themed board game"); //This will have to be edited when game gets implemented
+        monopoly = new Game("Monopoly", 8, 2, "multiplayer economics-themed board game");
         gameRepo.save(monopoly);
     }
 

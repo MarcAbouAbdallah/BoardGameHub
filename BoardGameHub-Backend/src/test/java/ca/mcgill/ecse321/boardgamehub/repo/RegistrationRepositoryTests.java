@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.boardgamehub.repo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.sql.Date;
 
@@ -83,5 +84,46 @@ public class RegistrationRepositoryTests {
         assertEquals(john.getId(), RegistrationFromDb.getKey().getRegistrant().getId());
         assertNotNull(RegistrationFromDb.getKey().getRegisteredEvent());
         assertEquals(hanging.getId(), RegistrationFromDb.getKey().getRegisteredEvent().getId());
-}
+
+    }
+
+    @Test
+    public void testDeleteRegistration() {
+        // Creating the registration first
+        Player john = new Player("John",
+                                 "john@gmail.com",
+                                 "John@123",
+                                 true);
+        john = personRepo.save(john);
+
+        Game hangman = new Game("Hangman", 
+                                 4, 
+                                 2, 
+                                 "A word game");
+        hangman = gameRepo.save(hangman);
+
+        GameCopy hangmanCopy = new GameCopy(true, hangman, john);
+        hangmanCopy = gameCopyRepo.save(hangmanCopy);
+
+        Date eventDate = Date.valueOf("2025-02-20");
+        Event hanging = new Event("hanging",
+                                  "McGill", 
+                                  "spend some time", 
+                                  eventDate, 
+                                  4, 
+                                  john, 
+                                  hangmanCopy);
+        hanging = eventRepo.save(hanging);
+
+        Registration.Key key = new Registration.Key(john, hanging);
+        Registration registration = new Registration(key);
+        registration = registrationRepo.save(registration);
+
+        // Deleting
+        registrationRepo.delete(registration);
+
+        Registration RegistrationFromDb = registrationRepo.findRegistrationByKey(key);
+        assertNull(RegistrationFromDb);
+    }
+
 }
