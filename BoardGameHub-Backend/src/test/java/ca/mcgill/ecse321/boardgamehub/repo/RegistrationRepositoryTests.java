@@ -31,7 +31,41 @@ public class RegistrationRepositoryTests {
     @Autowired
     private GameCopyRepository gameCopyRepo;
 
+    private Player john;
+    private Game hangman;
+    private GameCopy hangmanCopy;
+    private Event hanging;
+    private Registration registration;
+    private Registration.Key key;
+
     @BeforeEach
+    public void setup() {
+        john = new Player("John",
+                          "john@gmail.com", 
+                          "John@123",
+                          true);
+        john = personRepo.save(john);
+
+        hangman = new Game("Hangman",
+                           4, 
+                           2, 
+                           "A word game");
+        hangman = gameRepo.save(hangman);
+
+        hangmanCopy = new GameCopy(true, hangman, john);
+        hangmanCopy = gameCopyRepo.save(hangmanCopy);
+
+        Date eventDate = Date.valueOf("2025-02-20");
+        hanging = new Event("hanging",
+                            "McGill", 
+                            "spend some time", 
+                            eventDate, 
+                            4, 
+                            john, 
+                            hangmanCopy);
+        hanging = eventRepo.save(hanging);
+    }
+
     @AfterEach
     public void clearDatabase() {
         registrationRepo.deleteAll();
@@ -45,35 +79,10 @@ public class RegistrationRepositoryTests {
     @Test
     public void testCreateAndReadRegistration() {
         //Arrange
-        Player john = new Player("John",
-                                 "john@gmail.com",
-                                 "John@123",
-                                 true);
-        john = personRepo.save(john);
-
-        Game hangman = new Game("Hangman", 
-                                 4, 
-                                 2, 
-                                 "A word game");
-        hangman = gameRepo.save(hangman);
-
-        GameCopy hangmanCopy = new GameCopy(true, hangman, john);
-        hangmanCopy = gameCopyRepo.save(hangmanCopy);
-
-        Date eventDate = Date.valueOf("2025-02-20");
-        Event hanging = new Event("hanging",
-                                  "McGill", 
-                                  "spend some time", 
-                                  eventDate, 
-                                  4, 
-                                  john, 
-                                  hangmanCopy);
-        hanging = eventRepo.save(hanging);
-
-        Registration.Key key = new Registration.Key(john, hanging);
-        Registration registration = new Registration(key);
+        key = new Registration.Key(john, hanging);
+        registration = new Registration(key);
         registration = registrationRepo.save(registration);
-
+      
         //Act
         Registration RegistrationFromDb = registrationRepo.findRegistrationByKey(key);
 
@@ -89,41 +98,31 @@ public class RegistrationRepositoryTests {
 
     @Test
     public void testDeleteRegistration() {
-        // Creating the registration first
-        Player john = new Player("John",
-                                 "john@gmail.com",
-                                 "John@123",
-                                 true);
-        john = personRepo.save(john);
-
-        Game hangman = new Game("Hangman", 
-                                 4, 
-                                 2, 
-                                 "A word game");
-        hangman = gameRepo.save(hangman);
-
-        GameCopy hangmanCopy = new GameCopy(true, hangman, john);
-        hangmanCopy = gameCopyRepo.save(hangmanCopy);
-
-        Date eventDate = Date.valueOf("2025-02-20");
-        Event hanging = new Event("hanging",
-                                  "McGill", 
-                                  "spend some time", 
-                                  eventDate, 
-                                  4, 
-                                  john, 
-                                  hangmanCopy);
-        hanging = eventRepo.save(hanging);
-
-        Registration.Key key = new Registration.Key(john, hanging);
-        Registration registration = new Registration(key);
+        key = new Registration.Key(john, hanging);
+        registration = new Registration(key);
         registration = registrationRepo.save(registration);
-
-        // Deleting
+      
         registrationRepo.delete(registration);
+        Registration RegistrationFromDb = registrationRepo.findRegistrationByKey(registration.getKey());
 
-        Registration RegistrationFromDb = registrationRepo.findRegistrationByKey(key);
         assertNull(RegistrationFromDb);
     }
 
+    @Test
+    public void testNonExistingRegistration() {
+        //Arrange
+        Player avery = new Player("Avery",
+                          "avery@gmail.com", 
+                          "Avery@123",
+                          true);
+        avery = personRepo.save(avery);
+        
+        Registration.Key testKey = new Registration.Key(avery, hanging);
+
+        //Act
+        Registration RegistrationFromDb = registrationRepo.findRegistrationByKey(testKey);
+
+        //Assert
+        assertNull(RegistrationFromDb);
+    }
 }
