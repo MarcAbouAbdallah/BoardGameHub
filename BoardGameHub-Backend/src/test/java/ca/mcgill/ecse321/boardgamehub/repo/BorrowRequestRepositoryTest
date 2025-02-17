@@ -1,0 +1,95 @@
+package ca.mcgill.ecse321.boardgamehub.repo;
+
+import static org.junit.jupiter.api.Assertions.*;
+import ca.mcgill.ecse321.boardgamehub.model.*;
+import java.sql.Date;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest
+@ActiveProfiles("test")
+public class BorrowRequestRepositoryTest {
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepository;
+
+    @Autowired
+    private PlayerRepository playerRepository;
+
+    @Autowired
+    private GameCopyRepository gameCopyRepository;
+
+    private Player requester;
+    private Player requestee;
+    private GameCopy gameCopy;
+    private BorrowRequest borrowRequest;
+
+    @BeforeEach
+    public void setup() {
+        // Create and save requester (borrower)
+        requester = new Player("Alice", "alice@example.com", "password123", false);
+        playerRepository.save(requester);
+
+        // Create and save requestee (game owner)
+        requestee = new Player("Bob", "bob@example.com", "securePass", true);
+        playerRepository.save(requestee);
+
+        // Create and save a GameCopy
+        gameCopy = new GameCopy();
+        gameCopyRepository.save(gameCopy);
+
+        // Create and save a BorrowRequest
+        borrowRequest = new BorrowRequest(
+            requester, requestee, gameCopy, 
+            "I want to borrow this game", 
+            Date.valueOf("2025-02-15"), 
+            Date.valueOf("2025-02-20")
+        );
+        borrowRequestRepository.save(borrowRequest);
+    }
+
+    @AfterEach
+    public void cleanup() {
+        borrowRequestRepository.deleteAll();
+        gameCopyRepository.deleteAll();
+        playerRepository.deleteAll();
+    }
+
+    @Test
+    public void testPersistAndRetrieveBorrowRequest() {
+        Optional<BorrowRequest> foundRequest = borrowRequestRepository.findById(borrowRequest.getId());
+
+        assertTrue(foundRequest.isPresent());
+        assertEquals("I want to borrow this game", foundRequest.get().getComment());
+        assertEquals(requester.getId(), foundRequest.get().getRequester().getId());
+        assertEquals(requestee.getId(), foundRequest.get().getRequestee().getId());
+        assertEquals(gameCopy.getId(), foundRequest.get().getGame().getId());
+        assertEquals(BorrowStatus.PENDING, foundRequest.get().getStatus());
+    }
+
+    @Test
+    public void testDeleteBorrowRequest() {
+        assertTrue(borrowRequestRepository.findById(borrowRequest.getId()).isPresent());
+
+        borrowRequestRepository.delete(borrowRequest);
+        assertFalse(borrowRequestRepository.findById(borrowRequest.getId()).isPresent());
+    }
+
+    @Test
+    public void testUpdateBorrowRequest() {
+        borrowRequest.setComment("Updated Borrow Comment");
+        borrowRequest.setStatus(BorrowStatus.ACCEPTED);
+        borrowRequestRepository.save(borrowRequest);
+
+        Optional<BorrowRequest> updatedRequest = borrowRequestRepository.findById(borrowRequest.getId());
+
+        assertTrue(updatedRequest.isPresent());
+        assertEquals("Updated Borrow Comment", updatedRequest.get().getComment());
+        assertEquals(BorrowStatus.ACCEPTED, updatedRequest.get().getStatus());
+    }
+}
