@@ -60,10 +60,11 @@ public class Registration {
             registeredEvent = aRegisteredEvent;
         }
 
+        @Override
         public String toString() {
             return super.toString() + "[" +
-                    "registrant" + ":" + getRegistrant() + "," +
-                    "event" + ":" + getRegisteredEvent() + "," +
+                    "registrant" + ":" + (getRegistrant() != null ? getRegistrant().getName() : "null") + "," +
+                    "event" + ":" + (getRegisteredEvent() != null ? getRegisteredEvent().getName() : "null") + "," +
                     "]";
         }
 

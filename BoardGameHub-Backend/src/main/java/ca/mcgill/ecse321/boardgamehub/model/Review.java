@@ -80,18 +80,22 @@ public class Review {
         return true;
     } 
 
+    @Override
     public String toString() {
-    return super.toString() + "[" +
+        return super.toString() + "[" +
             "id" + ":" + getId() + "," +
             "rating" + ":" + getRating() + "," +
             "comment" + ":" + getComment() + "," +
-            "reviewer" + ":" + getReviewer() + "," +
-            "game" + ":" + getGame() + "]"
-            + System.getProperties().getProperty("line.separator")
-            +
-            "  " + "date" + "="
-            + (getDate() != null ? !getDate().equals(this) ? getDate().toString().replaceAll("  ", "    ") : "this"
-                    : "null");
+            "reviewer" + ":" + (getReviewer() != null ? getReviewer().getName() : "null") + "," +
+            "game" + ":" + (getGame() != null ? getGame().getName() : "null") + "]";
+            
+            //The code below seemed useless. It is an artifact from a previous year tutorial's version
+            //of the toString method. I don't think it makes sense to use it in our case
+            // + System.getProperties().getProperty("line.separator")
+            // +
+            // "  " + "date" + "="
+            // + (getDate() != null ? !getDate().equals(this) ? getDate().toString().replaceAll("  ", "    ") : "this"
+            //         : "null");
     }
     
 }

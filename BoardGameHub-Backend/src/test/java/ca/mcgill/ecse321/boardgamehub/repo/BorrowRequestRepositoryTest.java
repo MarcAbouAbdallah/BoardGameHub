@@ -3,7 +3,6 @@ package ca.mcgill.ecse321.boardgamehub.repo;
 import static org.junit.jupiter.api.Assertions.*;
 import ca.mcgill.ecse321.boardgamehub.model.*;
 import java.sql.Date;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

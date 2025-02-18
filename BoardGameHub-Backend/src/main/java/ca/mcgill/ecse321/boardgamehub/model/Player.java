@@ -69,6 +69,7 @@ public class Player {
         return true;
     }
 
+    @Override
     public String toString() {
         return super.toString() + "[" +
                 "id" + ":" + getId() + "," +
