@@ -19,7 +19,7 @@ Jerome is a second year computer engineering student. His interest in computers 
 Bora is a second year computer engineering student. From an early age, robots piqued his interest. Similarly, robotics is his area of interest. In his spare time, He enjoys playing overlooked video games to relax.
 
 **Mubeen Mohammed**\
-Intro here
+Mubeen is a third year engineering student. His interest in AI applications and machine learning. In his free time, he enjoys playing chess and building cool stuff and automating them
 
 **Raphaël Verger**\
 Raphaël is a third year computer engineering student. He is mainly focused on machine learning, data analysis and software development. Outside of the classroom, he enjoys traveling and taking pictures!
@@ -36,5 +36,5 @@ The scope of this deliverable contained the modelling and database setup for the
 |Marleine Atalla||||
 |Jerome Courtemanche|Written report director, developper|Setting up the repository, implementing the "Review" class, persistence and tests and documenting the README.md & wiki.|~12hrs|
 |Bora Denizasan|Developer|Implementing the "Review" class, persistence and tests|~5hrs|
-|Mubeen Mohammed||||
+|Mubeen Mohammed|Scrum Master, Developer|Creating the github project and issues, implementing "Person" model, persistence and tests. Involved in key decisions for the domain model|~7hrs|
 |Raphaël Verger|Developer, documentation specialist| Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions in the wiki.|~9hrs|
