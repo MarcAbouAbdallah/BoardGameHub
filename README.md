@@ -16,7 +16,7 @@ Intro here
 Jerome is a second year computer engineering student. His interest in computers and software started at a young age with video games. Curiosity made his passion evolve to processors and other chips. Although he is mainly interested in working with hardware, he enjoys writing software as well.
 
 **Bora Denizasan**\
-Intro here
+Bora is a second year computer engineering student. From an early age, robots piqued his interest. Similarly, robotics is his area of interest. In his spare time, He enjoys playing overlooked video games to relax.
 
 **Mubeen Mohammed**\
 Intro here
@@ -35,6 +35,6 @@ The scope of this deliverable contained the modelling and database setup for the
 |Deon Aftahi||||
 |Marleine Atalla||||
 |Jerome Courtemanche|Written report director, developper|Setting up the repository, implementing the "Review" class, persistence and tests and documenting the README.md & wiki.|~12hrs|
-|Bora Denizasan||||
+|Bora Denizasan|Developer|Implementing the "Review" class, persistence and tests|~5hrs|
 |Mubeen Mohammed||||
 |Raphaël Verger|Developer, documentation specialist| Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions in the wiki.|~9hrs|
