@@ -29,12 +29,18 @@ The scope of this deliverable contained the modelling and database setup for the
 [Project report](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report)  |  [Meeting minutes](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Meeting-minutes)\
 \
 **Overview table:**
+Note: Some tasks are missing from the table because they were done by everyone in collaboration during team meetings. All the tasks that were split differently among team members are found in the table. The common tasks include:\
+* Requirements
+* Use case diagrams
+* Domain model\
+After these were complete we split up the coding and documentation tasks as outlined in the table.
+
 |Team member|Role|Tasks|Time spent|
 | --- | --- | --- | --- |
 |Marc Abou Abdallah||||
-|Deon Aftahi||||
-|Marleine Atalla||||
-|Jerome Courtemanche|Written report director, developer|Setting up the repository, implementing the "Review" class, persistence and tests and documenting the README.md & wiki.|~12hrs|
-|Bora Denizasan|Developer|Implementing the "Review" class, persistence and tests. Involved in the creation of the requirements model and domain model.|~11hrs|
-|Mubeen Mohammed|Scrum Master, Developer|Creating the github project and issues, implementing "Person" model, persistence and tests. Involved in key decisions for the domain model|~7hrs|
-|Raphaël Verger|Developer, documentation specialist| Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions and writing testing documentation in the wiki.|~12hrs|
+|Deon Aftahi||"Withdrawing from an event" use case specification, ||
+|Marleine Atalla||"Creating an event" use case specification, ||
+|Jerome Courtemanche|Written report director, developer|"Handling borrow requests" use case specification, Setting up the repository, implementing the "Review" class, persistence and tests, documenting the README.md & organizing and writing the wiki, collaboration on final cleanup of project before submission|~15hrs|
+|Bora Denizasan|Developer|"View lending history" use case specification, Implementing the "Review" class, persistence and tests. Involved in the creation of the requirements model and domain model.|~11hrs|
+|Mubeen Mohammed|Scrum Master, Developer|"Registering for an event" use case specification, Creating the github project and issues, implementing "Person" model, persistence and tests. Involved in key decisions for the domain model|~9hrs|
+|Raphaël Verger|Developer, documentation specialist|"Adding a game to personal collection" use case specification,  Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions and writing testing documentation in the wiki.|~12hrs|

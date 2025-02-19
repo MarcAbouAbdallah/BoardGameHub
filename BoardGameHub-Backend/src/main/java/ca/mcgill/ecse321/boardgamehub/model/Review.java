@@ -86,6 +86,7 @@ public class Review {
             "id" + ":" + getId() + "," +
             "rating" + ":" + getRating() + "," +
             "comment" + ":" + getComment() + "," +
+            "date" + ":" + (getDate() != null ? getDate() : "null") + "," +
             "reviewer" + ":" + (getReviewer() != null ? getReviewer().getName() : "null") + "," +
             "game" + ":" + (getGame() != null ? getGame().getName() : "null") + "]";
     }
