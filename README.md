@@ -19,7 +19,7 @@ Jerome is a second year computer engineering student. His interest in computers 
 Bora is a second year computer engineering student. From an early age, robots piqued his interest. Similarly, robotics is his area of interest. In his spare time, He enjoys playing overlooked video games to relax.
 
 **Mubeen Mohammed**\
-Mubeen is a third year engineering student. His interest in AI applications and machine learning. In his free time, he enjoys playing chess and building cool stuff and automating them
+Mubeen is a third year software engineering student. His interest in AI applications and machine learning. In his free time, he enjoys playing chess and building cool stuff and automating them
 
 **Raphaël Verger**\
 Raphaël is a third year computer engineering student. He is mainly focused on machine learning, data analysis and software development. Outside of the classroom, he enjoys traveling and taking pictures!
@@ -47,5 +47,5 @@ Coding and documentation tasks were split as outlined in the table below.
 |Marleine Atalla|Developer|Writing of Functional and Non-Functional Requirements, "Creating an event" use case specification, Implementing the "BorrowRequest" class, persistence, and tests. Review of the Domain Model for design issues. Collaborated on writing/editing the Wiki.|~12hrs|
 |Jerome Courtemanche|Written report director, developer|"Handling borrow requests" use case specification, Setting up the repository, implementing the "Review" class, persistence and tests, documenting the README.md & organizing and writing the wiki, collaboration on final cleanup of project before submission|~15hrs|
 |Bora Denizasan|Developer|"View lending history" use case specification, Implementing the "Review" class, persistence and tests. Involved in the creation of the requirements model and domain model.|~11hrs|
-|Mubeen Mohammed|Scrum Master, Developer|"Registering for an event" use case specification, Creating the github project and issues, implementing "Person" model, persistence and tests. Involved in key decisions for the domain model|~9hrs|
+|Mubeen Mohammed|Scrum Master, Developer|"Registering for an event" use case specification, Creating the github project and issues, implementing "Person" model, persistence and tests. Involved in key decisions for the domain model|~12hrs|
 |Raphaël Verger|Developer, documentation specialist|"Adding a game to personal collection" use case specification, Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions and writing testing documentation in the wiki.|~12hrs|
