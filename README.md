@@ -7,7 +7,7 @@ Here is a short introduction to the members of group 5 who are working on this p
 Marc is a third-year software engineering student with an interest in software development and AI. His personal hobbies include soccer, going to the gym, and working out.
 
 **Deon Aftahi**\
-Intro here
+Deon is a second-year Software Engineering student with a strong interest in full-stack development and entrepeneurship. He enjoys building seamless and interactive applications from the ground up. Outside of academics, he spends his time working out, traveling, and playing guitar.
 
 **Marleine Atalla**\
 Marleine is a third year Computer Engineering student. Some of her interests include Robotics, Automation, and Artificial Intelligence. Beyond the classroom setting, she enjoys running and traveling. 
