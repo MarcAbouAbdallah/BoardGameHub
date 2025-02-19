@@ -10,7 +10,7 @@ Marc is a third-year software engineering student with an interest in software d
 Intro here
 
 **Marleine Atalla**\
-Intro here
+Marleine is a third year Computer Engineering student. Some of her interests include Robotics, Automation, and Artificial Intelligence. Beyond the classroom setting, she enjoys running and traveling. 
 
 **Jerome Courtemanche**\
 Jerome is a second year computer engineering student. His interest in computers and software started at a young age with video games. Curiosity made his passion evolve to processors and other chips. Although he is mainly interested in working with hardware, he enjoys writing software as well.
@@ -44,7 +44,7 @@ Coding and documentation tasks were split as outlined in the table below.
 | --- | --- | --- | --- |
 |Marc Abou Abdallah|Developer, QA tester|"Requesting to Borrow a Game" use case specification, Implementing the "Event" feature (model,persistence,tests), Writing additional tests for other classes (BorrowRequest, Game, GameCopy), Assisting in documentation (wiki, key decisions, reviewing deliverable 0.5), Suggesting and providing iterations for the domain model.|~15hrs|
 |Deon Aftahi||"Withdrawing from an event" use case specification, ||
-|Marleine Atalla||"Creating an event" use case specification, ||
+|Marleine Atalla|Developer|Writing of Functional and Non-Functional Requirements, "Creating an event" use case specification, Implementing the "BorrowRequest" class, persistence, and tests. Review of the Domain Model for design issues. Collaborated on writing/editing the Wiki.|~12hrs|
 |Jerome Courtemanche|Written report director, developer|"Handling borrow requests" use case specification, Setting up the repository, implementing the "Review" class, persistence and tests, documenting the README.md & organizing and writing the wiki, collaboration on final cleanup of project before submission|~15hrs|
 |Bora Denizasan|Developer|"View lending history" use case specification, Implementing the "Review" class, persistence and tests. Involved in the creation of the requirements model and domain model.|~11hrs|
 |Mubeen Mohammed|Scrum Master, Developer|"Registering for an event" use case specification, Creating the github project and issues, implementing "Person" model, persistence and tests. Involved in key decisions for the domain model|~9hrs|
