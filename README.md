@@ -4,7 +4,7 @@ This application is a social network for all board game lovers. Players and game
 Here is a short introduction to the members of group 5 who are working on this project:
 
 **Marc Abou Abdallah**\
-Intro here
+Marc is a third-year software engineering student with an interest in software development and AI. His personal hobbies include soccer, going to the gym, and working out.
 
 **Deon Aftahi**\
 Intro here
@@ -25,22 +25,27 @@ Mubeen is a third year engineering student. His interest in AI applications and 
 Raphaël is a third year computer engineering student. He is mainly focused on machine learning, data analysis and software development. Outside of the classroom, he enjoys traveling and taking pictures!
 
 ### Deliverable 1
-The scope of this deliverable contained the modelling and database setup for the semester's project. First we had to create a [requirements model](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Requirements) for the application comprising 12 functional requirements and 3 non-functional requirements. We moved on to use cases for the next part of the requirement model. We started by making two [use case diagrams](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Use-Case-Diagrams) describing how users can interact with the application. We finished our requirement model by creating a detailed description for [7 of the most important use cases](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Use-Cases) for our diagrams. The second part of the project was the [exploratory domain model](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Class-Diagram). We created a class diagram that reflects the interactions between different parts of the program. The third part was the code implementation along with the persistence layer. We created the code which corresponds to the domain model and connected it to our persistence layer through Spring & Hibernate. The last step was to thoroughly [test our application](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Testing-Documentation). Our tests were implemented using JUnit. We did all this while properly applying and documenting the engineering design process we went through. Whether it is [meeting minutes](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Meeting-minutes) or [design decisions](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report), every step of our journey is documented in the [wiki](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki). Information on our roles and division of tasks can be found in the table below.\
-[Project report](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report)  |  [Meeting minutes](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Meeting-minutes)\
+The scope of this deliverable included modelling and database setup for the semester project. First, we created a [requirements model](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Requirements) for the application, defining 12 functional and 3 non-functional requirements. Next, we worked on use cases, providing two [use case diagrams](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Use-Case-Diagrams) and a detailed description of [7 key use cases](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Use-Cases) from our diagrams.
+The second part of the project was focused on the [exploratory domain model](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Class-Diagram), where we created a class diagram to represent the interactions in the application.
+In the third phase of the deliverable, we implemented the model classes along with the persistence layer. We also conducted thorough [testing of our persistence layer](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Testing-Documentation) using JUnit.
+Throughout the entire process, we carefully applied and documented our software engineering design process. Whether through [meeting minutes](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Meeting-minutes) or [design decisions](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report), every step of our journey is recorded in the [wiki](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki). 
+Information regarding team roles and task distribution can be found in the table below.\
+
+[Project report](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report)\
 \
 **Overview table:**
-Note: Some tasks are missing from the table because they were done by everyone in collaboration during team meetings. All the tasks that were split differently among team members are found in the table. The common tasks include:\
+Note: Some tasks are missing from the table because they were done by everyone in collaboration during team meetings, including:
 * Requirements
 * Use case diagrams
 * Domain model\
-After these were complete we split up the coding and documentation tasks as outlined in the table.
+Coding and documentation tasks were split as outlined in the table below.
 
 |Team member|Role|Tasks|Time spent|
 | --- | --- | --- | --- |
-|Marc Abou Abdallah||||
+|Marc Abou Abdallah|Developer, QA tester|"Requesting to Borrow a Game" use case specification, Implementing the "Event" feature (model,persistence,tests), Writing additional tests for other classes (BorrowRequest, Game, GameCopy), Assisting in documentation (wiki, key decisions, reviewing deliverable 0.5), Suggesting and providing iterations for the domain model.|~15hrs|
 |Deon Aftahi||"Withdrawing from an event" use case specification, ||
 |Marleine Atalla||"Creating an event" use case specification, ||
 |Jerome Courtemanche|Written report director, developer|"Handling borrow requests" use case specification, Setting up the repository, implementing the "Review" class, persistence and tests, documenting the README.md & organizing and writing the wiki, collaboration on final cleanup of project before submission|~15hrs|
 |Bora Denizasan|Developer|"View lending history" use case specification, Implementing the "Review" class, persistence and tests. Involved in the creation of the requirements model and domain model.|~11hrs|
 |Mubeen Mohammed|Scrum Master, Developer|"Registering for an event" use case specification, Creating the github project and issues, implementing "Person" model, persistence and tests. Involved in key decisions for the domain model|~9hrs|
-|Raphaël Verger|Developer, documentation specialist|"Adding a game to personal collection" use case specification,  Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions and writing testing documentation in the wiki.|~12hrs|
+|Raphaël Verger|Developer, documentation specialist|"Adding a game to personal collection" use case specification, Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions and writing testing documentation in the wiki.|~12hrs|
