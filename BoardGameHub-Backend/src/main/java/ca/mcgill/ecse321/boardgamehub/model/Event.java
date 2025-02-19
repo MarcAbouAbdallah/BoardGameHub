@@ -94,23 +94,27 @@ public class Event {
         return true;
     }
 
+    @Override
     public String toString() {
-    return super.toString() + "[" +
-        "name" + ":" + getName() + "," +
-        "location" + ":" + getLocation() + "," +
-        "description" + ":" + getDescription() + "," +
-        "date" + ":" + getDate() + "," +
-        "maxParticipants" + ":" + getMaxParticipants() + "," +
-        "organizer" + ":" + getOrganizer() + "," +
-        "game" + ":" + getGame() + "]"
-        + System.getProperties().getProperty("line.separator")
-        +
-        "  " + "date" + "="
-        + (getDate() != null 
-            ? (!getDate().equals(this) 
-                ? getDate().toString().replaceAll("  ", "    ") 
-                : "this") 
-            : "null");
+        return super.toString() + "[" +
+            "name" + ":" + getName() + "," +
+            "location" + ":" + getLocation() + "," +
+            "description" + ":" + getDescription() + "," +
+            "date" + ":" + (date != null ? date : "null") + "," +
+            "maxParticipants" + ":" + getMaxParticipants() + "," +
+            "organizer" + ":" + (getOrganizer() != null ? getOrganizer().getName() : "null") + "," +
+            "game" + ":" + (getGame() != null ? getGame().getGame().getName() : "null") + "]";
+
+        //The code below seemed useless. It is an artifact from a previous year tutorial's version
+        //of the toString method. I don't think it makes sense to use it in our case
+        // + System.getProperties().getProperty("line.separator")
+        // +
+        // "  " + "date" + "="
+        // + (getDate() != null 
+        //     ? (!getDate().equals(this) 
+        //         ? getDate().toString().replaceAll("  ", "    ") 
+        //         : "this") 
+        //     : "null");
     }
 
 }
