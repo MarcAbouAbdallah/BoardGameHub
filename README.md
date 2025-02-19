@@ -43,7 +43,7 @@ Coding and documentation tasks were split as outlined in the table below.
 |Team member|Role|Tasks|Time spent|
 | --- | --- | --- | --- |
 |Marc Abou Abdallah|Developer, QA tester|"Requesting to Borrow a Game" use case specification, Implementing the "Event" feature (model,persistence,tests), Writing additional tests for other classes (BorrowRequest, Game, GameCopy), Assisting in documentation (wiki, key decisions, reviewing deliverable 0.5), Suggesting and providing iterations for the domain model.|~15hrs|
-|Deon Aftahi||"Withdrawing from an event" use case specification, ||
+|Deon Aftahi|Developer| "Withdrawing from an event" use case specification. Implementing the "Game" class, persistance, and tests. Implementing the "GameCopy" class, persisance, and tests |~11hrs|
 |Marleine Atalla|Developer|Writing of Functional and Non-Functional Requirements, "Creating an event" use case specification, Implementing the "BorrowRequest" class, persistence, and tests. Review of the Domain Model for design issues. Collaborated on writing/editing the Wiki.|~12hrs|
 |Jerome Courtemanche|Written report director, developer|"Handling borrow requests" use case specification, Setting up the repository, implementing the "Review" class, persistence and tests, documenting the README.md & organizing and writing the wiki, collaboration on final cleanup of project before submission|~15hrs|
 |Bora Denizasan|Developer|"View lending history" use case specification, Implementing the "Review" class, persistence and tests. Involved in the creation of the requirements model and domain model.|~11hrs|
