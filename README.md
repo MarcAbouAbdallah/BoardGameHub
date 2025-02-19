@@ -35,6 +35,6 @@ The scope of this deliverable contained the modelling and database setup for the
 |Deon Aftahi||||
 |Marleine Atalla||||
 |Jerome Courtemanche|Written report director, developer|Setting up the repository, implementing the "Review" class, persistence and tests and documenting the README.md & wiki.|~12hrs|
-|Bora Denizasan|Developer|Implementing the "Review" class, persistence and tests|~5hrs|
+|Bora Denizasan|Developer|Implementing the "Review" class, persistence and tests. Involved in the creation of the requirements model and domain model.|~11hrs|
 |Mubeen Mohammed|Scrum Master, Developer|Creating the github project and issues, implementing "Person" model, persistence and tests. Involved in key decisions for the domain model|~7hrs|
 |Raphaël Verger|Developer, documentation specialist| Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions and writing testing documentation in the wiki.|~12hrs|
