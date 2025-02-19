@@ -176,5 +176,4 @@ public class EventRepositoryTests {
         assertEquals(monopolyEvent.getOrganizer().getId(), monopolyEventFromDb.getOrganizer().getId());
         assertEquals(monopolyEvent.getGame().getId(), monopolyEventFromDb.getGame().getId());
     }
-
 }

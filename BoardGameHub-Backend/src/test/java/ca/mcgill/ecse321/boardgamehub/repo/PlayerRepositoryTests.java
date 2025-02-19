@@ -34,8 +34,7 @@ public class PlayerRepositoryTests {
         John = playerRepository.save(John);
 
         //Act
-        Player JohnFromDb = playerRepository.findPlayerById(John.getId());
-        
+        Player JohnFromDb = playerRepository.findPlayerById(John.getId());       
 
         //Assert
         assertNotNull(JohnFromDb);
@@ -44,7 +43,6 @@ public class PlayerRepositoryTests {
         assertEquals(John.getPassword(), JohnFromDb.getPassword());
         assertEquals(John.getId(), JohnFromDb.getId());
         assertEquals(John.getIsGameOwner(), JohnFromDb.getIsGameOwner());
-
     }
 
     @Test
@@ -72,7 +70,6 @@ public class PlayerRepositoryTests {
         assertEquals(John.getPassword(), JohnFromDb.getPassword());
         assertEquals(John.getId(), JohnFromDb.getId());
         assertEquals(John.getIsGameOwner(), JohnFromDb.getIsGameOwner());
-
     }
 
     @Test
@@ -138,8 +135,4 @@ public class PlayerRepositoryTests {
         //Assert
         assertNull(JohnFromDb);
     }
-
-        
-
-    
 }

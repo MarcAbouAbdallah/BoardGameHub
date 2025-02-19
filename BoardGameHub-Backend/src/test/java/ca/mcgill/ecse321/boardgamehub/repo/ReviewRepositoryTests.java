@@ -264,5 +264,4 @@ public class ReviewRepositoryTests {
         //Assert
         assertEquals(2, reviewsFromDb.size());
     }
-
 }
