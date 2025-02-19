@@ -12,5 +12,4 @@ public interface GameCopyRepository extends CrudRepository<GameCopy, Integer>{
     public GameCopy findGameCopyById(int id);
     public List<GameCopy> findByGame(Game game);
     public List<GameCopy> findByOwner(Player owner);
-
 }
