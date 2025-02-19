@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -33,8 +34,7 @@ public class PlayerRepositoryTests {
         John = playerRepository.save(John);
 
         //Act
-        Player JohnFromDb = playerRepository.findPlayerById(John.getId());
-        
+        Player JohnFromDb = playerRepository.findPlayerById(John.getId());       
 
         //Assert
         assertNotNull(JohnFromDb);
@@ -43,7 +43,6 @@ public class PlayerRepositoryTests {
         assertEquals(John.getPassword(), JohnFromDb.getPassword());
         assertEquals(John.getId(), JohnFromDb.getId());
         assertEquals(John.getIsGameOwner(), JohnFromDb.getIsGameOwner());
-
     }
 
     @Test
@@ -71,7 +70,6 @@ public class PlayerRepositoryTests {
         assertEquals(John.getPassword(), JohnFromDb.getPassword());
         assertEquals(John.getId(), JohnFromDb.getId());
         assertEquals(John.getIsGameOwner(), JohnFromDb.getIsGameOwner());
-
     }
 
     @Test
@@ -137,8 +135,4 @@ public class PlayerRepositoryTests {
         //Assert
         assertNull(JohnFromDb);
     }
-
-        
-
-    
 }

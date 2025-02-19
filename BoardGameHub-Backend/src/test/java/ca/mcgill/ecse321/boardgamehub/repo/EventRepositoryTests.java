@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -175,5 +176,4 @@ public class EventRepositoryTests {
         assertEquals(monopolyEvent.getOrganizer().getId(), monopolyEventFromDb.getOrganizer().getId());
         assertEquals(monopolyEvent.getGame().getId(), monopolyEventFromDb.getGame().getId());
     }
-
 }
