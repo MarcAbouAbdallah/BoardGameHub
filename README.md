@@ -37,15 +37,17 @@ Information regarding team roles and task distribution can be found in the table
 Note: Some tasks are missing from the table because they were done by everyone in collaboration during team meetings, including:
 * Requirements
 * Use case diagrams
-* Domain model\
-Coding and documentation tasks were split as outlined in the table below.
+* Domain model
+* Backlog maintenance
+
+Coding and documentation tasks were split as outlined in the table below:
 
 |Team member|Role|Tasks|Time spent|
 | --- | --- | --- | --- |
 |Marc Abou Abdallah|Developer, QA tester|"Requesting to Borrow a Game" use case specification, Implementing the "Event" feature (model,persistence,tests), Writing additional tests for other classes (BorrowRequest, Game, GameCopy), Assisting in documentation (wiki, key decisions, reviewing deliverable 0.5), Suggesting and providing iterations for the domain model.|~15hrs|
 |Deon Aftahi|Developer| "Withdrawing from an event" use case specification. Implementing the "Game" class, persistance, and tests. Implementing the "GameCopy" class, persisance, and tests |~11hrs|
 |Marleine Atalla|Developer|Writing of Functional and Non-Functional Requirements, "Creating an event" use case specification, Implementing the "BorrowRequest" class, persistence, and tests. Review of the Domain Model for design issues. Collaborated on writing/editing the Wiki.|~12hrs|
-|Jerome Courtemanche|Written report director, developer|"Handling borrow requests" use case specification, Setting up the repository, implementing the "Review" class, persistence and tests, documenting the README.md & organizing and writing the wiki, collaboration on final cleanup of project before submission|~15hrs|
+|Jerome Courtemanche|Written report director, developer|"Handling borrow requests" use case specification, setting up the repository, implementing the "Review" class with persistence and tests, documenting the README.md & organizing and writing the wiki, collaboration on final cleanup of project before submission, ensuring proper GitHub workflow within team, monitoring issues and PR's.|~15hrs|
 |Bora Denizasan|Developer|"View lending history" use case specification, Implementing the "Review" class, persistence and tests. Involved in the creation of the requirements model and domain model.|~11hrs|
 |Mubeen Mohammed|Scrum Master, Developer|"Registering for an event" use case specification, Creating the github project and issues, implementing "Person" model, persistence and tests. Involved in key decisions for the domain model|~12hrs|
 |Raphaël Verger|Developer, documentation specialist|"Adding a game to personal collection" use case specification, Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions and writing testing documentation in the wiki.|~12hrs|
