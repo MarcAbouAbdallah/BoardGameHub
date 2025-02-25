@@ -29,7 +29,7 @@ The scope of this deliverable included modelling and database setup for the seme
 The second part of the project was focused on the [exploratory domain model](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Class-Diagram), where we created a class diagram to represent the interactions in the application.
 In the third phase of the deliverable, we implemented the model classes along with the persistence layer. We also conducted thorough [testing of our persistence layer](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Testing-Documentation) using JUnit.
 Throughout the entire process, we carefully applied and documented our software engineering design process. Whether through [meeting minutes](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Meeting-minutes) or [design decisions](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report), every step of our journey is recorded in the [wiki](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki). 
-Information regarding team roles and task distribution can be found in the table below.\
+Information regarding team roles and task distribution can be found in the table below.
 
 [Project report](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report)\
 \
@@ -51,3 +51,17 @@ Coding and documentation tasks were split as outlined in the table below:
 |Bora Denizasan|Developer|"View lending history" use case specification, Implementing the "Review" class, persistence and tests. Involved in the creation of the requirements model and domain model.|~11hrs|
 |Mubeen Mohammed|Scrum Master, Developer|"Registering for an event" use case specification, Creating the github project and issues, implementing "Person" model, persistence and tests. Involved in key decisions for the domain model|~12hrs|
 |Raphaël Verger|Developer, documentation specialist|"Adding a game to personal collection" use case specification, Providing initial version of model domain, implementing "BorrowStatus" class, describing key design decisions and writing testing documentation in the wiki.|~12hrs|
+***
+### Deliverable 2
+The scope of this deliverable includes completing the code with the service & controller layers with a RESTful API, documenting and testing them thoroughly.\
+\
+**Overview table:**
+|Team member|Role|Tasks|Time spent|
+| --- | --- | --- | --- |
+|Marc Abou Abdallah||||
+|Deon Aftahi||||
+|Marleine Atalla||||
+|Jerome Courtemanche||||
+|Bora Denizasan||||
+|Mubeen Mohammed||||
+|Raphaël Verger||||
