@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
@@ -29,6 +28,7 @@ import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.model.Review;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.ReviewSearchDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 
@@ -56,6 +56,8 @@ public class ReviewServiceTests {
     @Test
     public void testCreateValidReview() {
         //Arrange
+        Date date = Date.valueOf(LocalDate.now());
+        
         when(mockPlayerRepo.findPlayerById(0))
         .thenReturn(VALID_PLAYER);
 
@@ -76,13 +78,15 @@ public class ReviewServiceTests {
         assertEquals(VALID_COMMENT, createdReview.getComment());
         assertEquals(VALID_PLAYER_ID, createdReview.getReviewer().getId());
         assertEquals(VALID_GAME_NAME, createdReview.getGame().getName());
-        //Should there be an asertion for the date as it is created autonomously in the service...??
+        assertEquals(date, createdReview.getDate());
+        //Should there be an assertion for the date as it is created autonomously in the service...??
     }
 
     @Test
     public void testFindReviewByValidId() {
         //Arrange
         Date date = Date.valueOf(LocalDate.now());
+
         when(mockReviewRepo.findReviewById(0))
         .thenReturn(new Review(VALID_RATING, VALID_COMMENT, date, VALID_PLAYER, VALID_GAME));
 
@@ -112,21 +116,29 @@ public class ReviewServiceTests {
 
     @Test
     public void testFindReviewByValidReviewerAndGame() {
-        //TODO IMPLEMENT THIS PROPERLY (NOT USING RIGHT SERVICE METHOD ATM)
-        fail();
         //Arrange
         Date date = Date.valueOf(LocalDate.now());
         List<Review> reviewList = new ArrayList<Review>();
         reviewList.add(new Review(VALID_RATING, VALID_COMMENT, date, VALID_PLAYER, VALID_GAME));
 
+        when(mockPlayerRepo.findPlayerById(0))
+        .thenReturn(VALID_PLAYER);
+
+        when(mockGameRepo.findGameByName("Monopoly"))
+        .thenReturn(VALID_GAME);
+
         when(mockReviewRepo.findByReviewerAndGame(VALID_PLAYER, VALID_GAME))
         .thenReturn(reviewList);
 
+        ReviewSearchDto dto = new ReviewSearchDto(VALID_PLAYER_ID, VALID_GAME_NAME);
+
         //Act
-        List<Review> foundReviewList = mockReviewRepo.findByReviewerAndGame(VALID_PLAYER, VALID_GAME);
+        List<Review> foundReviewList = reviewService.findByReviewerAndGame(dto);
         Review foundReview = foundReviewList.get(0);
 
         //Assert
+        assertNotNull(foundReviewList);
+        assertEquals(1, foundReviewList.size());
         assertNotNull(foundReview);
         assertEquals(VALID_RATING, foundReview.getRating());
         assertEquals(VALID_COMMENT, foundReview.getComment());
@@ -137,6 +149,37 @@ public class ReviewServiceTests {
 
     @Test
     public void findReviewByInvalidReviewerAndValidGame() {
-        fail();
+        //Arrange
+        /**
+         * By default repo returns null on invalid search.
+         * Game repo mock is not necessary to be implemented
+         * as exception will be thrown when player is not found and
+         * gameRepo mock will neve be reached. (Review service looks
+         * for player first and then game)
+        */
+
+        ReviewSearchDto dto = new ReviewSearchDto(1588809,VALID_GAME_NAME);
+
+        //Act & Assert
+        BoardGameHubException e = assertThrows(BoardGameHubException.class,
+                                               () -> reviewService.findByReviewerAndGame(dto));
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+        assertEquals("There is no person with ID 1588809.", e.getMessage());
+    }
+
+    @Test
+    public void findReviewByValidReviewerAndInvalidGame() {
+        //Arrange
+        //By default repo returns null on invalid search.
+        when(mockPlayerRepo.findPlayerById(0))
+        .thenReturn(VALID_PLAYER);
+
+        ReviewSearchDto dto = new ReviewSearchDto(VALID_PLAYER.getId(),"Risk");
+
+        //Act & Assert
+        BoardGameHubException e = assertThrows(BoardGameHubException.class,
+                                               () -> reviewService.findByReviewerAndGame(dto));
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+        assertEquals("There is no game with name Risk.", e.getMessage());
     }
 }

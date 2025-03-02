@@ -1,11 +1,11 @@
 package ca.mcgill.ecse321.boardgamehub.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
-import java.sql.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,6 +23,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import ca.mcgill.ecse321.boardgamehub.dto.ErrorDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewResponseDto;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
@@ -75,6 +76,7 @@ public class ReviewIntegrationTests {
     @Order(0)
     public void testCreateValidReview() {
         //Arrange
+        //Date date = Date.valueOf(LocalDate.now());
         ReviewCreationDto dto = new ReviewCreationDto(VALID_RATING, VALID_COMMENT, VALID_PLAYER.getId(), VALID_GAME.getName());
 
         //Act
@@ -89,6 +91,46 @@ public class ReviewIntegrationTests {
 		assertEquals(dto.getComment(), response.getBody().getComment());
         assertEquals(dto.getReviewerId(), response.getBody().getReviewerId());
         assertEquals(dto.getGameName(), response.getBody().getGameName());
-		//assertEquals(Date.valueOf(LocalDate.now()), response.getBody().getReviewDate());//Maybe not accurate date?
+		//assertEquals(date, response.getBody().getReviewDate());
+        //No real way to get the date object for assertions since it is created in service... Will ask TA about this.
+    }
+
+    @Test
+    @Order(1)
+    public void testCreateInvalidReview() {
+        //Arrange
+        int invalidId = VALID_PLAYER.getId() + 1;
+        ReviewCreationDto dto = new ReviewCreationDto(VALID_RATING, VALID_COMMENT, invalidId, VALID_GAME.getName());
+
+        //Act
+        ResponseEntity<ErrorDto> response = client.postForEntity("/reviews", dto, ErrorDto.class);
+
+        //Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+		    List.of(String.format("There is no person with ID %d.", invalidId)),
+		    response.getBody().getErrors());
+    }
+
+    @Test
+    @Order(2)
+    public void testGetValidReviewById() {
+        //Arrange
+
+        //Act
+        ResponseEntity<ReviewResponseDto> response = client.getForEntity(String.format("/reviews/%d", createdReviewId), ReviewResponseDto.class);
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertTrue(response.getBody().getId() >= 0, "the ID should be a positive int");
+		this.createdReviewId = response.getBody().getId();
+		assertEquals(VALID_RATING, response.getBody().getRating());
+		assertEquals(VALID_COMMENT, response.getBody().getComment());
+        assertEquals(VALID_PLAYER.getId(), response.getBody().getReviewerId());
+        assertEquals(VALID_GAME.getName(), response.getBody().getGameName());
+        //assertEquals(Date.valueOf(LocalDate.now()), response.getBody().getReviewDate());
+		//No real way to get the date for assertions since it is created in service... Will ask TA about this.
     }
 }

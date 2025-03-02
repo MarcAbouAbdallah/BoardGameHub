@@ -2,12 +2,14 @@ package ca.mcgill.ecse321.boardgamehub.service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.ReviewSearchDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
@@ -15,6 +17,7 @@ import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
 import ca.mcgill.ecse321.boardgamehub.model.Review;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
+
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -63,5 +66,22 @@ public class ReviewService {
                                             String.format("No review has Id %d", id));
         }
         return review;
+    }
+
+    public List<Review> findByReviewerAndGame(@Valid ReviewSearchDto dto) {
+        Player reviewer = playerRepo.findPlayerById(dto.getReviewerId());
+        if (reviewer == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no person with ID %d.",
+                                    dto.getReviewerId()));
+        }
+
+        Game game = gameRepo.findGameByName(dto.getGameName());
+        if (game == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no game with name %s.",
+                                    dto.getGameName()));
+        }
+        return reviewRepo.findByReviewerAndGame(reviewer, game);
     }
 }
