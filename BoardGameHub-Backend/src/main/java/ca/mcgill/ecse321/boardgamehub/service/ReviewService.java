@@ -56,5 +56,12 @@ public class ReviewService {
         return reviewRepo.save(review);
     }
 
-
+    public Review findReviewById(int id) {
+        Review review = reviewRepo.findReviewById(id);
+        if (review == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            String.format("No review has Id %d", id));
+        }
+        return review;
+    }
 }

@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.boardgamehub.dto;
 
+import java.sql.Date;
+
 import ca.mcgill.ecse321.boardgamehub.model.Review;
 
 public class ReviewResponseDto {
@@ -8,6 +10,7 @@ public class ReviewResponseDto {
     private String comment;
     private int reviewerId;
     private String gameName;
+    private Date reviewDate;
 
     protected ReviewResponseDto() {
 
@@ -19,6 +22,7 @@ public class ReviewResponseDto {
         this.comment = review.getComment();
         this.reviewerId = review.getReviewer().getId();
         this.gameName = review.getGame().getName();
+        this.reviewDate = review.getDate();
     }
 
     public int getId() {
@@ -39,5 +43,33 @@ public class ReviewResponseDto {
 
     public String getGameName() {
         return gameName;
+    }
+
+    public Date getReviewDate() {
+        return reviewDate;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public void setReviewerId(int reviewerId) {
+        this.reviewerId = reviewerId;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
+    }
+
+    public void setReviewDate(Date reviewDate) {
+        this.reviewDate = reviewDate;
     }
 }

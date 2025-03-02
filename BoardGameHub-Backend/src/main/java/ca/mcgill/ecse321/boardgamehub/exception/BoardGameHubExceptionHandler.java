@@ -6,12 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import ca.mcgill.ecse321.boardgamehub.dto.ErrorDto;
 
-public class BoardGameHubExceptionHandler {
-    
+@ControllerAdvice
+public class BoardGameHubExceptionHandler { 
     @ExceptionHandler(BoardGameHubException.class)
     public ResponseEntity<ErrorDto> handleEventRegistrationException(BoardGameHubException e) {
         return new ResponseEntity<ErrorDto>(new ErrorDto(e.getMessage()), e.getStatus());
