@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class PersonalGameCollectionService {
+public class PersonalCollectionService {
 
     private final PlayerRepository playerRepository;
     private final GameRepository gameRepository;
     private final GameCopyRepository gameCopyRepository;
 
     @Autowired
-    public PersonalGameCollectionService(PlayerRepository playerRepository,
+    public PersonalCollectionService(PlayerRepository playerRepository,
                                          GameRepository gameRepository,
                                          GameCopyRepository gameCopyRepository) {
         this.playerRepository = playerRepository;

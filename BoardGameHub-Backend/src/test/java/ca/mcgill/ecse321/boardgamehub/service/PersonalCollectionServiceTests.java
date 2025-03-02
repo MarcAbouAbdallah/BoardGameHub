@@ -18,10 +18,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class PersonalGameCollectionServiceTests {
+public class PersonalCollectionServiceTests {
 
     @Autowired
-    private PersonalGameCollectionService personalGameCollectionService;
+    private PersonalCollectionService personalGameCollectionService;
 
     @Autowired
     private PlayerRepository playerRepository;
