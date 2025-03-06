@@ -19,7 +19,8 @@ import ca.mcgill.ecse321.boardgamehub.model.Event;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
-import ca.mcgill.ecse321.boardgamehub.dto.EventCreationdto;
+import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -37,7 +38,7 @@ public class EventService {
 
 
     @Transactional
-    public Event createEvent(@Valid EventCreationdto eventToCreate) {
+    public Event createEvent(@Valid EventCreationDto eventToCreate) {
 
         Player organizer = playerRepo.findPlayerById(eventToCreate.getOrganizer());
         if (organizer == null) {
@@ -84,6 +85,7 @@ public class EventService {
         return event;
     }
 
+    @Transactional
     public void deleteEvent(int evenId, int playerId) {
         Event event = findEventById(evenId);
         Player player = playerRepo.findPlayerById(playerId);
@@ -99,6 +101,36 @@ public class EventService {
 
         eventRepo.delete(event);
     }
+
+    @Transactional
+    public Event updateEvent(@Valid EventUpdateDto eventDTO, int eventId, int organizerId) {
+        Event event = findEventById(eventId);
+
+        if (event.getOrganizer().getId() != (organizerId)) {
+            throw new BoardGameHubException(HttpStatus.FORBIDDEN, "You are not authorized to update this event.");
+        }
+
+        // Updating non-null fields
+        if (eventDTO.getName() != null) event.setName(eventDTO.getName());
+        if (eventDTO.getDescription() != null) event.setDescription(eventDTO.getDescription());
+        if (eventDTO.getLocation() != null) event.setLocation(eventDTO.getLocation());
+        if (eventDTO.getDate() != null) event.setDate(Date.valueOf(eventDTO.getDate()));
+        if (eventDTO.getStartTime() != null) event.setStartTime(Time.valueOf(eventDTO.getStartTime()));
+        if (eventDTO.getEndTime() != null) event.setEndTime(Time.valueOf(eventDTO.getEndTime()));
+        if (eventDTO.getMaxParticipants() != null) event.setMaxParticipants(eventDTO.getMaxParticipants());
+
+        // If the game is changed, this checks it exists
+        if (eventDTO.getGame() != null) {
+            GameCopy newGame = gameRepo.findGameCopyById(eventDTO.getGame());
+            if (newGame == null) {
+                throw new BoardGameHubException(HttpStatus.NOT_FOUND, "No game found with ID " + eventDTO.getGame());
+            }
+            event.setGame(newGame);
+        }
+
+        return eventRepo.save(event);
+    }
+
 
     @Transactional
     public Registration registerToEvent(int eventId, int playerId) {

@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 
-public class EventCreationdto {
+public class EventCreationDto {
     @NotBlank(message = "Event name cannot be empty.")
     private String eventName;
 
@@ -39,9 +39,9 @@ public class EventCreationdto {
     @NotNull(message = "Oganizer Id is required.")
     private int organizerId;
 
-    protected EventCreationdto() {}
+    protected EventCreationDto() {}
 
-    public EventCreationdto(String name, String location, String description, LocalDate date, LocalTime startTime, LocalTime endTime, int maxParticipants, int organizer, int game) {
+    public EventCreationDto(String name, String location, String description, LocalDate date, LocalTime startTime, LocalTime endTime, int maxParticipants, int organizer, int game) {
         this.eventName = name;
         this.eventLocation = location;
         this.eventDescription = description;

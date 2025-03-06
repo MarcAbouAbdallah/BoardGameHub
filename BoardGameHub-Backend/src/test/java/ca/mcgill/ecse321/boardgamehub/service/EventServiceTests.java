@@ -23,7 +23,8 @@ import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
-import ca.mcgill.ecse321.boardgamehub.dto.EventCreationdto;
+import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.model.Event;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
@@ -70,7 +71,7 @@ public class EventServiceTests {
 
     @Test
     public void testCreateValidEvent() {
-        EventCreationdto eventToCreate = new EventCreationdto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
+        EventCreationDto eventToCreate = new EventCreationDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
         when(mockPlayerRepo.findPlayerById(VALID_ORGANIZER_ID)).thenReturn(VALID_ORGANIZER);
         when(mockGameRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(VALID_GAME);
         when(mockEventRepo.save(any(Event.class))).thenAnswer((InvocationOnMock invocation) -> {
@@ -101,7 +102,7 @@ public class EventServiceTests {
 
     @Test
     public void testCreateEventWithInvalidOrganizer() {
-        EventCreationdto eventToCreate = new EventCreationdto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
+        EventCreationDto eventToCreate = new EventCreationDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
         when(mockPlayerRepo.findPlayerById(VALID_ORGANIZER_ID)).thenReturn(null);
 
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
@@ -114,7 +115,7 @@ public class EventServiceTests {
 
     @Test
     public void testCreateEventWithInvalidGame() {
-        EventCreationdto eventToCreate = new EventCreationdto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
+        EventCreationDto eventToCreate = new EventCreationDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
         when(mockPlayerRepo.findPlayerById(VALID_ORGANIZER_ID)).thenReturn(VALID_ORGANIZER);
         when(mockGameRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(null);
 
@@ -327,6 +328,83 @@ public class EventServiceTests {
         assertEquals(1, retrievedEvents.size());
         assertEquals(VALID_EVENT_NAME, retrievedEvents.get(0).getName());
         assertEquals(VALID_EVENT_LOCATION, retrievedEvents.get(0).getLocation());
+    }
+
+    @Test
+    public void testUpdateEvent_Success() {
+        VALID_ORGANIZER.setId(VALID_ORGANIZER_ID); // Because the organizer is not set in the DTO
+
+        Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
+        VALID_EVENT.setId(VALID_EVENT_ID);
+
+        EventUpdateDto updateDTO = new EventUpdateDto("Updated Game Night", null, "New Venue", null, null, null, null, null);
+        
+        when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(VALID_EVENT);
+        when(mockEventRepo.save(any(Event.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Event updatedEvent = eventService.updateEvent(updateDTO, VALID_EVENT_ID, VALID_ORGANIZER_ID);
+
+        assertNotNull(updatedEvent);
+        assertEquals("Updated Game Night", updatedEvent.getName());
+        assertEquals("New Venue", updatedEvent.getLocation());
+        // The rest is unchanged
+        assertEquals(VALID_EVENT_DESCRIPTION, updatedEvent.getDescription());
+        assertEquals(VALID_GAME, updatedEvent.getGame());
+        assertEquals(Date.valueOf(VALID_DATE), updatedEvent.getDate());
+        assertEquals(Time.valueOf(VALID_START_TIME), updatedEvent.getStartTime());
+        assertEquals(Time.valueOf(VALID_END_TIME), updatedEvent.getEndTime());
+        assertEquals(MAX_PARTICIPANTS, updatedEvent.getMaxParticipants());
+    }
+
+    @Test
+    public void testUpdate_withoutPermission(){
+        VALID_ORGANIZER.setId(VALID_ORGANIZER_ID);
+
+        Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
+        VALID_EVENT.setId(VALID_EVENT_ID);
+
+        EventUpdateDto updateDTO = new EventUpdateDto("Updated Game Night", null, "New Venue", null, null, null, null, null);
+        
+        when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(VALID_EVENT);
+
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            eventService.updateEvent(updateDTO, VALID_EVENT_ID, VALID_PLAYER_ID); // Player is not the organizer (can't update)
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+        assertEquals("You are not authorized to update this event.", exception.getMessage());
+    }
+
+    @Test
+    public void testUpdateEvent_Fail_EventNotFound() {
+        EventUpdateDto updateDTO = new EventUpdateDto("Updated Game Night", null, "New Venue", null, null, null, null, null);
+        
+        when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(null);
+
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            eventService.updateEvent(updateDTO, VALID_EVENT_ID, VALID_ORGANIZER_ID);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("No event has Id " + VALID_EVENT_ID, exception.getMessage());
+    }
+
+    @Test
+    public void testUpdateEvent_Fail_InvalidGame() {
+        Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
+        VALID_EVENT.setId(VALID_EVENT_ID);
+
+        EventUpdateDto updateDTO = new EventUpdateDto(null, null, null, null, null, null, null, VALID_GAME_ID);
+        
+        when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(VALID_EVENT);
+        when(mockGameRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(null);
+
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            eventService.updateEvent(updateDTO, VALID_EVENT_ID, VALID_ORGANIZER_ID);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("No game found with ID " + VALID_GAME_ID, exception.getMessage());
     }
 
 }
