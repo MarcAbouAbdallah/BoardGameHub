@@ -90,6 +90,7 @@ public class PlayerService {
         return true;
     }
 
+    @Transactional
     public Player RetrievePlayer(String email) {
         //Check if email is valid
         if (email == null || email.isEmpty()) {
