@@ -11,6 +11,8 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -209,7 +211,7 @@ public class EventServiceTests {
     }
 
     @Test
-    public void testRegisterToEvent_EventFull(){
+    public void testRegisterToEvent_Fail_EventFull(){
         Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
         VALID_EVENT.setId(VALID_EVENT_ID);
         
@@ -226,7 +228,7 @@ public class EventServiceTests {
     }
 
     @Test
-    public void testRegisterToEvent_AlreadyRegistered(){
+    public void testRegisterToEvent_Fail_AlreadyRegistered(){
         Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
         VALID_EVENT.setId(VALID_EVENT_ID);
         Registration registration = new Registration(new Registration.Key(VALID_PLAYER, VALID_EVENT));
@@ -276,4 +278,55 @@ public class EventServiceTests {
         // No deletion happened
         verify(mockRegistrationRepo, never()).delete(any(Registration.class));
     } 
+
+    @Test
+    public void testUnregisterFromEvent_Fail_PlayerNotFound() {
+        Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
+        VALID_EVENT.setId(VALID_EVENT_ID);
+
+        when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(VALID_EVENT);
+        when(mockPlayerRepo.findPlayerById(VALID_PLAYER_ID)).thenReturn(null);
+
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
+                eventService.unregisterFromEvent(VALID_EVENT_ID, VALID_PLAYER_ID));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("No player has Id " + VALID_PLAYER_ID, exception.getMessage());
+
+        // No deletion happened
+        verify(mockRegistrationRepo, never()).delete(any(Registration.class));
+    }
+
+    @Test
+    public void testUnregisterFromEvent_Fail_EventNotFound() {
+        when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(null);
+
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
+                eventService.unregisterFromEvent(VALID_EVENT_ID, VALID_PLAYER_ID));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("No event has Id " + VALID_EVENT_ID, exception.getMessage());
+
+        // No deletion happened
+        verify(mockRegistrationRepo, never()).delete(any(Registration.class));
+    }
+
+    @Test
+    public void testGetAllEvents_Success() {
+        Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
+        VALID_EVENT.setId(VALID_EVENT_ID);
+
+        List<Event> eventList = new ArrayList<>();
+        eventList.add(VALID_EVENT);
+
+        when(mockEventRepo.findAll()).thenReturn(eventList);
+
+        List<Event> retrievedEvents = eventService.getallEvents();
+
+        assertNotNull(retrievedEvents);
+        assertEquals(1, retrievedEvents.size());
+        assertEquals(VALID_EVENT_NAME, retrievedEvents.get(0).getName());
+        assertEquals(VALID_EVENT_LOCATION, retrievedEvents.get(0).getLocation());
+    }
+
 }
