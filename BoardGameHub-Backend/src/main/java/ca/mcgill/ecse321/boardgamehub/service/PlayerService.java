@@ -5,105 +5,67 @@ import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.IllegalTransactionStateException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import jakarta.validation.Valid;
+import ca.mcgill.ecse321.boardgamehub.dto.PlayerCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.PlayerLoginDto;
+import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 
 
 @Service
+@Validated
 public class PlayerService {
-    private final PlayerRepository playerRepository;
-    
     @Autowired
-    public PlayerService(PlayerRepository playerRepository) {
-        this.playerRepository = playerRepository;
+    private PlayerRepository playerRepository;
+    
+
+
+
+    @Transactional
+    public Player RegisterPlayer(@Valid PlayerCreationDto playerCreationDto) {
+        Player p = new Player(
+            playerCreationDto.getName(),
+            playerCreationDto.getEmail(),
+            playerCreationDto.getPassword(),
+            playerCreationDto.getIsGameOwner()
+        );
+        return playerRepository.save(p);
     }
 
     @Transactional
-    public Player Register(String name, String email, String password) {
-        //Check if name, email, and password are valid
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be empty!");
+    public Player Login(@Valid PlayerLoginDto playerLoginDto) {
+        Player player = playerRepository.findPlayerByEmail(playerLoginDto.getEmail());
+        if (player == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Incorrect email or account does not exist");
         }
-        if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be empty!");
+        if (!player.getPassword().equals(playerLoginDto.getPassword())) {
+            throw new BoardGameHubException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
-        if (password == null || password.length() < 8) {
-            throw new IllegalArgumentException("Password too short");
-        }
+        return player;
         
-        //Create a new player
-        try {
-            Player PlayerToCreate = new Player(name, email, password, false);
-            playerRepository.save(PlayerToCreate);
-            return PlayerToCreate;
-        }catch (Exception e) {
-            throw new IllegalTransactionStateException(e.getMessage());
-        }
-
     }
 
     @Transactional
-    public Player Login(String email, String password) {
-        //Check if email and password are valid
-        if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be empty!");
+    public void DeletePlayer(int id) {
+        Player p = playerRepository.findPlayerById(id);
+        if (p == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Player does not exist");
         }
-        if (password == null || password.isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be empty!");
-        }
-
-        //Check if the player exists
-        Player player = playerRepository.findPlayerByEmail(email);
-        if (player == null) {
-            throw new IllegalArgumentException("Player does not exist!");
-        }
-
-        //Check if the password is correct
-        if (!player.getPassword().equals(password)) {
-            throw new IllegalArgumentException("Incorrect password!");
-        }
-
-        return player;
+        playerRepository.delete(p);
+        
     }
 
     @Transactional
-    public boolean DeletePlayer(String email) {
-        //Check if email is valid
-        if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be empty!");
+    public Player RetrievePlayer(int id) {
+        Player p = playerRepository.findPlayerById(id);
+        if (p == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Player does not exist");
         }
-
-        //Check if the player exists
-        Player player = playerRepository.findPlayerByEmail(email);
-        if (player == null) {
-            throw new IllegalArgumentException("Player does not exist!");
-        }
-
-        //Delete the player
-        try {
-            playerRepository.delete(player);
-        }
-        catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
-        return true;
-    }
-
-    @Transactional
-    public Player RetrievePlayer(String email) {
-        //Check if email is valid
-        if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be empty!");
-        }
-
-        //Check if the player exists
-        Player player = playerRepository.findPlayerByEmail(email);
-        if (player == null) {
-            throw new IllegalArgumentException("Player does not exist!");
-        }
-
-        return player;
+        return p;
+        
     }
 
 }
