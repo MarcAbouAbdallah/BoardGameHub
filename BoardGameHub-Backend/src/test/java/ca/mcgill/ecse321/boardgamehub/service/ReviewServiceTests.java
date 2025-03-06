@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.boardgamehub.service;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.sql.Date;
@@ -18,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -275,5 +278,25 @@ public class ReviewServiceTests {
                                                () -> reviewService.editReview(dto));
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
         assertEquals("No review has Id 156678", e.getMessage());
+    }
+
+    @Test
+    public void testDeleteReview() {
+        //Arrange
+        Date date = Date.valueOf(LocalDate.now());
+        when(mockReviewRepo.findReviewById(0))
+        .thenReturn(new Review(VALID_RATING, VALID_COMMENT, date, VALID_PLAYER, VALID_GAME));
+
+        //Act & Assert
+        assertDoesNotThrow(() -> reviewService.deleteReview(0));
+        verify(mockReviewRepo, times(1)).delete(any());
+    }
+
+    @Test
+    public void testDeleteInvalidReview() {
+        BoardGameHubException e = assertThrows(BoardGameHubException.class,
+                                               () -> reviewService.deleteReview(15));
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+        assertEquals("No review has Id 15", e.getMessage());
     }
 }

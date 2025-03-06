@@ -59,6 +59,36 @@ public class ReviewService {
 
         return reviewRepo.save(review);
     }
+    
+    public Review editReview(@Valid ReviewUpdateDto editedReview) {
+
+        Date today = Date.valueOf(LocalDate.now());
+
+        Review review = reviewRepo.findReviewById(editedReview.getId());
+
+        if (review == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            String.format("No review has Id %d", editedReview.getId()));
+        }
+
+        review.setRating(editedReview.getRating());
+        review.setComment(editedReview.getComment());
+        review.setDate(today);
+
+        return reviewRepo.save(review);
+    }
+
+    @Transactional
+    public void deleteReview(int id) {
+        Review review = reviewRepo.findReviewById(id);
+
+        if (review == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            String.format("No review has Id %d", id));
+        }
+
+        reviewRepo.delete(review);
+    }
 
     public Review findReviewById(int id) {
         Review review = reviewRepo.findReviewById(id);
@@ -94,23 +124,5 @@ public class ReviewService {
                                     gameName));
         }
         return reviewRepo.findByGame(game);
-    }
-
-    public Review editReview(@Valid ReviewUpdateDto editedReview) {
-
-        Date today = Date.valueOf(LocalDate.now());
-
-        Review review = reviewRepo.findReviewById(editedReview.getId());
-
-        if (review == null) {
-            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
-                                            String.format("No review has Id %d", editedReview.getId()));
-        }
-
-        review.setRating(editedReview.getRating());
-        review.setComment(editedReview.getComment());
-        review.setDate(today);
-
-        return reviewRepo.save(review);
     }
 }
