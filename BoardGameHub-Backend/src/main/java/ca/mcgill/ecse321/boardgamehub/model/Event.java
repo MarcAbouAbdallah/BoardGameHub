@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 import java.sql.Date;
+import java.sql.Time;
 
 @Entity
 public class Event {
@@ -16,6 +17,8 @@ public class Event {
     private String location;
     private String description;
     private Date date;
+    private Time startTime;
+    private Time endTime;
     private int maxParticipants;
     @ManyToOne
     private Player organizer;
@@ -25,11 +28,13 @@ public class Event {
     protected Event() {
     }
 
-    public Event(String name, String location, String description, Date date, int maxParticipants, Player organizer, GameCopy game) {
+    public Event(String name, String location, String description, Date date, Time starTime, Time endTime, int maxParticipants, Player organizer, GameCopy game) {
         this.name = name;
         this.location = location;
         this.description = description;
         this.date = date;
+        this.startTime = starTime;
+        this.endTime = endTime;
         this.maxParticipants = maxParticipants;
         this.organizer = organizer;
         this.game = game;
@@ -59,39 +64,43 @@ public class Event {
     public String getLocation() {
         return location;
     }
+    public Time getStartTime() {
+        return startTime;
+    }
+    public Time getEndTime() {
+        return endTime;
+    }
 
     
-    public boolean setId(int aId) {
+    public void setId(int aId) {
         id = aId;
-        return true;
     }
-    public boolean setName(String aName) {
+    public void setName(String aName) {
         name = aName;
-        return true;
     }
-    public boolean setGame(GameCopy aGame) {
+    public void setGame(GameCopy aGame) {
         game = aGame;
-        return true;
     }
-    public boolean setOrganizer(Player aOrganizer) {
+    public void setOrganizer(Player aOrganizer) {
         organizer = aOrganizer;
-        return true;
     }
-    public boolean setMaxParticipants(int aMaxParticipants) {
+    public void setMaxParticipants(int aMaxParticipants) {
         maxParticipants = aMaxParticipants;
-        return true;
     }
-    public boolean setDate(Date aDate) {
+    public void setDate(Date aDate) {
         date = aDate;
-        return true;
     }
-    public boolean setDescription(String aDescription) {
+    public void setDescription(String aDescription) {
         description = aDescription;
-        return true;
     }
-    public boolean setLocation(String aLocation) {
+    public void setLocation(String aLocation) {
         location = aLocation;
-        return true;
+    }
+    public void setStartTime(Time aStartTime) {
+        startTime = aStartTime;
+    }
+    public void setEndTime(Time aEndTime) {
+        endTime = aEndTime;
     }
 
     @Override
@@ -101,6 +110,8 @@ public class Event {
             "location" + ":" + getLocation() + "," +
             "description" + ":" + getDescription() + "," +
             "date" + ":" + (date != null ? date : "null") + "," +
+            "startTime" + ":" + (startTime != null ? startTime : "null") + "," +
+            "endTime" + ":" + (endTime != null ? endTime : "null") + "," +
             "maxParticipants" + ":" + getMaxParticipants() + "," +
             "organizer" + ":" + (getOrganizer() != null ? getOrganizer().getName() : "null") + "," +
             "game" + ":" + (getGame() != null ? getGame().getGame().getName() : "null") + "]";

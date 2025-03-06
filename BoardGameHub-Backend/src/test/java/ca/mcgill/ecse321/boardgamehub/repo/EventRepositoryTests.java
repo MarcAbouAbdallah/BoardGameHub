@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -70,13 +71,15 @@ public class EventRepositoryTests {
     @Test
     public void testCreateAndReadEvent() {
         //Arrange
-        Date today = Date.valueOf("2025-02-13");
+        Date date = Date.valueOf("2025-02-13");
+        Time startTime = Time.valueOf("10:00:00");
+        Time endTime = Time.valueOf("12:00:00");
         String name = "Monopoly Event";
         String location = "McGill";
         String description = "Playing Monopoly";
         int maxParticipants = 9;
 
-        Event monopolyEvent = new Event(name,location,description,today,maxParticipants,john,monopolyCopy);
+        Event monopolyEvent = new Event(name,location,description,date,startTime,endTime,maxParticipants,john,monopolyCopy);
         
         monopolyEvent = EventRepo.save(monopolyEvent);
 
@@ -90,7 +93,9 @@ public class EventRepositoryTests {
 		assertEquals(name, monopolyEventFromDb.getName());
         assertEquals(location, monopolyEventFromDb.getLocation());
         assertEquals(description, monopolyEventFromDb.getDescription());
-        assertEquals(today, monopolyEventFromDb.getDate());
+        assertEquals(date, monopolyEventFromDb.getDate());
+        assertEquals(startTime, monopolyEventFromDb.getStartTime());
+        assertEquals(endTime, monopolyEventFromDb.getEndTime());
         assertEquals(maxParticipants, monopolyEventFromDb.getMaxParticipants());
         
         assertEquals(john.getId(), monopolyEventFromDb.getOrganizer().getId());
@@ -100,12 +105,14 @@ public class EventRepositoryTests {
     @Test
     public void testUpdateEvent() {
         Date today = Date.valueOf("2025-02-13");
+        Time startTime = Time.valueOf("10:00:00");
+        Time endTime = Time.valueOf("12:00:00");
         String name = "Monopoly Event";
         String location = "McGill";
         String description = "Playing Monopoly";
         int maxParticipants = 9;
 
-        Event monopolyEvent = new Event(name,location,description,today,maxParticipants,john,monopolyCopy);
+        Event monopolyEvent = new Event(name,location,description,today,startTime,endTime,maxParticipants,john,monopolyCopy);
         
         monopolyEvent = EventRepo.save(monopolyEvent);
 
@@ -113,12 +120,16 @@ public class EventRepositoryTests {
         String newLocation = "Concordia";
         String newDescription = "Playing Monopoly 2";
         Date newDate = Date.valueOf("2025-02-14");
+        Time newStartTime = Time.valueOf("11:00:00");
+        Time newEndTime = Time.valueOf("13:00:00");
         int newMaxParticipants = 10;
     
         monopolyEvent.setName(newName);
         monopolyEvent.setLocation(newLocation);
         monopolyEvent.setDescription(newDescription);
         monopolyEvent.setDate(newDate);
+        monopolyEvent.setStartTime(newStartTime);
+        monopolyEvent.setEndTime(newEndTime);
         monopolyEvent.setMaxParticipants(newMaxParticipants);
         monopolyEvent = EventRepo.save(monopolyEvent);
 
@@ -131,18 +142,22 @@ public class EventRepositoryTests {
         assertEquals(newLocation, monopolyEventFromDb.getLocation());
         assertEquals(newDescription, monopolyEventFromDb.getDescription());
         assertEquals(newDate, monopolyEventFromDb.getDate());
+        assertEquals(newStartTime, monopolyEventFromDb.getStartTime());
+        assertEquals(newEndTime, monopolyEventFromDb.getEndTime());
         assertEquals(newMaxParticipants, monopolyEventFromDb.getMaxParticipants());
     }
 
     @Test
     public void testDeleteEvent() {
         Date today = Date.valueOf("2025-02-13");
+        Time startTime = Time.valueOf("10:00:00");
+        Time endTime = Time.valueOf("12:00:00");
         String name = "Monopoly Event";
         String location = "McGill";
         String description = "Playing Monopoly";
         int maxParticipants = 9;
 
-        Event monopolyEvent = new Event(name,location,description,today,maxParticipants,john,monopolyCopy);
+        Event monopolyEvent = new Event(name,location,description,today,startTime,endTime,maxParticipants,john,monopolyCopy);
         
         monopolyEvent = EventRepo.save(monopolyEvent);
 
@@ -156,12 +171,14 @@ public class EventRepositoryTests {
     @Test
     public void TestFindEventByOrganizer() {
         Date today = Date.valueOf("2025-02-13");
+        Time startTime = Time.valueOf("10:00:00");
+        Time endTime = Time.valueOf("12:00:00");
         String name = "Monopoly Event";
         String location = "McGill";
         String description = "Playing Monopoly";
         int maxParticipants = 9;
 
-        Event monopolyEvent = new Event(name,location,description,today,maxParticipants,john,monopolyCopy);
+        Event monopolyEvent = new Event(name,location,description,today,startTime,endTime,maxParticipants,john,monopolyCopy);
         
         monopolyEvent = EventRepo.save(monopolyEvent);
 

@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.boardgamehub.service;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +54,16 @@ public class EventService {
         }
 
         Date eventDate = Date.valueOf(eventToCreate.getDate());
+        Time startTime = Time.valueOf(eventToCreate.getStartTime());
+        Time endTime = Time.valueOf(eventToCreate.getEndTime());
 
         Event event = new Event(
                                 eventToCreate.getName(),
                                 eventToCreate.getLocation(),
                                 eventToCreate.getDescription(),
                                 eventDate,
+                                startTime,
+                                endTime,
                                 eventToCreate.getMaxParticipants(),
                                 organizer,
                                 game);

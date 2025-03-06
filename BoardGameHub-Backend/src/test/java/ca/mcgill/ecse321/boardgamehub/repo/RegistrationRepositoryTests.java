@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.sql.Date;
+import java.sql.Time;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,10 +58,14 @@ public class RegistrationRepositoryTests {
         hangmanCopy = gameCopyRepo.save(hangmanCopy);
 
         Date eventDate = Date.valueOf("2025-02-20");
+        Time startTime = Time.valueOf("12:00:00");
+        Time endTime = Time.valueOf("14:00:00");
         hanging = new Event("hanging",
                             "McGill", 
                             "spend some time", 
-                            eventDate, 
+                            eventDate,
+                            startTime,
+                            endTime,
                             4, 
                             john, 
                             hangmanCopy);

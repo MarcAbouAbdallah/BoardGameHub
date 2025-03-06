@@ -1,11 +1,13 @@
 package ca.mcgill.ecse321.boardgamehub.dto;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 
 public class EventCreationdto {
     @NotBlank(message = "Event name cannot be empty.")
@@ -24,6 +26,13 @@ public class EventCreationdto {
     @NotNull(message = "Event date cannot be empty.")
     private LocalDate eventDate;
 
+    @NotNull(message = "Start Time is required.")
+    private LocalTime startTime;
+
+    @NotNull(message = "End Time is required.")
+    @FutureOrPresent(message = "End Time must be in the future.")
+    private LocalTime endTime;
+
     @NotNull(message = "Board game Id is required.")
     private int gameId;
 
@@ -32,11 +41,13 @@ public class EventCreationdto {
 
     protected EventCreationdto() {}
 
-    public EventCreationdto(String name, String location, String description, LocalDate date, int maxParticipants, int organizer, int game) {
+    public EventCreationdto(String name, String location, String description, LocalDate date, LocalTime startTime, LocalTime endTime, int maxParticipants, int organizer, int game) {
         this.eventName = name;
         this.eventLocation = location;
         this.eventDescription = description;
         this.eventDate = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.maxParticipants = maxParticipants;
         this.organizerId = organizer;
         this.gameId = game;
@@ -68,6 +79,22 @@ public class EventCreationdto {
 
     public LocalDate getDate() {
         return eventDate;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     public void setDate(LocalDate date) {
