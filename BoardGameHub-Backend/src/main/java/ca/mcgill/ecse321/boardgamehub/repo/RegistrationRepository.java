@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface RegistrationRepository extends CrudRepository<Registration, Registration.Key> {
     public Registration findRegistrationByKey(Registration.Key key);
-    long countByKey_RegisteredEvent(Event registeredEvent);
+    int countByKey_RegisteredEvent(Event registeredEvent);
 }
