@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewSearchDto;
+import ca.mcgill.ecse321.boardgamehub.dto.ReviewUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
@@ -83,5 +84,33 @@ public class ReviewService {
                                     dto.getGameName()));
         }
         return reviewRepo.findByReviewerAndGame(reviewer, game);
+    }
+
+    public List<Review> findByGame(String gameName) {
+        Game game = gameRepo.findGameByName(gameName);
+        if (game == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no game with name %s.",
+                                    gameName));
+        }
+        return reviewRepo.findByGame(game);
+    }
+
+    public Review editReview(@Valid ReviewUpdateDto editedReview) {
+
+        Date today = Date.valueOf(LocalDate.now());
+
+        Review review = reviewRepo.findReviewById(editedReview.getId());
+
+        if (review == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            String.format("No review has Id %d", editedReview.getId()));
+        }
+
+        review.setRating(editedReview.getRating());
+        review.setComment(editedReview.getComment());
+        review.setDate(today);
+
+        return reviewRepo.save(review);
     }
 }
