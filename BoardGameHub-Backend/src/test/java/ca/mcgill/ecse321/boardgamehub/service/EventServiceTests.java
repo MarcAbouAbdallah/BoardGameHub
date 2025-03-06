@@ -225,6 +225,25 @@ public class EventServiceTests {
         assertEquals("This event is full.", exception.getMessage());
     }
 
+    @Test
+    public void testRegisterToEvent_AlreadyRegistered(){
+        Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
+        VALID_EVENT.setId(VALID_EVENT_ID);
+        Registration registration = new Registration(new Registration.Key(VALID_PLAYER, VALID_EVENT));
+        
+        when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(VALID_EVENT);
+        when(mockPlayerRepo.findPlayerById(VALID_PLAYER_ID)).thenReturn(VALID_PLAYER);
+        when(mockRegistrationRepo.countByKey_RegisteredEvent(VALID_EVENT)).thenReturn(5);
+        when(mockRegistrationRepo.findRegistrationByKey(any())).thenReturn(registration);
+
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            eventService.registerToEvent(VALID_EVENT_ID, VALID_PLAYER_ID);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals("You are already registered to this event.", exception.getMessage());
+    }
+
     @Test void testUnregisterFromEvent_Success(){
         Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
         VALID_EVENT.setId(VALID_EVENT_ID);
