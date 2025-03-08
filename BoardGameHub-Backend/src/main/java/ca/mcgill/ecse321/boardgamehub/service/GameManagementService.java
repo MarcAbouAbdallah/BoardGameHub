@@ -20,6 +20,7 @@ import ca.mcgill.ecse321.boardgamehub.model.BorrowRequest;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.dto.GameCopyCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameUpdateDto;
 
@@ -105,6 +106,18 @@ public class GameManagementService {
 
     }
 
+    //GameCopy Stuff
+
+    @Transactional
+    public GameCopy createGameCopy(@Valid GameCopyCreationDto gameCopyToCreate){
+        GameCopy g = new GameCopy(
+            gameCopyToCreate.getIsAvailable(),
+            gameCopyToCreate.getGame(),
+            gameCopyToCreate.getOwner()
+        );
+        return gameCopyRepo.save(g);
+    }
+
     public Player getOwnerById(int id){
         GameCopy copy = gameCopyRepo.findGameCopyById(id);
         if (copy == null){
@@ -115,7 +128,7 @@ public class GameManagementService {
         }
     }
 
-    public Player getCurrentPlayerById(int id){
+    public Player getHolderById(int id){
         GameCopy copy = gameCopyRepo.findGameCopyById(id);
         if (copy == null){
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Game Copy does not exist");
