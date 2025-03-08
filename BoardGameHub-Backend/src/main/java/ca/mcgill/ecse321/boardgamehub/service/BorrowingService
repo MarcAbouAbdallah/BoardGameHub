@@ -1,0 +1,104 @@
+package ca.mcgill.ecse321.boardgamehub.service;
+
+import java.sql.Date;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
+import ca.mcgill.ecse321.boardgamehub.model.BorrowRequest;
+import ca.mcgill.ecse321.boardgamehub.model.BorrowStatus;
+import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
+import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+
+import jakarta.transaction.Transactional;
+
+@Service
+public class BorrowingService {
+    
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
+
+    @Autowired
+    private PlayerRepository playerRepo;
+
+    @Autowired
+    private GameCopyRepository gameCopyRepo;
+
+    /**
+     * Creating a borrowing request.
+     */
+    @Transactional
+    public BorrowRequest createBorrowRequest(int requesterId, int requesteeId, int gameCopyId, String comment, Date startDate, Date endDate) {
+        Player requester = playerRepo.findById(requesterId)
+            .orElseThrow(() -> new BoardGameHubException(HttpStatus.NOT_FOUND, "Requester not found."));
+        Player requestee = playerRepo.findById(requesteeId)
+            .orElseThrow(() -> new BoardGameHubException(HttpStatus.NOT_FOUND, "Requestee not found."));
+        GameCopy gameCopy = gameCopyRepo.findById(gameCopyId)
+            .orElseThrow(() -> new BoardGameHubException(HttpStatus.NOT_FOUND, "Game copy not found."));
+
+        if (requester.equals(requestee)) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "You cannot borrow a game from yourself.");
+        }
+
+        BorrowRequest borrowRequest = new BorrowRequest(requester, requestee, gameCopy, comment, startDate, endDate);
+        borrowRequestRepo.save(borrowRequest);
+        return borrowRequest;
+    }
+
+    /**
+     * Retrieves all borrow requests.
+     */
+    public List<BorrowRequest> getAllBorrowRequests() {
+        return (List<BorrowRequest>) borrowRequestRepo.findAll();
+    }
+
+    /**
+     * Finds a borrow request by ID.
+     */
+    public BorrowRequest findBorrowRequestById(int requestId) {
+        return borrowRequestRepo.findById(requestId)
+            .orElseThrow(() -> new BoardGameHubException(HttpStatus.NOT_FOUND, "No borrow request found with ID " + requestId));
+    }
+
+    /**
+     * Approves a borrow request.
+     */
+    @Transactional
+    public BorrowRequest approveBorrowRequest(int requestId) {
+        BorrowRequest request = findBorrowRequestById(requestId);
+        if (request.getStatus() != BorrowStatus.PENDING) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be approved.");
+        }
+
+        request.setStatus(BorrowStatus.ACCEPTED);
+        return borrowRequestRepo.save(request);
+    }
+
+    /**
+     * Rejects a borrow request.
+     */
+    @Transactional
+    public BorrowRequest rejectBorrowRequest(int requestId) {
+        BorrowRequest request = findBorrowRequestById(requestId);
+        if (request.getStatus() != BorrowStatus.PENDING) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be rejected.");
+        }
+
+        request.setStatus(BorrowStatus.DECLINED);
+        return borrowRequestRepo.save(request);
+    }
+
+    /**
+     * Deletes a borrow request.
+     */
+    @Transactional
+    public void deleteBorrowRequest(int requestId) {
+        BorrowRequest request = findBorrowRequestById(requestId);
+        borrowRequestRepo.delete(request);
+    }
+}
