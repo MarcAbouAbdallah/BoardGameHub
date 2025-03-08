@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.boardgamehub.service;
 
 import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +20,7 @@ import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.dto.GameCopyCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.GameCopyUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameUpdateDto;
 
@@ -48,7 +48,7 @@ public class GameManagementService {
     }
 
     @Transactional
-    public void deletGame(int id ){
+    public void deleteGame(int id ){
         Game g = gameRepo.findGameById(id);
         //make sure game exists
         if (g == null) {
@@ -115,6 +115,38 @@ public class GameManagementService {
             gameCopyToCreate.getGame(),
             gameCopyToCreate.getOwner()
         );
+        return gameCopyRepo.save(g);
+    }
+
+    @Transactional
+    public void deleteGameCopy(int id ){
+        GameCopy g = gameCopyRepo.findGameCopyById(id);
+        //make sure gamecopy exists
+        if (g == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "GameCopy does not exist");
+        }
+        else{
+            gameCopyRepo.delete(g);
+        }
+    }
+
+    @Transactional 
+    public GameCopy updateGameCopy(@Valid GameCopyUpdateDto gameCopyToUpdate, int id){
+        GameCopy g = gameCopyRepo.findGameCopyById(id);
+        if (g == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format("No gamecopy has Id %d", id));
+        }
+
+        if (gameCopyToUpdate.getGame() != null){
+            g.setGame(gameCopyToUpdate.getGame());
+        }
+        if (gameCopyToUpdate.getOwner() != null){
+            g.setOwner(gameCopyToUpdate.getOwner());
+        }
+        if (gameCopyToUpdate.getIsAvailable() != null){
+            g.setIsAvailable(gameCopyToUpdate.getIsAvailable());
+        }
+
         return gameCopyRepo.save(g);
     }
 
