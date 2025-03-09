@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
@@ -23,6 +26,8 @@ import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 
+@SpringBootTest
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class PlayerServiceTests {
     @Mock
     private PlayerRepository mockPlayerRepository;
