@@ -149,10 +149,10 @@ public class ReviewServiceTests {
         when(mockReviewRepo.findByReviewerAndGame(VALID_PLAYER, VALID_GAME))
         .thenReturn(reviewList);
 
-        ReviewSearchDto dto = new ReviewSearchDto(VALID_PLAYER_ID, VALID_GAME_NAME);
+        //ReviewSearchDto dto = new ReviewSearchDto(VALID_PLAYER_ID, VALID_GAME_NAME);
 
         //Act
-        List<Review> foundReviewList = reviewService.findByReviewerAndGame(dto);
+        List<Review> foundReviewList = reviewService.findByReviewerAndGame(VALID_GAME_NAME, VALID_PLAYER_ID);
         Review foundReview = foundReviewList.get(0);
 
         //Assert
@@ -177,11 +177,11 @@ public class ReviewServiceTests {
          * for player first and then game)
         */
 
-        ReviewSearchDto dto = new ReviewSearchDto(1588809,VALID_GAME_NAME);
+        //ReviewSearchDto dto = new ReviewSearchDto(1588809,VALID_GAME_NAME);
 
         //Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class,
-                                               () -> reviewService.findByReviewerAndGame(dto));
+                                               () -> reviewService.findByReviewerAndGame(VALID_GAME_NAME, 1588809));
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
         assertEquals("There is no person with ID 1588809.", e.getMessage());
     }
@@ -193,11 +193,11 @@ public class ReviewServiceTests {
         when(mockPlayerRepo.findPlayerById(0))
         .thenReturn(VALID_PLAYER);
 
-        ReviewSearchDto dto = new ReviewSearchDto(VALID_PLAYER.getId(),"Risk");
+        //ReviewSearchDto dto = new ReviewSearchDto(VALID_PLAYER.getId(),"Risk");
 
         //Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class,
-                                               () -> reviewService.findByReviewerAndGame(dto));
+                                               () -> reviewService.findByReviewerAndGame("Risk", VALID_PLAYER.getId()));
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
         assertEquals("There is no game with name Risk.", e.getMessage());
     }
