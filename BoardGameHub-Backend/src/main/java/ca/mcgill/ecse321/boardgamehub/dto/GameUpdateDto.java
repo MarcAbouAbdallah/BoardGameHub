@@ -1,9 +1,5 @@
 package ca.mcgill.ecse321.boardgamehub.dto;
 
-import java.time.LocalDate;
-
-import org.checkerframework.checker.units.qual.min;
-
 public class GameUpdateDto {
     private String name;
     private String description;
