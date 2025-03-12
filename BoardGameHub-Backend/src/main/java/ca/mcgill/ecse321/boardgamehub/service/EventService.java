@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 
@@ -26,6 +27,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Service
+@Validated
 public class EventService {
     @Autowired
     private EventRepository eventRepo;
@@ -106,11 +108,19 @@ public class EventService {
     public Event updateEvent(@Valid EventUpdateDto eventDTO, int eventId, int organizerId) {
         Event event = findEventById(eventId);
 
-        if (event.getOrganizer().getId() != (organizerId)) {
-            throw new BoardGameHubException(HttpStatus.FORBIDDEN, "You are not authorized to update this event.");
+        Player player = playerRepo.findPlayerById(organizerId);
+        if (player == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            String.format("No player has Id %d", organizerId));
         }
 
-        // Updating non-null fields
+        if (!event.getOrganizer().equals(player)) {
+            throw new BoardGameHubException(HttpStatus.FORBIDDEN, 
+                                            "You are not the organizer of this event.");
+        }
+
+        eventDTO.validate();
+
         if (eventDTO.getName() != null) event.setName(eventDTO.getName());
         if (eventDTO.getDescription() != null) event.setDescription(eventDTO.getDescription());
         if (eventDTO.getLocation() != null) event.setLocation(eventDTO.getLocation());
@@ -119,7 +129,6 @@ public class EventService {
         if (eventDTO.getEndTime() != null) event.setEndTime(Time.valueOf(eventDTO.getEndTime()));
         if (eventDTO.getMaxParticipants() != null) event.setMaxParticipants(eventDTO.getMaxParticipants());
 
-        // If the game is changed, this checks it exists
         if (eventDTO.getGame() != null) {
             GameCopy newGame = gameRepo.findGameCopyById(eventDTO.getGame());
             if (newGame == null) {

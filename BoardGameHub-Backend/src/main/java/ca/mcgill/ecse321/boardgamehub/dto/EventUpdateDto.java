@@ -49,5 +49,28 @@ public class EventUpdateDto {
 
     public Integer getGame() { return gameId; }
     public void setGame(Integer game) { this.gameId = game; }
+
+    public void validate(){
+        
+        if (name != null && name.isBlank()) {
+            throw new IllegalArgumentException("Event name cannot be blank.");
+        }
+
+        if (location != null && location.isBlank()) {
+            throw new IllegalArgumentException("Event location cannot be blank.");
+        }
+
+        if (maxParticipants != null && maxParticipants <= 0) {
+            throw new IllegalArgumentException("Maximum participants must be greater than zero.");
+        }
+
+        if (date != null && date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Event date must be in the future.");
+        }
+
+        if (startTime != null && endTime != null && !startTime.isBefore(endTime)) {
+            throw new IllegalArgumentException("Start time must be before end time.");
+        }
+    }
 }
 
