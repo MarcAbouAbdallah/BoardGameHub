@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -16,8 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import ca.mcgill.ecse321.boardgamehub.dto.ErrorDto;
+import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestDto;
 import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestCreationDto;
-import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestResponseDto;
+import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.model.*;
 import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
@@ -45,7 +45,7 @@ public class BorrowRequestIntegrationTests {
     private static final Player VALID_REQUESTER = new Player("Alice", "alice@example.com", "password123", false);
     private static final Player VALID_REQUESTEE = new Player("Bob", "bob@example.com", "securePass", true);
     private static final GameCopy VALID_GAME_COPY = new GameCopy();
-    
+
     private static final String TEST_COMMENT = "Request to borrow this game.";
     private static final Date START_DATE = Date.valueOf("2025-02-15");
     private static final Date END_DATE = Date.valueOf("2025-02-20");
@@ -73,13 +73,13 @@ public class BorrowRequestIntegrationTests {
                 VALID_REQUESTER.getId(), VALID_REQUESTEE.getId(), VALID_GAME_COPY.getId(), TEST_COMMENT, START_DATE, END_DATE);
 
         // Act
-        ResponseEntity<BorrowRequestResponseDto> response = client.postForEntity("/borrowRequests/create", dto, BorrowRequestResponseDto.class);
+        ResponseEntity<BorrowRequestDto> response = client.postForEntity("/borrowRequests/create", dto, BorrowRequestDto.class);
 
         // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().getId() >= 0, "The ID should be a positive integer");
-        
+
         this.createdBorrowRequestId = response.getBody().getId();
         assertEquals(dto.getComment(), response.getBody().getComment());
         assertEquals(dto.getRequesterId(), response.getBody().getRequesterId());
@@ -87,7 +87,7 @@ public class BorrowRequestIntegrationTests {
         assertEquals(dto.getGameCopyId(), response.getBody().getGameCopyId());
     }
 
-    /** Test Case2: Cannot create borrow request with invalid requester **/
+    /** Test Case 2: Cannot create borrow request with invalid requester **/
     @Test
     @Order(2)
     public void testCreateBorrowRequestFails_InvalidRequester() {
@@ -104,12 +104,12 @@ public class BorrowRequestIntegrationTests {
         assertEquals("Requester not found.", response.getBody().getErrors().get(0));
     }
 
-    /** Test Case3: Retrieve borrow request by ID **/
+    /** Test Case 3: Retrieve borrow request by ID **/
     @Test
     @Order(3)
     public void testGetValidBorrowRequestById() {
         // Act
-        ResponseEntity<BorrowRequestResponseDto> response = client.getForEntity("/borrowRequests/" + createdBorrowRequestId, BorrowRequestResponseDto.class);
+        ResponseEntity<BorrowRequestDto> response = client.getForEntity("/borrowRequests/" + createdBorrowRequestId, BorrowRequestDto.class);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -119,13 +119,13 @@ public class BorrowRequestIntegrationTests {
         assertEquals(VALID_REQUESTEE.getId(), response.getBody().getRequesteeId());
     }
 
-    /**  Test Case  4: Approve a borrow request **/
+    /**  Test Case 4: Approve a borrow request **/
     @Test
     @Order(4)
     public void testApproveBorrowRequest() {
         // Act
-        ResponseEntity<BorrowRequestResponseDto> response = client.exchange("/borrowRequests/" + createdBorrowRequestId + "/approve",
-                org.springframework.http.HttpMethod.PUT, null, BorrowRequestResponseDto.class);
+        ResponseEntity<BorrowRequestDto> response = client.exchange("/borrowRequests/" + createdBorrowRequestId + "/approve?requesteeId=" + VALID_REQUESTEE.getId(),
+                org.springframework.http.HttpMethod.PUT, null, BorrowRequestDto.class);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -138,8 +138,8 @@ public class BorrowRequestIntegrationTests {
     @Order(5)
     public void testRejectBorrowRequest() {
         // Act
-        ResponseEntity<BorrowRequestResponseDto> response = client.exchange("/borrowRequests/" + createdBorrowRequestId + "/reject",
-                org.springframework.http.HttpMethod.PUT, null, BorrowRequestResponseDto.class);
+        ResponseEntity<BorrowRequestDto> response = client.exchange("/borrowRequests/" + createdBorrowRequestId + "/reject?requesteeId=" + VALID_REQUESTEE.getId(),
+                org.springframework.http.HttpMethod.PUT, null, BorrowRequestDto.class);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -147,24 +147,41 @@ public class BorrowRequestIntegrationTests {
         assertEquals(BorrowStatus.DECLINED.toString(), response.getBody().getStatus());
     }
 
-    /**  Test Case 6: Cannot approve non-existent borrow request **/
+    /** Test Case 6: Update a borrow request **/
     @Test
     @Order(6)
+    public void testUpdateBorrowRequest() {
+        // Arrange
+        BorrowRequestUpdateDto updateDto = new BorrowRequestUpdateDto("Updated comment", null, null);
+
+        // Act
+        ResponseEntity<BorrowRequestDto> response = client.exchange("/borrowRequests/" + createdBorrowRequestId + "/update?requesterId=" + VALID_REQUESTER.getId(),
+                org.springframework.http.HttpMethod.PUT, null, BorrowRequestDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Updated comment", response.getBody().getComment());
+    }
+
+    /** Test Case 7: Cannot approve non-existent borrow request **/
+    @Test
+    @Order(7)
     public void testApproveNonExistentBorrowRequest() {
         int invalidId = createdBorrowRequestId + 100;
-        ResponseEntity<ErrorDto> response = client.exchange("/borrowRequests/" + invalidId + "/approve",
+        ResponseEntity<ErrorDto> response = client.exchange("/borrowRequests/" + invalidId + "/approve?requesteeId=" + VALID_REQUESTEE.getId(),
                 org.springframework.http.HttpMethod.PUT, null, ErrorDto.class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Borrow request not found.", response.getBody().getErrors().get(0));
+        assertEquals("No borrow request found with ID " + invalidId, response.getBody().getErrors().get(0));
     }
 
-    /**Test Case7: Delete a borrow request **/
+    /** Test Case 8: Delete a borrow request **/
     @Test
-    @Order(7)
+    @Order(8)
     public void testDeleteBorrowRequest() {
         // Act
-        ResponseEntity<Void> response = client.exchange("/borrowRequests/" + createdBorrowRequestId + "/delete",
+        ResponseEntity<Void> response = client.exchange("/borrowRequests/" + createdBorrowRequestId + "/delete?requesterId=" + VALID_REQUESTER.getId(),
                 org.springframework.http.HttpMethod.DELETE, null, Void.class);
 
         // Assert
