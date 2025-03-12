@@ -2,7 +2,9 @@ package ca.mcgill.ecse321.boardgamehub.dto;
 
 import java.sql.Date;
 
+import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Review;
+import ca.mcgill.ecse321.boardgamehub.response.GameCopyResponse;
 
 public class ReviewResponseDto {
     private int id;
@@ -23,6 +25,17 @@ public class ReviewResponseDto {
         this.reviewerId = review.getReviewer().getId();
         this.gameName = review.getGame().getName();
         this.reviewDate = review.getDate();
+    }
+
+    public static ReviewResponseDto fromReview(Review review) {
+        ReviewResponseDto response = new ReviewResponseDto();
+        response.id = review.getId();
+        response.rating = review.getRating();
+        response.comment = review.getComment();
+        response.reviewerId = review.getReviewer().getId();
+        response.gameName = review.getGame().getName();
+        response.reviewDate = review.getDate();
+        return response;
     }
 
     public int getId() {

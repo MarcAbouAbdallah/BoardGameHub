@@ -18,6 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -30,11 +35,15 @@ import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
+import ca.mcgill.ecse321.boardgamehub.response.GameCopyResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class ReviewIntegrationTests {
+
+    @LocalServerPort
+    private int port;
 
     @Autowired
     private TestRestTemplate client;
@@ -196,9 +205,59 @@ public class ReviewIntegrationTests {
         //Arrange
 
         //Act
-        String queryString = String.format("/reviews/game/%s/%d", VALID_GAME.getName(), createdReviewId);
-        ResponseEntity<ReviewResponseDto[]> response = client.getForEntity(queryString, ReviewResponseDto[].class);
+        // String queryString = String.format("http://localhost:" + port + "/reviews/game/%s/%d", VALID_GAME.getName(), VALID_PLAYER.getId());
+        // ResponseEntity<Object> response = client.exchange(
+        //     queryString,
+        //     HttpMethod.GET,
+        //     null, // No request body needed for GET requests
+        //     Object.class // We'll first deserialize into Object to check the type
+        // );
+
+        // // Check if the response is a list or a single object
+        // Object responseBody = response.getBody();
+
+        // ReviewResponseDto responseItem = null;
+        // List<ReviewResponseDto> reviews = null;
+
+        // if (responseBody instanceof List<?>) {
+        //     // If it's a List, cast it to List<ReviewResponseDto>
+        //     reviews = (List<ReviewResponseDto>) responseBody;
+        //     // Process the list
+        //     if (!reviews.isEmpty()) {
+        //         responseItem = reviews.get(0);
+        //         // Perform assertions on the responseItem
+        //     }
+        // } else if (responseBody instanceof ReviewResponseDto) {
+        //     // If it's a single ReviewResponseDto, handle it as a single review
+        //         responseItem = (ReviewResponseDto) responseBody;
+        //     // Perform assertions on the responseItem
+        // } else {
+        //     // Handle unexpected responses
+        //     System.out.println("Unexpected response format: " + responseBody);
+        // }
+        String queryString = String.format("http://localhost:" + port + "/reviews/game/%s/%d", VALID_GAME.getName(), VALID_PLAYER.getId());
+        ResponseEntity<ReviewResponseDto[]> response = client.exchange(
+            queryString,
+            HttpMethod.GET,
+            null,
+            ReviewResponseDto[].class
+        );
         ReviewResponseDto responseItem = response.getBody()[0];
+        //ResponseEntity<ReviewResponseDto[]> response = client.getForEntity(queryString, ReviewResponseDto[].class);
+        
+        // ResponseEntity<List<ReviewResponseDto>> response = client.exchange(
+        //     queryString, 
+        //     HttpMethod.GET, 
+        //     null,  // No request body needed for GET requests
+        //     new ParameterizedTypeReference<List<ReviewResponseDto>>() {});
+
+        // ResponseEntity<GameCopyResponse[]> response = client.exchange(
+        //     queryString,
+        //     HttpMethod.GET,
+        //     null,
+        //     GameCopyResponse[].class
+        // );
+        // ReviewResponseDto responseItem = response.getBody().get(0);
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         
@@ -247,5 +306,29 @@ public class ReviewIntegrationTests {
     public void testUpdateValidReview() {
         //Arrange
         ReviewUpdateDto dto = new ReviewUpdateDto(createdReviewId, 4, "NVM, I don't like the game now");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");  // This is just an example; adjust as needed.
+        
+        // Wrap the body (dto) and headers in HttpEntity
+        HttpEntity<ReviewUpdateDto> httpEntity = new HttpEntity<>(dto, headers);
+        
+        ResponseEntity<ReviewResponseDto> response = client.exchange(
+            "http://localhost:" + port + "/reviews",
+            HttpMethod.PUT,
+            httpEntity,
+            ReviewResponseDto.class
+        );
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        
+		assertNotNull(response.getBody());
+		assertTrue(response.getBody().getId() >= 0, "the ID should be a positive int");
+		this.createdReviewId = response.getBody().getId();
+		assertEquals(4, response.getBody().getRating());
+		assertEquals("NVM, I don't like the game now", response.getBody().getComment());
+        assertEquals(VALID_PLAYER.getId(), response.getBody().getReviewerId());
+        assertEquals(VALID_GAME.getName(), response.getBody().getGameName());
+
     }
 }

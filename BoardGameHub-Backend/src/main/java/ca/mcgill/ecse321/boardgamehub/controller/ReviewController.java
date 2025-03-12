@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewResponseDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewUpdateDto;
+import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Review;
+import ca.mcgill.ecse321.boardgamehub.response.GameCopyResponse;
 import ca.mcgill.ecse321.boardgamehub.service.ReviewService;
 
 @RestController
@@ -73,13 +76,24 @@ public class ReviewController {
      * @return A list of reviews for that game
      */
     @GetMapping("reviews/game/{gameName}/{reviewerId}")
-    public List<ReviewResponseDto> findByGameAndReviewer(@PathVariable String gameName, @PathVariable int reviewerId) {
-        List<Review> reviewList = reviewService.findByReviewerAndGame(gameName, reviewerId);
-        List<ReviewResponseDto> dtoList = new ArrayList<>();
-        for (Review review: reviewList) {
-            dtoList.add(new ReviewResponseDto(review));
-        }
-        return dtoList;
+    public ResponseEntity<List<ReviewResponseDto>> findByGameAndReviewer(@PathVariable String gameName, @PathVariable int reviewerId) {
+        // List<Review> reviewList = reviewService.findByReviewerAndGame(gameName, reviewerId);
+        // List<ReviewResponseDto> dtoList = new ArrayList<>();
+        // for (Review review: reviewList) {
+        //     dtoList.add(new ReviewResponseDto(review));
+        // }
+        // return dtoList;
+        // List<Review> reviewList = reviewService.findByReviewerAndGame(gameName, reviewerId);
+        // List<ReviewResponseDto> dtoList = new ArrayList<>();
+        // for (Review review: reviewList) {
+        //     dtoList.add(new ReviewResponseDto(review));
+        // }
+        // return ResponseEntity.ok(dtoList);
+        List<Review> reviews = reviewService.findByReviewerAndGame(gameName, reviewerId);
+        List<ReviewResponseDto> responses = reviews.stream()
+            .map(ReviewResponseDto::fromReview)
+            .toList();
+        return ResponseEntity.ok(responses);
     }
 
     /**
