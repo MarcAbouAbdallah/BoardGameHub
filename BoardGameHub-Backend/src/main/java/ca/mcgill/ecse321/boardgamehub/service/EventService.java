@@ -22,7 +22,7 @@ import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
 import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
-
+import ca.mcgill.ecse321.boardgamehub.dto.RegistrationDto;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -184,6 +184,36 @@ public class EventService {
         }
 
         registrationRepo.delete(registration);
+    }
+    
+    @Transactional
+    public Registration registerToEvent(@Valid RegistrationDto registrationDto) {
+        int registeredEventId = registrationDto.getRegisteredEventId();
+        int registrantId = registrationDto.getRegistrantId();
+
+        Event registeredEvent = findEventById(registeredEventId);
+        Player registrant = playerRepo.findPlayerById(registrantId);
+
+        if (registrant == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            String.format("No player has Id %d", registrantId));
+        }
+
+        int participants = (int) registrationRepo.countByKey_RegisteredEvent(registeredEvent);
+
+        if (participants >= registeredEvent.getMaxParticipants()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, 
+                                            "This event is full.");
+        }
+
+        Registration.Key key = new Registration.Key(registrant, registeredEvent);
+        if (registrationRepo.findRegistrationByKey(key) != null) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, 
+                                            "You are already registered to this event.");
+        }
+
+        Registration registration = new Registration(key);
+        return registrationRepo.save(registration);
     }
 
 
