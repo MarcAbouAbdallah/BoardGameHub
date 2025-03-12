@@ -34,7 +34,6 @@ import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
-import ca.mcgill.ecse321.boardgamehub.response.GameCopyResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

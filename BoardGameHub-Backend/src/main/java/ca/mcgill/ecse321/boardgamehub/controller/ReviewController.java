@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewResponseDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewUpdateDto;
-import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Review;
-import ca.mcgill.ecse321.boardgamehub.response.GameCopyResponse;
 import ca.mcgill.ecse321.boardgamehub.service.ReviewService;
 
 @RestController
@@ -71,24 +69,15 @@ public class ReviewController {
 
     /**
      * Find all reviews for a particular game by a particular person
+     * Somehow Returning a list in the same way the other endpoints do errors out.
+     * This is why it is coded like this.
      * 
-     * @param dto a dto containing the id of the reviewer and the name of the game
+     * @param gameName the name of the game whose reviews we are looking for
+     * @param reviewerId the id of the reviewer whose reviews we want
      * @return A list of reviews for that game
      */
     @GetMapping("reviews/game/{gameName}/{reviewerId}")
     public ResponseEntity<List<ReviewResponseDto>> findByGameAndReviewer(@PathVariable String gameName, @PathVariable int reviewerId) {
-        // List<Review> reviewList = reviewService.findByReviewerAndGame(gameName, reviewerId);
-        // List<ReviewResponseDto> dtoList = new ArrayList<>();
-        // for (Review review: reviewList) {
-        //     dtoList.add(new ReviewResponseDto(review));
-        // }
-        // return dtoList;
-        // List<Review> reviewList = reviewService.findByReviewerAndGame(gameName, reviewerId);
-        // List<ReviewResponseDto> dtoList = new ArrayList<>();
-        // for (Review review: reviewList) {
-        //     dtoList.add(new ReviewResponseDto(review));
-        // }
-        // return ResponseEntity.ok(dtoList);
         List<Review> reviews = reviewService.findByReviewerAndGame(gameName, reviewerId);
         List<ReviewResponseDto> responses = reviews.stream()
             .map(ReviewResponseDto::fromReview)

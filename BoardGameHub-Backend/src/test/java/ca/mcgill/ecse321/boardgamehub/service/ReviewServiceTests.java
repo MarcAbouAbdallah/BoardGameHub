@@ -31,7 +31,6 @@ import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.model.Review;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewCreationDto;
-import ca.mcgill.ecse321.boardgamehub.dto.ReviewSearchDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
@@ -137,7 +136,7 @@ public class ReviewServiceTests {
     public void testFindReviewByValidReviewerAndGame() {
         //Arrange
         Date date = Date.valueOf(LocalDate.now());
-        List<Review> reviewList = new ArrayList<Review>();
+        List<Review> reviewList = new ArrayList<>();
         reviewList.add(new Review(VALID_RATING, VALID_COMMENT, date, VALID_PLAYER, VALID_GAME));
 
         when(mockPlayerRepo.findPlayerById(0))
@@ -207,7 +206,7 @@ public class ReviewServiceTests {
         //Arrange
         Date date = Date.valueOf(LocalDate.now());
 
-        List<Review> reviewList = new ArrayList<Review>();
+        List<Review> reviewList = new ArrayList<>();
         reviewList.add(new Review(VALID_RATING, VALID_COMMENT, date, VALID_PLAYER, VALID_GAME));
 
         when(mockGameRepo.findGameByName("Monopoly"))

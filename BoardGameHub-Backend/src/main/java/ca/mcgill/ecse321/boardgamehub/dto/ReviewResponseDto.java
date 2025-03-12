@@ -2,9 +2,7 @@ package ca.mcgill.ecse321.boardgamehub.dto;
 
 import java.sql.Date;
 
-import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Review;
-import ca.mcgill.ecse321.boardgamehub.response.GameCopyResponse;
 
 public class ReviewResponseDto {
     private int id;
