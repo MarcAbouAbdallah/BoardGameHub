@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -163,7 +162,7 @@ public class ReviewIntegrationTests {
 
     @Test
     @Order(4)
-    public void testGetValidReviewByGame() {
+    public void testGetValidReviewsByGame() {
         //Arrange
 
         //Act
@@ -205,36 +204,6 @@ public class ReviewIntegrationTests {
         //Arrange
 
         //Act
-        // String queryString = String.format("http://localhost:" + port + "/reviews/game/%s/%d", VALID_GAME.getName(), VALID_PLAYER.getId());
-        // ResponseEntity<Object> response = client.exchange(
-        //     queryString,
-        //     HttpMethod.GET,
-        //     null, // No request body needed for GET requests
-        //     Object.class // We'll first deserialize into Object to check the type
-        // );
-
-        // // Check if the response is a list or a single object
-        // Object responseBody = response.getBody();
-
-        // ReviewResponseDto responseItem = null;
-        // List<ReviewResponseDto> reviews = null;
-
-        // if (responseBody instanceof List<?>) {
-        //     // If it's a List, cast it to List<ReviewResponseDto>
-        //     reviews = (List<ReviewResponseDto>) responseBody;
-        //     // Process the list
-        //     if (!reviews.isEmpty()) {
-        //         responseItem = reviews.get(0);
-        //         // Perform assertions on the responseItem
-        //     }
-        // } else if (responseBody instanceof ReviewResponseDto) {
-        //     // If it's a single ReviewResponseDto, handle it as a single review
-        //         responseItem = (ReviewResponseDto) responseBody;
-        //     // Perform assertions on the responseItem
-        // } else {
-        //     // Handle unexpected responses
-        //     System.out.println("Unexpected response format: " + responseBody);
-        // }
         String queryString = String.format("http://localhost:" + port + "/reviews/game/%s/%d", VALID_GAME.getName(), VALID_PLAYER.getId());
         ResponseEntity<ReviewResponseDto[]> response = client.exchange(
             queryString,
@@ -243,21 +212,7 @@ public class ReviewIntegrationTests {
             ReviewResponseDto[].class
         );
         ReviewResponseDto responseItem = response.getBody()[0];
-        //ResponseEntity<ReviewResponseDto[]> response = client.getForEntity(queryString, ReviewResponseDto[].class);
-        
-        // ResponseEntity<List<ReviewResponseDto>> response = client.exchange(
-        //     queryString, 
-        //     HttpMethod.GET, 
-        //     null,  // No request body needed for GET requests
-        //     new ParameterizedTypeReference<List<ReviewResponseDto>>() {});
 
-        // ResponseEntity<GameCopyResponse[]> response = client.exchange(
-        //     queryString,
-        //     HttpMethod.GET,
-        //     null,
-        //     GameCopyResponse[].class
-        // );
-        // ReviewResponseDto responseItem = response.getBody().get(0);
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         
@@ -329,6 +284,46 @@ public class ReviewIntegrationTests {
 		assertEquals("NVM, I don't like the game now", response.getBody().getComment());
         assertEquals(VALID_PLAYER.getId(), response.getBody().getReviewerId());
         assertEquals(VALID_GAME.getName(), response.getBody().getGameName());
+    }
 
+    @Test
+    @Order(10)
+    public void testDeleteInvalidReview() {
+        int invalidId = createdReviewId+1;
+        ResponseEntity<ErrorDto> response = client.exchange(
+            "http://localhost:"+port+"/reviews/"+invalidId,
+            HttpMethod.DELETE,
+            null,
+            ErrorDto.class
+        );
+
+        //Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+		    List.of(String.format("No review has Id %d", invalidId)),
+		    response.getBody().getErrors());
+    }
+
+    @Test
+    @Order(11)
+    public void testDeleteValidReview() {
+        // Remove the review copy
+        ResponseEntity<Void> removeResponse = client.exchange(
+            "http://localhost:"+port+"/reviews/"+createdReviewId,
+            HttpMethod.DELETE,
+            null,
+            Void.class
+        );
+        assertEquals(HttpStatus.OK, removeResponse.getStatusCode());
+        
+        ResponseEntity<ErrorDto> response = client.getForEntity(String.format("/reviews/%d", createdReviewId), ErrorDto.class);
+
+        //Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+		    List.of(String.format("No review has Id %d", createdReviewId)),
+		    response.getBody().getErrors());
     }
 }
