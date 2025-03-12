@@ -42,7 +42,7 @@ public class PlayerServiceTests {
     @Test
     public void testRegisterValidPlayer() {
         // Arrange
-        PlayerCreationDto John = new PlayerCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+        PlayerCreationDto John = new PlayerCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, false);
         when(mockPlayerRepository.save(any(Player.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
         // Act
@@ -180,7 +180,7 @@ public class PlayerServiceTests {
         when(mockPlayerRepository.findPlayerById(id)).thenReturn(John);
         when(mockPlayerRepository.save(any(Player.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
-        PlayerCreationDto updatedJohn = new PlayerCreationDto("Jane Doe", "jane.doe@mail.mcgill.ca", "password456");
+        PlayerCreationDto updatedJohn = new PlayerCreationDto("Jane Doe", "jane.doe@mail.mcgill.ca", "password456", true);
 
         //Act
         Player updatedPlayer = playerService.updatePlayer(id, updatedJohn);
@@ -199,7 +199,7 @@ public class PlayerServiceTests {
         int id = 0;
         when(mockPlayerRepository.findPlayerById(id)).thenReturn(null);
 
-        PlayerCreationDto updatedJohn = new PlayerCreationDto("Jane Doe", "jane.doe@mail.mcgill.ca", "password456");
+        PlayerCreationDto updatedJohn = new PlayerCreationDto("Jane Doe", "jane.doe@mail.mcgill.ca", "password456", true);
 
         //Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
