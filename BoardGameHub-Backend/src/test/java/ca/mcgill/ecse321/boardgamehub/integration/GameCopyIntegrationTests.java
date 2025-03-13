@@ -101,6 +101,7 @@ public class GameCopyIntegrationTests {
     public void testGetEmptyPersonalCollection() {
         //Arrange
         HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+
         //Act
         ResponseEntity<GameCopyResponseDto[]> response = client.exchange(
             createURLWithPort("/" + testPlayer.getId()),
@@ -108,6 +109,7 @@ public class GameCopyIntegrationTests {
             requestEntity,
             GameCopyResponseDto[].class
         );
+
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         GameCopyResponseDto[] collection = response.getBody();
@@ -120,6 +122,7 @@ public class GameCopyIntegrationTests {
     public void testAddGameToPersonalCollection() {
         //Arrange
         HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+
         //Act
         ResponseEntity<GameCopyResponseDto> response = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
@@ -127,6 +130,7 @@ public class GameCopyIntegrationTests {
             requestEntity,
             GameCopyResponseDto.class
         );
+
         //Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         GameCopyResponseDto added = response.getBody();
@@ -147,6 +151,7 @@ public class GameCopyIntegrationTests {
             requestEntity,
             GameCopyResponseDto.class
         );
+
         //Act: Get available copies
         ResponseEntity<GameCopyResponseDto[]> response = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/available"),
@@ -154,6 +159,7 @@ public class GameCopyIntegrationTests {
             requestEntity,
             GameCopyResponseDto[].class
         );
+
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         GameCopyResponseDto[] availableBefore = response.getBody();
@@ -167,6 +173,7 @@ public class GameCopyIntegrationTests {
             requestEntity,
             GameCopyResponseDto.class
         );
+
         //Act: Get available copies again
         response = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/available"),
@@ -174,6 +181,7 @@ public class GameCopyIntegrationTests {
             requestEntity,
             GameCopyResponseDto[].class
         );
+
         //Assert
         GameCopyResponseDto[] availableAfter = response.getBody();
         assertNotNull(availableAfter);
@@ -192,6 +200,7 @@ public class GameCopyIntegrationTests {
             GameCopyResponseDto.class
         );
         assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
+
         //Act: Lend the game copy
         ResponseEntity<GameCopyResponseDto> lendResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/lend?gameId=" + testGame.getId()),
@@ -199,11 +208,13 @@ public class GameCopyIntegrationTests {
             requestEntity,
             GameCopyResponseDto.class
         );
+
         //Assert
         assertEquals(HttpStatus.OK, lendResponse.getStatusCode());
         GameCopyResponseDto lentCopy = lendResponse.getBody();
         assertNotNull(lentCopy);
         assertFalse(lentCopy.getIsAvailable());
+
         //Act: Return the game copy
         ResponseEntity<GameCopyResponseDto> returnResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/return?gameId=" + testGame.getId()),
@@ -211,6 +222,7 @@ public class GameCopyIntegrationTests {
             requestEntity,
             GameCopyResponseDto.class
         );
+
         //Assert
         assertEquals(HttpStatus.OK, returnResponse.getStatusCode());
         GameCopyResponseDto returnedCopy = returnResponse.getBody();
@@ -230,6 +242,7 @@ public class GameCopyIntegrationTests {
             GameCopyResponseDto.class
         );
         assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
+
         //Act: Remove the game copy
         ResponseEntity<Void> removeResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/remove?gameId=" + testGame.getId()),
@@ -237,6 +250,7 @@ public class GameCopyIntegrationTests {
             requestEntity,
             Void.class
         );
+
         //Assert
         assertEquals(HttpStatus.NO_CONTENT, removeResponse.getStatusCode());
         ResponseEntity<GameCopyResponseDto[]> getResponse = client.exchange(
@@ -257,6 +271,7 @@ public class GameCopyIntegrationTests {
         //Arrange: Prepare a request without the "User-Id" header.
         HttpHeaders noUserHeaders = new HttpHeaders();
         HttpEntity<?> requestEntity = new HttpEntity<>(noUserHeaders);
+
         //Act: Attempt to add a game copy.
         ResponseEntity<String> addResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
@@ -264,6 +279,7 @@ public class GameCopyIntegrationTests {
             requestEntity,
             String.class
         );
+
         //Assert
         assertEquals(HttpStatus.UNAUTHORIZED, addResponse.getStatusCode());
     }
