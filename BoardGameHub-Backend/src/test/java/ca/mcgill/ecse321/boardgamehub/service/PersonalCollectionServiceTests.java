@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.boardgamehub.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
@@ -70,10 +71,11 @@ public class PersonalCollectionServiceTests {
     @Test
     public void testDuplicateGameAdditionThrowsException() {
         personalGameCollectionService.addGameToPersonalCollection(testPlayer.getId(), testGame.getId());
-        Exception exception = assertThrows(IllegalStateException.class, () ->
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
             personalGameCollectionService.addGameToPersonalCollection(testPlayer.getId(), testGame.getId())
         );
-        assertTrue(exception.getMessage().contains("Player already owns this game."), "Expected duplicate addition error.");
+        assertTrue(exception.getMessage().contains("Player already owns this game."),
+                   "Expected duplicate addition error.");
     }
 
     @Test
@@ -90,10 +92,11 @@ public class PersonalCollectionServiceTests {
 
     @Test
     public void testRemoveNonExistentGameThrowsException() {
-        Exception exception = assertThrows(IllegalStateException.class, () ->
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
             personalGameCollectionService.removeGameFromPersonalCollection(testPlayer.getId(), testGame.getId())
         );
-        assertTrue(exception.getMessage().contains("Game not found in player's collection."), "Expected removal error.");
+        assertTrue(exception.getMessage().contains("Game not found in player's collection."),
+                   "Expected removal error.");
     }
 
     @Test
@@ -124,10 +127,11 @@ public class PersonalCollectionServiceTests {
     public void testLendGameCopyAlreadyLentOut() {
         personalGameCollectionService.addGameToPersonalCollection(testPlayer.getId(), testGame.getId());
         personalGameCollectionService.lendGameCopy(testPlayer.getId(), testGame.getId());
-        Exception exception = assertThrows(IllegalStateException.class, () ->
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
             personalGameCollectionService.lendGameCopy(testPlayer.getId(), testGame.getId())
         );
-        assertTrue(exception.getMessage().contains("Game copy is already lent out"), "Expected exception for lending an already lent copy.");
+        assertTrue(exception.getMessage().contains("Game copy is already lent out"),
+                   "Expected exception for lending an already lent copy.");
     }
 
     @Test
@@ -141,9 +145,10 @@ public class PersonalCollectionServiceTests {
     @Test
     public void testReturnGameCopyAlreadyAvailable() {
         personalGameCollectionService.addGameToPersonalCollection(testPlayer.getId(), testGame.getId());
-        Exception exception = assertThrows(IllegalStateException.class, () ->
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
             personalGameCollectionService.returnGameCopy(testPlayer.getId(), testGame.getId())
         );
-        assertTrue(exception.getMessage().contains("Game copy is already available"), "Expected exception for returning an available game copy.");
+        assertTrue(exception.getMessage().contains("Game copy is already available"),
+                   "Expected exception for returning an available game copy.");
     }
 }

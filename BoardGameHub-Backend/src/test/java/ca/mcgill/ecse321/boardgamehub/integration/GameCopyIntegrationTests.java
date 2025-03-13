@@ -1,226 +1,270 @@
 package ca.mcgill.ecse321.boardgamehub.integration;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import ca.mcgill.ecse321.boardgamehub.dto.GameCopyResponseDto;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
-import ca.mcgill.ecse321.boardgamehub.response.GameCopyResponse;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(Lifecycle.PER_CLASS)
 public class GameCopyIntegrationTests {
 
-    @LocalServerPort
-    private int port;
+    @Autowired
+    private TestRestTemplate client;
 
     @Autowired
-    private TestRestTemplate restTemplate;
-    
+    private PlayerRepository playerRepo;
+
     @Autowired
-    private PlayerRepository playerRepository;
-    
+    private GameRepository gameRepo;
+
     @Autowired
-    private GameRepository gameRepository;
-    
-    @Autowired
-    private GameCopyRepository gameCopyRepository;
-    
+    private GameCopyRepository gameCopyRepo;
+
+    private final String TEST_PLAYER_NAME = "Test Player";
+    private final String TEST_PLAYER_EMAIL = "testplayer@example.com";
+    private final String TEST_PLAYER_PASSWORD = "password";
+    private final String TEST_GAME_NAME = "Test Game";
+    private final int TEST_GAME_MIN_PLAYERS = 4;
+    private final int TEST_GAME_MAX_PLAYERS = 2;
+    private final String TEST_GAME_DESCRIPTION = "A fun test game";
+
     private Player testPlayer;
     private Game testGame;
     private HttpHeaders headers;
-    
-    @BeforeEach
+
+    @BeforeAll
     public void setup() {
-        // Create test player and game using parameterized constructors
-        testPlayer = new Player("Test Player", "testplayer@example.com", "password", false);
-        playerRepository.save(testPlayer);
-        
-        testGame = new Game("Test Game", 4, 2, "A fun test game");
-        gameRepository.save(testGame);
-        
+        //Arrange
+        gameCopyRepo.deleteAll();
+        gameRepo.deleteAll();
+        playerRepo.deleteAll();
+
+        testPlayer = new Player(TEST_PLAYER_NAME, TEST_PLAYER_EMAIL, TEST_PLAYER_PASSWORD, false);
+        playerRepo.save(testPlayer);
+
+        testGame = new Game(TEST_GAME_NAME, TEST_GAME_MIN_PLAYERS, TEST_GAME_MAX_PLAYERS, TEST_GAME_DESCRIPTION);
+        gameRepo.save(testGame);
+
         headers = new HttpHeaders();
         headers.set("User-Id", String.valueOf(testPlayer.getId()));
     }
-    
+
     @AfterEach
+    public void cleanupAfterEach() {
+        //Arrange
+        gameCopyRepo.deleteAll();
+    }
+
+    @AfterAll
     public void cleanup() {
-        gameCopyRepository.deleteAll();
-        gameRepository.deleteAll();
-        playerRepository.deleteAll();
+        //Arrange
+        gameCopyRepo.deleteAll();
+        gameRepo.deleteAll();
+        playerRepo.deleteAll();
     }
-    
+
     private String createURLWithPort(String uri) {
-        return "http://localhost:" + port + "/gameCopies" + uri;
+        return "http://localhost:" + portFromUri(client.getRootUri()) + "/gameCopies" + uri;
     }
-    
+
+    private String portFromUri(String rootUri) {
+        String[] parts = rootUri.split(":");
+        String portWithSuffix = parts[2];
+        return portWithSuffix.replaceAll("[^0-9]", "");
+    }
+
     @Test
+    @Order(0)
     public void testGetEmptyPersonalCollection() {
+        //Arrange
         HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<GameCopyResponse[]> response = restTemplate.exchange(
+        //Act
+        ResponseEntity<GameCopyResponseDto[]> response = client.exchange(
             createURLWithPort("/" + testPlayer.getId()),
             HttpMethod.GET,
             requestEntity,
-            GameCopyResponse[].class
+            GameCopyResponseDto[].class
         );
-        
+        //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(0, response.getBody().length);
+        GameCopyResponseDto[] collection = response.getBody();
+        assertNotNull(collection);
+        assertEquals(0, collection.length);
     }
-    
+
     @Test
+    @Order(1)
     public void testAddGameToPersonalCollection() {
+        //Arrange
         HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<GameCopyResponse> response = restTemplate.exchange(
+        //Act
+        ResponseEntity<GameCopyResponseDto> response = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
             HttpMethod.POST,
             requestEntity,
-            GameCopyResponse.class
+            GameCopyResponseDto.class
         );
-        
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        GameCopyResponse added = response.getBody();
+        //Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        GameCopyResponseDto added = response.getBody();
         assertNotNull(added);
         assertEquals(testGame.getId(), added.getGameId());
         assertEquals(testPlayer.getId(), added.getOwnerId());
         assertTrue(added.getIsAvailable());
     }
-    
+
     @Test
+    @Order(2)
     public void testGetAvailableGameCopies() {
+        //Arrange: Add a game copy
         HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-        // Add a game copy (available by default)
-        restTemplate.exchange(
+        client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
             HttpMethod.POST,
             requestEntity,
-            GameCopyResponse.class
+            GameCopyResponseDto.class
         );
-        
-        // Verify available copies exist
-        ResponseEntity<GameCopyResponse[]> availableResponse = restTemplate.exchange(
+        //Act: Get available copies
+        ResponseEntity<GameCopyResponseDto[]> response = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/available"),
             HttpMethod.GET,
             requestEntity,
-            GameCopyResponse[].class
+            GameCopyResponseDto[].class
         );
-        assertEquals(HttpStatus.OK, availableResponse.getStatusCode());
-        assertNotNull(availableResponse.getBody());
-        assertEquals(1, availableResponse.getBody().length);
-        
-        // Lend the game copy so it's no longer available
-        restTemplate.exchange(
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        GameCopyResponseDto[] availableBefore = response.getBody();
+        assertNotNull(availableBefore);
+        assertEquals(1, availableBefore.length);
+
+        //Arrange: Lend the copy
+        client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/lend?gameId=" + testGame.getId()),
             HttpMethod.POST,
             requestEntity,
-            GameCopyResponse.class
+            GameCopyResponseDto.class
         );
-        
-        // Verify available copies are now empty
-        availableResponse = restTemplate.exchange(
+        //Act: Get available copies again
+        response = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/available"),
             HttpMethod.GET,
             requestEntity,
-            GameCopyResponse[].class
+            GameCopyResponseDto[].class
         );
-        assertEquals(HttpStatus.OK, availableResponse.getStatusCode());
-        assertNotNull(availableResponse.getBody());
-        assertEquals(0, availableResponse.getBody().length);
+        //Assert
+        GameCopyResponseDto[] availableAfter = response.getBody();
+        assertNotNull(availableAfter);
+        assertEquals(0, availableAfter.length);
     }
-    
+
     @Test
+    @Order(3)
     public void testLendAndReturnGameCopy() {
+        //Arrange: Add a new game copy
         HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-        // Add a game copy
-        restTemplate.exchange(
+        ResponseEntity<GameCopyResponseDto> addResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
             HttpMethod.POST,
             requestEntity,
-            GameCopyResponse.class
+            GameCopyResponseDto.class
         );
-        // Lend the game copy
-        ResponseEntity<GameCopyResponse> lendResponse = restTemplate.exchange(
+        assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
+        //Act: Lend the game copy
+        ResponseEntity<GameCopyResponseDto> lendResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/lend?gameId=" + testGame.getId()),
             HttpMethod.POST,
             requestEntity,
-            GameCopyResponse.class
+            GameCopyResponseDto.class
         );
+        //Assert
         assertEquals(HttpStatus.OK, lendResponse.getStatusCode());
-        GameCopyResponse lentCopy = lendResponse.getBody();
+        GameCopyResponseDto lentCopy = lendResponse.getBody();
         assertNotNull(lentCopy);
         assertFalse(lentCopy.getIsAvailable());
-        
-        // Return the game copy
-        ResponseEntity<GameCopyResponse> returnResponse = restTemplate.exchange(
+        //Act: Return the game copy
+        ResponseEntity<GameCopyResponseDto> returnResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/return?gameId=" + testGame.getId()),
             HttpMethod.POST,
             requestEntity,
-            GameCopyResponse.class
+            GameCopyResponseDto.class
         );
+        //Assert
         assertEquals(HttpStatus.OK, returnResponse.getStatusCode());
-        GameCopyResponse returnedCopy = returnResponse.getBody();
+        GameCopyResponseDto returnedCopy = returnResponse.getBody();
         assertNotNull(returnedCopy);
         assertTrue(returnedCopy.getIsAvailable());
     }
-    
+
     @Test
+    @Order(4)
     public void testRemoveGameFromPersonalCollection() {
+        //Arrange: Add a game copy
         HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-        // Add a game copy first
-        restTemplate.exchange(
+        ResponseEntity<GameCopyResponseDto> addResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
             HttpMethod.POST,
             requestEntity,
-            GameCopyResponse.class
+            GameCopyResponseDto.class
         );
-        
-        // Remove the game copy
-        ResponseEntity<Void> removeResponse = restTemplate.exchange(
+        assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
+        //Act: Remove the game copy
+        ResponseEntity<Void> removeResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/remove?gameId=" + testGame.getId()),
             HttpMethod.DELETE,
             requestEntity,
             Void.class
         );
-        assertEquals(HttpStatus.OK, removeResponse.getStatusCode());
-        
-        // Verify that the collection is empty
-        ResponseEntity<GameCopyResponse[]> getResponse = restTemplate.exchange(
+        //Assert
+        assertEquals(HttpStatus.NO_CONTENT, removeResponse.getStatusCode());
+        ResponseEntity<GameCopyResponseDto[]> getResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId()),
             HttpMethod.GET,
             requestEntity,
-            GameCopyResponse[].class
+            GameCopyResponseDto[].class
         );
         assertEquals(HttpStatus.OK, getResponse.getStatusCode());
-        assertNotNull(getResponse.getBody());
-        assertEquals(0, getResponse.getBody().length);
+        GameCopyResponseDto[] collection = getResponse.getBody();
+        assertNotNull(collection);
+        assertEquals(0, collection.length);
     }
-    
+
     @Test
+    @Order(5)
     public void testUnauthorizedAccess() {
-        // Missing User-Id header should result in unauthorized response for modifying endpoints
+        //Arrange: Prepare a request without the "User-Id" header.
         HttpHeaders noUserHeaders = new HttpHeaders();
         HttpEntity<?> requestEntity = new HttpEntity<>(noUserHeaders);
-        ResponseEntity<String> addResponse = restTemplate.exchange(
+        //Act: Attempt to add a game copy.
+        ResponseEntity<String> addResponse = client.exchange(
             createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
             HttpMethod.POST,
             requestEntity,
             String.class
         );
+        //Assert
         assertEquals(HttpStatus.UNAUTHORIZED, addResponse.getStatusCode());
     }
 }

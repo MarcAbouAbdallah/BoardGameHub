@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.boardgamehub.service;
 
+import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
@@ -7,6 +8,7 @@ import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +46,8 @@ public class PersonalCollectionService {
         List<GameCopy> copies = gameCopyRepository.findByOwner(player);
         for (GameCopy copy : copies) {
             if (copy.getGame().getId() == game.getId()) {
-                throw new IllegalStateException("Player already owns this game.");
+                throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Player already owns this game.");
             }
         }
         // Create and persist a new GameCopy with default availability true
@@ -69,7 +72,9 @@ public class PersonalCollectionService {
         if (toRemove != null) {
             gameCopyRepository.delete(toRemove);
         } else {
-            throw new IllegalStateException("Game not found in player's collection.");
+            throw new BoardGameHubException(
+                HttpStatus.NOT_FOUND,
+                "Game not found in player's collection.");
         }
     }
 
@@ -89,7 +94,8 @@ public class PersonalCollectionService {
 
         GameCopy target = findGameCopyInCollection(player, game);
         if (!target.getIsAvailable()) {
-            throw new IllegalStateException("Game copy is already lent out.");
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Game copy is already lent out.");
         }
         target.setIsAvailable(false);
         return gameCopyRepository.save(target);
@@ -102,7 +108,8 @@ public class PersonalCollectionService {
 
         GameCopy target = findGameCopyInCollection(player, game);
         if (target.getIsAvailable()) {
-            throw new IllegalStateException("Game copy is already available.");
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Game copy is already available.");
         }
         target.setIsAvailable(true);
         return gameCopyRepository.save(target);
@@ -116,16 +123,22 @@ public class PersonalCollectionService {
                 return copy;
             }
         }
-        throw new IllegalStateException("Game not found in player's collection.");
+        throw new BoardGameHubException(
+            HttpStatus.NOT_FOUND,
+            "Game not found in player's collection.");
     }
 
     private Player findPlayerOrThrow(Integer playerId) {
         return playerRepository.findById(playerId)
-            .orElseThrow(() -> new IllegalArgumentException("Player with ID " + playerId + " not found."));
+            .orElseThrow(() -> new BoardGameHubException(
+                HttpStatus.NOT_FOUND,
+                String.format("Player with ID %d not found.", playerId)));
     }
 
     private Game findGameOrThrow(Integer gameId) {
         return gameRepository.findById(gameId)
-            .orElseThrow(() -> new IllegalArgumentException("Game with ID " + gameId + " not found."));
+            .orElseThrow(() -> new BoardGameHubException(
+                HttpStatus.NOT_FOUND,
+                String.format("Game with ID %d not found.", gameId)));
     }
 }
