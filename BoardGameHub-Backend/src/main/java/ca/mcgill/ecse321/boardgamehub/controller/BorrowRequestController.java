@@ -1,92 +1,106 @@
-package ca.mcgill.ecse321.boardgamehub.controller;
-
-import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestCreationDto;
-import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestUpdateDto;
-import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestDto;
-import ca.mcgill.ecse321.boardgamehub.service.BorrowingService;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-@RestController
-@RequestMapping("/borrowRequests")
-public class BorrowRequestController {
-
-    private final BorrowingService borrowingService;
+@Service
+public class BorrowingService {
 
     @Autowired
-    public BorrowRequestController(BorrowingService borrowingService) {
-        this.borrowingService = borrowingService;
+    private BorrowRequestRepository borrowRequestRepo;
+
+    @Autowired
+    private PlayerRepository playerRepo;
+
+    @Autowired
+    private GameCopyRepository gameCopyRepo;
+
+    /**Create a borrow request */
+    @Transactional
+    public BorrowRequest createBorrowRequest(@Valid BorrowRequestCreationDto dto) {
+        Player requester = playerRepo.findById(dto.getRequesterId())
+            .orElseThrow(() -> new BoardGameHubException(HttpStatus.NOT_FOUND, "Requester not found."));
+        Player requestee = playerRepo.findById(dto.getRequesteeId())
+            .orElseThrow(() -> new BoardGameHubException(HttpStatus.NOT_FOUND, "Requestee not found."));
+        GameCopy gameCopy = gameCopyRepo.findById(dto.getGameCopyId())
+            .orElseThrow(() -> new BoardGameHubException(HttpStatus.NOT_FOUND, "Game copy not found."));
+
+        if (requester.equals(requestee)) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "You cannot borrow a game from yourself.");
+        }
+        if (dto.getEndDate().before(dto.getStartDate())) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "End date must be after start date.");
+        }
+
+        BorrowRequest borrowRequest = new BorrowRequest(requester, requestee, gameCopy, dto.getComment(), dto.getStartDate(), dto.getEndDate());
+        return borrowRequestRepo.save(borrowRequest);
     }
 
-    /** Creates a new borrow request */
-    @PostMapping("/create")
-    public ResponseEntity<BorrowRequestDto> createBorrowRequest(@RequestBody BorrowRequestCreationDto dto) {
-        return new ResponseEntity<>(BorrowRequestDto.fromEntity(borrowingService.createBorrowRequest(dto)), HttpStatus.CREATED);
+    /**Get all borrow requests */
+    public List<BorrowRequest> getAllBorrowRequests() {
+        return (List<BorrowRequest>) borrowRequestRepo.findAll();
     }
 
-    /** Retrieves all borrow requests */
-    @GetMapping("/all")
-    public ResponseEntity<List<BorrowRequestDto>> getAllBorrowRequests() {
-        return ResponseEntity.ok(
-            borrowingService.getAllBorrowRequests().stream()
-                .map(BorrowRequestDto::fromEntity)
-                .collect(Collectors.toList())
-        );
+    /** Get a specific borrow request */
+    public BorrowRequest findBorrowRequestById(int requestId) {
+        return borrowRequestRepo.findById(requestId)
+            .orElseThrow(() -> new BoardGameHubException(HttpStatus.NOT_FOUND, "No borrow request found with ID " + requestId));
     }
 
-    /** Retrieve a specific borrow request by ID */
-    @GetMapping("/{requestId}")
-    public ResponseEntity<BorrowRequestDto> getBorrowRequestById(@PathVariable Integer requestId) {
-        return ResponseEntity.ok(BorrowRequestDto.fromEntity(borrowingService.findBorrowRequestById(requestId)));
+    /** Get all borrow requests sent by a given player */
+    public List<BorrowRequest> getRequestsSentByPlayer(int playerId) {
+        Player player = playerRepo.findById(playerId)
+            .orElseThrow(() -> new BoardGameHubException(HttpStatus.NOT_FOUND, "Player not found."));
+        return borrowRequestRepo.findByRequester(player);
     }
 
-    /** Retrieve all borrow requests sent by a player */
-    @GetMapping("/sent/{playerId}")
-    public ResponseEntity<List<BorrowRequestDto>> getRequestsSentByPlayer(@PathVariable Integer playerId) {
-        return ResponseEntity.ok(
-            borrowingService.getRequestsSentByPlayer(playerId).stream()
-                .map(BorrowRequestDto::fromEntity)
-                .collect(Collectors.toList())
-        );
+    /** Get all borrow requests received by a player */
+    public List<BorrowRequest> getRequestsReceivedByPlayer(int playerId) {
+        Player player = playerRepo.findById(playerId)
+            .orElseThrow(() -> new BoardGameHubException(HttpStatus.NOT_FOUND, "Player not found."));
+        return borrowRequestRepo.findByRequestee(player);
     }
 
-    /** Retrieves borrow requests received by a player */
-    @GetMapping("/received/{playerId}")
-    public ResponseEntity<List<BorrowRequestDto>> getRequestsReceivedByPlayer(@PathVariable Integer playerId) {
-        return ResponseEntity.ok(
-            borrowingService.getRequestsReceivedByPlayer(playerId).stream()
-                .map(BorrowRequestDto::fromEntity)
-                .collect(Collectors.toList())
-        );
+    /** Approve || Reject a borrow request */
+    @Transactional
+    public BorrowRequest updateBorrowRequestStatus(int requestId, BorrowStatus newStatus) {
+        BorrowRequest request = findBorrowRequestById(requestId);
+
+        // Ensure only requestee can change the status
+        Player requestee = request.getRequestee();
+        if (requestee == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Requestee not found.");
+        }
+        if (newStatus != BorrowStatus.ACCEPTED && newStatus != BorrowStatus.DECLINED) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Invalid status update. Use ACCEPTED or DECLINED.");
+        }
+        if (request.getStatus() != BorrowStatus.PENDING) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be updated.");
+        }
+
+        request.setStatus(newStatus);
+        return borrowRequestRepo.save(request);
     }
 
-    /** Approves a borrow request */
-    @PutMapping("/{requestId}/approve")
-    public ResponseEntity<BorrowRequestDto> approveBorrowRequest(@PathVariable Integer requestId, @RequestParam Integer requesteeId) {
-        return ResponseEntity.ok(BorrowRequestDto.fromEntity(borrowingService.approveBorrowRequest(requestId, requesteeId)));
+    /**Update a borrow request -Only requester can update */
+    @Transactional
+    public BorrowRequest updateBorrowRequest(@Valid BorrowRequestUpdateDto dto, int requestId, int requesterId) {
+        BorrowRequest request = findBorrowRequestById(requestId);
+        if (request.getRequester().getId() != requesterId) {
+            throw new BoardGameHubException(HttpStatus.FORBIDDEN, "Only the requester can update this request.");
+        }
+
+        if (dto.getComment() != null) request.setComment(dto.getComment());
+        if (dto.getStartDate() != null) request.setStartDate(dto.getStartDate());
+        if (dto.getEndDate() != null) {
+            if (dto.getEndDate().before(request.getStartDate())) {
+                throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "End date must be after start date.");
+            }
+            request.setEndDate(dto.getEndDate());
+        }
+
+        return borrowRequestRepo.save(request);
     }
 
-    /** Rejects a borrow request */
-    @PutMapping("/{requestId}/reject")
-    public ResponseEntity<BorrowRequestDto> rejectBorrowRequest(@PathVariable Integer requestId, @RequestParam Integer requesteeId) {
-        return ResponseEntity.ok(BorrowRequestDto.fromEntity(borrowingService.rejectBorrowRequest(requestId, requesteeId)));
-    }
-
-    /** Updates a borrow request */
-    @PutMapping("/{requestId}/update")
-    public ResponseEntity<BorrowRequestDto> updateBorrowRequest(@PathVariable Integer requestId, @RequestParam Integer requesterId, @RequestBody BorrowRequestUpdateDto dto) {
-        return ResponseEntity.ok(BorrowRequestDto.fromEntity(borrowingService.updateBorrowRequest(dto, requestId, requesterId)));
-    }
-
-    /** Deletes a borrow request */
-    @DeleteMapping("/{requestId}/delete")
-    public ResponseEntity<Void> deleteBorrowRequest(@PathVariable Integer requestId, @RequestParam Integer requesterId) {
-        borrowingService.deleteBorrowRequest(requestId, requesterId);
-        return ResponseEntity.ok().build();
+    /** Deletes a borrow request - Only requester can delete) */
+    @Transactional
+    public void deleteBorrowRequest(int requestId) {
+        BorrowRequest request = findBorrowRequestById(requestId);
+        borrowRequestRepo.delete(request);
     }
 }
