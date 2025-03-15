@@ -150,7 +150,7 @@ public class EventService {
                                             String.format("No player has Id %d", playerId));
         }
 
-        int participants = (int) registrationRepo.countByKey_RegisteredEvent(event);
+        int participants = getParticipantsCount(eventId);
 
         if (participants >= event.getMaxParticipants()) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, 
@@ -184,6 +184,11 @@ public class EventService {
         }
 
         registrationRepo.delete(registration);
+    }
+
+    public int getParticipantsCount(int eventId) {
+        Event event = findEventById(eventId);
+        return (int) registrationRepo.countByKey_RegisteredEvent(event);
     }
 
 
