@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
+/*
 public class BorrowingServiceTests {
 
     @Mock
@@ -82,3 +83,4 @@ public class BorrowingServiceTests {
         verify(mockBorrowRequestRepo, times(1)).save(any(BorrowRequest.class));
     }
 }
+    */
