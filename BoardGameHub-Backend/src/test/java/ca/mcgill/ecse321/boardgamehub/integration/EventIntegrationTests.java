@@ -31,8 +31,8 @@ import ca.mcgill.ecse321.boardgamehub.dto.ErrorDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventResponseDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
-import ca.mcgill.ecse321.boardgamehub.dto.ReviewCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewResponseDto;
+import ca.mcgill.ecse321.boardgamehub.dto.ReviewUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
@@ -75,10 +75,8 @@ public class EventIntegrationTests {
     private static final LocalTime START_TIME = LocalTime.of(13, 0);
     private static final LocalTime END_TIME = LocalTime.of(14, 0);
     private static final int MAX_PARTICIPANTS = 4;
-    //private static int ORGANIZER_ID = VALID_ORGANIZER.getId();
-    //private static int GAME_ID = VALID_GAMECOPY.getId();
 
-    private int createdEventId;
+    private static int createdEventId;
 
     @BeforeAll
     public void setup() {
@@ -122,7 +120,7 @@ public class EventIntegrationTests {
         assertEquals(MAX_PARTICIPANTS, createdEvent.getMaxParticipants());
         assertEquals(0, createdEvent.getParticipantsCount());
 
-        this.createdEventId = createdEvent.getId(); // For other tests
+        createdEventId = createdEvent.getId(); // Will be used in later tests as created event
         
     }
 
@@ -150,6 +148,123 @@ public class EventIntegrationTests {
         assertTrue(responseBody.contains("Maximum participants must be greater than zero."),
                 "Error message for negative participants is missing.");
         
+    }
+
+    @Test
+    @Order(2)
+    public void testGetEventById() {
+        ResponseEntity<EventResponseDto> response = client.getForEntity("/events/" + createdEventId, EventResponseDto.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        EventResponseDto event = response.getBody();
+        assertNotNull(event);
+        assertEquals(createdEventId, event.getId());
+        assertEquals(NAME, event.getName());
+        assertEquals(LOCATION, event.getLocation());
+        assertEquals(DESCRIPTION, event.getDescription());
+        assertEquals(DATE, event.getDate());
+        assertEquals(START_TIME, event.getStartTime());
+        assertEquals(END_TIME, event.getEndTime());
+        assertEquals(MAX_PARTICIPANTS, event.getMaxParticipants());
+        assertEquals(0, event.getParticipantsCount());
+    }
+
+    @Test
+    @Order(3)
+    public void testGetEventById_Failure_NotFound() {
+        int wrongId = createdEventId + 1;
+        ResponseEntity<String> response = client.getForEntity("/events/" + wrongId, String.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+        String error = response.getBody();
+        assertNotNull(error);
+        assertTrue(error.contains("No event has Id " + wrongId),
+                "Error message for invalid event id.");
+    }
+
+    @Test
+    @Order(4)
+    public void testGetAllEvents() {
+        ResponseEntity<EventResponseDto[]> response = client.getForEntity("/events", EventResponseDto[].class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        EventResponseDto[] events = response.getBody();
+        assertNotNull(events);
+        assertEquals(1, events.length);
+
+        EventResponseDto event = events[0];
+        assertNotNull(event);
+        assertEquals(createdEventId, event.getId());
+        assertEquals(NAME, event.getName());
+        assertEquals(LOCATION, event.getLocation());
+        assertEquals(DESCRIPTION, event.getDescription());
+        assertEquals(DATE, event.getDate());
+        assertEquals(START_TIME, event.getStartTime());
+        assertEquals(END_TIME, event.getEndTime());
+        assertEquals(MAX_PARTICIPANTS, event.getMaxParticipants());
+        assertEquals(0, event.getParticipantsCount());
+    }
+
+    @Test
+    @Order(5)
+    public void testUpdateEvent() {
+        String newLocation = "New Location";
+        String newDescription = "New Description";
+        LocalDate newDate = LocalDate.of(2025, 3, 17);
+        LocalTime newStartTime = LocalTime.of(14, 0);
+        LocalTime newEndTime = LocalTime.of(15, 0);
+
+        EventUpdateDto dto = new EventUpdateDto(null, newDescription, newLocation, newDate, newStartTime, newEndTime, null, null);
+
+        String url = "/events/" + createdEventId + "?organizerId=" + VALID_ORGANIZER.getId();
+
+        ResponseEntity<EventResponseDto> response = client.exchange(url, HttpMethod.PUT, new HttpEntity<>(dto), EventResponseDto.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        EventResponseDto updatedEvent = response.getBody();
+        assertNotNull(updatedEvent);
+        assertEquals(createdEventId, updatedEvent.getId());
+        assertEquals(NAME, updatedEvent.getName()); // Not updated (still original value)
+        assertEquals(newLocation, updatedEvent.getLocation());
+        assertEquals(newDescription, updatedEvent.getDescription());
+        assertEquals(newDate, updatedEvent.getDate());
+        assertEquals(newStartTime, updatedEvent.getStartTime());
+        assertEquals(newEndTime, updatedEvent.getEndTime());
+        assertEquals(MAX_PARTICIPANTS, updatedEvent.getMaxParticipants()); // Not updated
+        assertEquals(0, updatedEvent.getParticipantsCount());
+    }
+
+    @Test
+    @Order(6)
+    public void testUpdateEvent_Unauthorized(){
+        String newLocation = "New Location";
+
+        EventUpdateDto dto = new EventUpdateDto(null, null, newLocation, null, null, null, null, null);
+
+        // Only the organizer can update the event
+        int unauthorizedId = VALID_ORGANIZER.getId() + 1;
+        Player unauthorizedPlayer = new Player("Unauthorized", "", "123", true);
+        playerRepo.save(unauthorizedPlayer);
+
+        String url = "/events/" + createdEventId + "?organizerId=" + unauthorizedId;
+
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.PUT, new HttpEntity<>(dto), String.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+
+        String error = response.getBody();
+        assertNotNull(error);
+        assertTrue(error.contains("You are not the organizer of this event."),
+                "Error message for unauthorized event update.");
     }
 
 }
