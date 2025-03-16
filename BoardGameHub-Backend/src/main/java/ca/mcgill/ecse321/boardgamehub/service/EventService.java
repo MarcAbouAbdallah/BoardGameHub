@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.boardgamehub.service;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ public class EventService {
 
     @Transactional
     public Event createEvent(@Valid EventCreationDto eventToCreate) {
+        validateDto(eventToCreate);
 
         Player organizer = playerRepo.findPlayerById(eventToCreate.getOrganizer());
         if (organizer == null) {
@@ -150,7 +152,7 @@ public class EventService {
                                             String.format("No player has Id %d", playerId));
         }
 
-        int participants = (int) registrationRepo.countByKey_RegisteredEvent(event);
+        int participants = getParticipantsCount(eventId);
 
         if (participants >= event.getMaxParticipants()) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, 
@@ -184,6 +186,37 @@ public class EventService {
         }
 
         registrationRepo.delete(registration);
+    }
+
+    public int getParticipantsCount(int eventId) {
+        Event event = findEventById(eventId);
+        return (int) registrationRepo.countByKey_RegisteredEvent(event);
+    }
+
+    public void validateDto(EventCreationDto eventToCreate) {
+        if (eventToCreate.getName().isBlank()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Event name cannot be blank.");
+        }
+
+        if (eventToCreate.getLocation().isBlank()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Event location cannot be blank.");
+        }
+
+        if (eventToCreate.getDescription().isBlank()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Event description cannot be blank.");
+        }
+
+        if (eventToCreate.getMaxParticipants() <= 0) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Maximum participants must be greater than zero.");
+        }
+
+        if (eventToCreate.getDate().isBefore(LocalDate.now())) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Event date must be in the future.");
+        }
+
+        if (eventToCreate.getStartTime().isAfter(eventToCreate.getEndTime())) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "End time must be after start time.");
+        }
     }
 
 

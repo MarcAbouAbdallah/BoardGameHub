@@ -5,9 +5,6 @@ import java.time.LocalTime;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.FutureOrPresent;
 
 public class EventCreationDto {
     @NotBlank(message = "Event name cannot be empty.")
@@ -19,10 +16,8 @@ public class EventCreationDto {
     @NotBlank(message = "Event location cannot be empty.")
     private String eventLocation;
 
-    @Positive(message = "Maximum participants must be a positive number.")
     private int maxParticipants;
 
-    @Future(message = "Event date must be in the future.")
     @NotNull(message = "Event date cannot be empty.")
     private LocalDate eventDate;
 
@@ -30,7 +25,6 @@ public class EventCreationDto {
     private LocalTime startTime;
 
     @NotNull(message = "End Time is required.")
-    @FutureOrPresent(message = "End Time must be in the future.")
     private LocalTime endTime;
 
     @NotNull(message = "Board game Id is required.")
