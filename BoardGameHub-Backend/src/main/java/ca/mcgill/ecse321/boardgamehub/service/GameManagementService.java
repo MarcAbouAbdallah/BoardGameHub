@@ -131,7 +131,7 @@ public class GameManagementService {
         GameCopy g = gameCopyRepo.findGameCopyById(id);
         //make sure gamecopy exists
         if (g == null) {
-            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "GameCopy does not exist");
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Game copy does not exist");
         }
         else{
             gameCopyRepo.delete(g);
@@ -142,7 +142,7 @@ public class GameManagementService {
     public GameCopy updateGameCopy(@Valid GameCopyUpdateDto gameCopyToUpdate, int id){
         GameCopy g = gameCopyRepo.findGameCopyById(id);
         if (g == null) {
-            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format("No gamecopy has Id %d", id));
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format("Game copy does not exist"));
         }
 
         if (gameCopyToUpdate.getGame() != null){
@@ -161,7 +161,7 @@ public class GameManagementService {
     public Player getOwnerById(int id){
         GameCopy copy = gameCopyRepo.findGameCopyById(id);
         if (copy == null){
-            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Game Copy does not exist");
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Game copy does not exist");
         }
         else{
             return copy.getOwner();
@@ -171,7 +171,7 @@ public class GameManagementService {
     public Player getHolderById(int id){
         GameCopy copy = gameCopyRepo.findGameCopyById(id);
         if (copy == null){
-            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Game Copy does not exist");
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Game copy does not exist");
         }
         else{
             //game being avaiable implies that whoever owns it currently has it
@@ -196,7 +196,7 @@ public class GameManagementService {
                     }
                 }
                 //No valid borrowrequest was found
-                throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Current Holder of game not found");
+                throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Current holder of game not found");
             }
         }
     }
