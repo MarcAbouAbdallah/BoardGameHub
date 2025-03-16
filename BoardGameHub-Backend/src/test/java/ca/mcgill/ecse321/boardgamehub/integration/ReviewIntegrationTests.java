@@ -19,8 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,13 +90,15 @@ public class ReviewIntegrationTests {
 
         //Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertNotNull(response.getBody());
-		assertTrue(response.getBody().getId() >= 0, "the ID should be a positive int");
-		this.createdReviewId = response.getBody().getId();
-		assertEquals(dto.getRating(), response.getBody().getRating());
-		assertEquals(dto.getComment(), response.getBody().getComment());
-        assertEquals(dto.getReviewerId(), response.getBody().getReviewerId());
-        assertEquals(dto.getGameName(), response.getBody().getGameName());
+
+        ReviewResponseDto responseDto = response.getBody();
+		assertNotNull(responseDto);
+		assertTrue(responseDto.getId() >= 0, "the ID should be a positive int");
+		this.createdReviewId = responseDto.getId();
+		assertEquals(dto.getRating(), responseDto.getRating());
+		assertEquals(dto.getComment(), responseDto.getComment());
+        assertEquals(dto.getReviewerId(), responseDto.getReviewerId());
+        assertEquals(dto.getGameName(), responseDto.getGameName());
 		//assertEquals(date, response.getBody().getReviewDate());
         //No real way to get the date object for assertions since it is created in service... Will ask TA about this.
     }
@@ -113,10 +115,11 @@ public class ReviewIntegrationTests {
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
         assertIterableEquals(
 		    List.of(String.format("There is no person with ID %d.", invalidId)),
-		    response.getBody().getErrors());
+		    responseDto.getErrors());
     }
 
     @Test
@@ -131,14 +134,15 @@ public class ReviewIntegrationTests {
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         
-		assertNotNull(response.getBody());
-		assertTrue(response.getBody().getId() >= 0, "the ID should be a positive int");
-		this.createdReviewId = response.getBody().getId();
-		assertEquals(VALID_RATING, response.getBody().getRating());
-		assertEquals(VALID_COMMENT, response.getBody().getComment());
-        assertEquals(VALID_PLAYER.getId(), response.getBody().getReviewerId());
-        assertEquals(VALID_GAME.getName(), response.getBody().getGameName());
-        //assertEquals(Date.valueOf(LocalDate.now()), response.getBody().getReviewDate());
+		ReviewResponseDto responseDto = response.getBody();
+		assertNotNull(responseDto);
+		assertTrue(responseDto.getId() >= 0, "the ID should be a positive int");
+		this.createdReviewId = responseDto.getId();
+		assertEquals(VALID_RATING, responseDto.getRating());
+		assertEquals(VALID_COMMENT, responseDto.getComment());
+        assertEquals(VALID_PLAYER.getId(), responseDto.getReviewerId());
+        assertEquals(VALID_GAME.getName(), responseDto.getGameName());
+        //assertEquals(Date.valueOf(LocalDate.now()), responseDto.getReviewDate());
 		//No real way to get the date for assertions since it is created in service... Will ask TA about this.
     }
 
@@ -153,10 +157,11 @@ public class ReviewIntegrationTests {
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
         assertIterableEquals(
 		    List.of(String.format("No review has Id %d", invalidId)),
-		    response.getBody().getErrors());
+		    responseDto.getErrors());
     }
 
     @Test
@@ -191,10 +196,11 @@ public class ReviewIntegrationTests {
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
         assertIterableEquals(
 		    List.of("There is no game with name Risk."),
-		    response.getBody().getErrors());
+		    responseDto.getErrors());
     }
 
     @Test
@@ -235,10 +241,11 @@ public class ReviewIntegrationTests {
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
         assertIterableEquals(
 		    List.of(String.format("There is no person with ID %d.",VALID_PLAYER.getId()+1)),
-		    response.getBody().getErrors());
+		    responseDto.getErrors());
     }
 
     @Test
@@ -249,10 +256,11 @@ public class ReviewIntegrationTests {
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
         assertIterableEquals(
 		    List.of("There is no game with name Risk."),
-		    response.getBody().getErrors());
+		    responseDto.getErrors());
     }
 
     @Test
@@ -276,13 +284,14 @@ public class ReviewIntegrationTests {
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         
-		assertNotNull(response.getBody());
-		assertTrue(response.getBody().getId() >= 0, "the ID should be a positive int");
-		this.createdReviewId = response.getBody().getId();
-		assertEquals(4, response.getBody().getRating());
-		assertEquals("NVM, I don't like the game now", response.getBody().getComment());
-        assertEquals(VALID_PLAYER.getId(), response.getBody().getReviewerId());
-        assertEquals(VALID_GAME.getName(), response.getBody().getGameName());
+		ReviewResponseDto responseDto = response.getBody();
+		assertNotNull(responseDto);
+		assertTrue(responseDto.getId() >= 0, "the ID should be a positive int");
+		this.createdReviewId = responseDto.getId();
+		assertEquals(4, responseDto.getRating());
+		assertEquals("NVM, I don't like the game now", responseDto.getComment());
+        assertEquals(VALID_PLAYER.getId(), responseDto.getReviewerId());
+        assertEquals(VALID_GAME.getName(), responseDto.getGameName());
     }
 
     @Test
@@ -298,10 +307,11 @@ public class ReviewIntegrationTests {
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
         assertIterableEquals(
 		    List.of(String.format("No review has Id %d", invalidId)),
-		    response.getBody().getErrors());
+		    responseDto.getErrors());
     }
 
     @Test
@@ -320,9 +330,10 @@ public class ReviewIntegrationTests {
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
         assertIterableEquals(
 		    List.of(String.format("No review has Id %d", createdReviewId)),
-		    response.getBody().getErrors());
+		    responseDto.getErrors());
     }
 }
