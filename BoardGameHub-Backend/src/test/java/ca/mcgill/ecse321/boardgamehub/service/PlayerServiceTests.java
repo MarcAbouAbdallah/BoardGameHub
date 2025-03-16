@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -39,10 +38,11 @@ public class PlayerServiceTests {
     private static final String VALID_EMAIL = "john.doe@mail.mcgill.ca";
     private static final String VALID_PASSWORD = "password123";
 
+   
     @Test
     public void testRegisterValidPlayer() {
         // Arrange
-        PlayerCreationDto John = new PlayerCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, false);
+        PlayerCreationDto John = new PlayerCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
         when(mockPlayerRepository.save(any(Player.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
         // Act
@@ -55,6 +55,21 @@ public class PlayerServiceTests {
         assertEquals(VALID_PASSWORD, createdPlayer.getPassword());
 
         verify(mockPlayerRepository, times(1)).save(any(Player.class));
+    }
+
+    @Test
+    public void testRegisterAlreadyExistingEmailPlayer() {
+        // Arrange
+        PlayerCreationDto John = new PlayerCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+        Player existingPlayer = new Player(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, false);
+        when(mockPlayerRepository.findAll()).thenReturn(java.util.List.of(existingPlayer));
+
+        // Act and Assert
+        BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
+            playerService.registerPlayer(John);
+        });
+        assertEquals(HttpStatus.CONFLICT, e.getStatus());
+        assertEquals("Email already in use", e.getMessage());
     }
 
 
@@ -148,7 +163,7 @@ public class PlayerServiceTests {
         when(mockPlayerRepository.findPlayerById(id)).thenReturn(John);
 
         //Act
-        Player retrievedPlayer = playerService.retrievePlayer(id);
+        Player retrievedPlayer = playerService.getPlayerById(id);
 
         //Assert
         assertNotNull(retrievedPlayer);
@@ -166,7 +181,7 @@ public class PlayerServiceTests {
 
         //Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
-            playerService.retrievePlayer(id);
+            playerService.getPlayerById(id);
         });
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
         assertEquals("Player does not exist", e.getMessage());

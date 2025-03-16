@@ -59,7 +59,7 @@ public class PlayerController {
     @GetMapping("/players/{id}")
     @ResponseStatus(HttpStatus.OK)
     public PlayerResponseDto findPlayerById(@PathVariable int id) {
-        Player player = playerService.retrievePlayer(id);
+        Player player = playerService.getPlayerById(id);
         return new PlayerResponseDto(player);
     }
 

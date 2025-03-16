@@ -4,18 +4,22 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Email;
 
-
 public class PlayerCreationDto {
-    @NotBlank(message = "Name is requried")
+    @NotBlank(message = "Name is required")
     private String name;
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;
     @Size(min = 8, message = "Password length must be at least 8 characters long")
-    @NotBlank(message = "Password is requried")
+    @NotBlank(message = "Password is required")
     private String password;
-    private boolean isGameOwner;
-    
+    private boolean isGameOwner = false; 
+
+    protected PlayerCreationDto() {}
+
+    public PlayerCreationDto(String name, String email, String password) {
+        this(name, email, password, false);
+    }
 
     public PlayerCreationDto(String name, String email, String password, boolean isGameOwner) {
         this.name = name;
