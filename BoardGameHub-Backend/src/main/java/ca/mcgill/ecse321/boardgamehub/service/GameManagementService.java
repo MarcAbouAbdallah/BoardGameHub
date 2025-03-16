@@ -78,6 +78,8 @@ public class GameManagementService {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format("No game has Id %d", id));
         }
 
+        gameToUpdate.validate();
+
         if (gameToUpdate.getName() != null){
             g.setName(gameToUpdate.getName());
         }
@@ -112,6 +114,7 @@ public class GameManagementService {
     }
 
     //GameCopy Stuff
+    //To be moved to PersonalCollection
 
     @Transactional
     public GameCopy createGameCopy(@Valid GameCopyCreationDto gameCopyToCreate){

@@ -22,8 +22,27 @@ public class GameUpdateDto {
     public void setDescription(String description) { this.description = description; }
 
     public Integer getMaxPlayers() { return maxPlayers; }
-    public void setMaxParticipants(Integer maxPlayers) { this.maxPlayers = maxPlayers; }
+    public void setMaxPlayerss(Integer maxPlayers) { this.maxPlayers = maxPlayers; }
 
     public Integer getMinPlayers() { return minPlayers; }
-    public void setMinParticipants(Integer minPlayers) { this.minPlayers = minPlayers; }
+    public void setMinPlayers(Integer minPlayers) { this.minPlayers = minPlayers; }
+
+    public void validate(){
+        
+        if (name != null && name.isBlank()) {
+            throw new IllegalArgumentException("Event name cannot be blank.");
+        }
+
+        if (description != null && description.isBlank()) {
+            throw new IllegalArgumentException("Game Description cannot be blank.");
+        }
+
+        if (maxPlayers != null && maxPlayers <= 0) {
+            throw new IllegalArgumentException("Maximum players must be greater than zero.");
+        }
+
+        if (minPlayers != null && (minPlayers > maxPlayers) ) {
+            throw new IllegalArgumentException("Minimum players cannot exceed maximum players");
+        }
+    }
 }
