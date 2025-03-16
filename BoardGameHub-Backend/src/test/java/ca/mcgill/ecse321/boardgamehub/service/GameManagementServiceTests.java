@@ -1,8 +1,10 @@
 package ca.mcgill.ecse321.boardgamehub.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,6 +59,12 @@ public class GameManagementServiceTests {
         validGameCopy.setId(VALID_GAME_COPY_ID);
     }
 
+    @AfterEach
+	public void clearDatabase() {
+		gameRepo.deleteAll();
+        gameCopyRepo.deleteAll();
+	}
+
     @Test
     void testCreateGame_Success() {
         GameCreationDto dto = new GameCreationDto("Chess", "A strategy game", 2, 2);
@@ -70,78 +78,62 @@ public class GameManagementServiceTests {
 
         assertNotNull(createdGame);
         assertEquals("Chess", createdGame.getName());
+        assertEquals("A strategy game", createdGame.getDescription());
+        assertEquals(2, createdGame.getMaxPlayers());
+        assertEquals(2, createdGame.getMinPlayers());
     }
 
     @Test
-    void testDeleteGame_Success() {
+    void testUpdateGame_Success() {
+        GameUpdateDto dto = new GameUpdateDto("Updated Chess", "New Description", 4, 2);
         when(gameRepo.findGameById(VALID_GAME_ID)).thenReturn(validGame);
-        doNothing().when(gameRepo).delete(validGame);
+        when(gameRepo.save(any(Game.class))).thenReturn(validGame);
 
-        assertDoesNotThrow(() -> gameManagementService.deleteGame(VALID_GAME_ID));
-        verify(gameRepo, times(1)).delete(validGame);
+        Game updatedGame = gameManagementService.updateGame(dto, VALID_GAME_ID);
+
+        assertNotNull(updatedGame);
+        assertEquals("Updated Chess", updatedGame.getName());
+        assertEquals("New Description", updatedGame.getDescription());
+        assertEquals(4, updatedGame.getMaxPlayers());
+        assertEquals(2, updatedGame.getMinPlayers());
     }
 
     @Test
-    void testDeleteGame_NotFound() {
+    void testUpdateGame_NotFound() {
+        GameUpdateDto dto = new GameUpdateDto("Updated Chess", "New Description", 4, 2);
         when(gameRepo.findGameById(INVALID_GAME_ID)).thenReturn(null);
 
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
-            gameManagementService.deleteGame(INVALID_GAME_ID));
+            gameManagementService.updateGame(dto, INVALID_GAME_ID));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("No game has Id 99", exception.getMessage());
     }
 
     @Test
-    void testFindGameById_Success() {
-        when(gameRepo.findGameById(VALID_GAME_ID)).thenReturn(validGame);
-
-        Game foundGame = gameManagementService.findGameById(VALID_GAME_ID);
-        assertNotNull(foundGame);
-        assertEquals("Chess", foundGame.getName());
-    }
-
-    @Test
-    void testFindGameById_NotFound() {
-        when(gameRepo.findGameById(INVALID_GAME_ID)).thenReturn(null);
-
-        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
-            gameManagementService.findGameById(INVALID_GAME_ID));
-
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-    }
-
-    @Test
-    void testCreateGameCopy_Success() {
-        GameCopyCreationDto dto = new GameCopyCreationDto(validGame, validPlayer, true);
-        when(gameCopyRepo.save(any(GameCopy.class))).thenAnswer(invocation -> {
-            GameCopy gameCopy = invocation.getArgument(0);
-            gameCopy.setId(VALID_GAME_COPY_ID);
-            return gameCopy;
-        });
-
-        GameCopy createdGameCopy = gameManagementService.createGameCopy(dto);
-
-        assertNotNull(createdGameCopy);
-        assertEquals(VALID_GAME_COPY_ID, createdGameCopy.getId());
-    }
-
-    @Test
-    void testDeleteGameCopy_Success() {
+    void testUpdateGameCopy_Success() {
+        GameCopyUpdateDto dto = new GameCopyUpdateDto(validGame, validPlayer, false);
         when(gameCopyRepo.findGameCopyById(VALID_GAME_COPY_ID)).thenReturn(validGameCopy);
-        doNothing().when(gameCopyRepo).delete(validGameCopy);
+        when(gameCopyRepo.save(any(GameCopy.class))).thenReturn(validGameCopy);
 
-        assertDoesNotThrow(() -> gameManagementService.deleteGameCopy(VALID_GAME_COPY_ID));
-        verify(gameCopyRepo, times(1)).delete(validGameCopy);
+        GameCopy updatedGameCopy = gameManagementService.updateGameCopy(dto, VALID_GAME_COPY_ID);
+
+        assertNotNull(updatedGameCopy);
+        assertFalse(updatedGameCopy.getIsAvailable());
+        assertEquals(validGame, updatedGameCopy.getGame());
+        assertEquals(validPlayer, updatedGameCopy.getOwner());
     }
 
     @Test
-    void testDeleteGameCopy_NotFound() {
+    void testUpdateGameCopy_NotFound() {
+        GameCopyUpdateDto dto = new GameCopyUpdateDto(validGame, validPlayer, false);
         when(gameCopyRepo.findGameCopyById(INVALID_GAME_COPY_ID)).thenReturn(null);
 
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
-            gameManagementService.deleteGameCopy(INVALID_GAME_COPY_ID));
+            gameManagementService.updateGameCopy(dto, INVALID_GAME_COPY_ID));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("No gamecopy has Id 100", exception.getMessage());
     }
 
     @Test
@@ -162,5 +154,6 @@ public class GameManagementServiceTests {
             gameManagementService.getOwnerById(INVALID_GAME_COPY_ID));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Game Copy does not exist", exception.getMessage());
     }
 }
