@@ -79,7 +79,11 @@ public class GameManagementServiceTests {
 
         assertNotNull(createdGame);
         assertEquals("Chess", createdGame.getName());
+        assertEquals("A strategy game", createdGame.getDescription());
+        assertEquals(2, createdGame.getMaxPlayers());
+        assertEquals(2, createdGame.getMinPlayers());
     }
+
 
     @Test
     void testDeleteGame_Success() {
@@ -184,6 +188,33 @@ public class GameManagementServiceTests {
     }
 
     @Test
+    void testUpdateGameCopy_Success() {
+        GameCopyUpdateDto dto = new GameCopyUpdateDto(null,null,false);
+
+        when(gameCopyRepo.findGameCopyById(VALID_GAME_COPY_ID)).thenReturn(validGameCopy);
+        when(gameCopyRepo.save(any(GameCopy.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        GameCopy updatedGameCopy = gameManagementService.updateGameCopy(dto, VALID_GAME_COPY_ID);
+
+        assertNotNull(updatedGameCopy);
+        assertFalse(updatedGameCopy.getIsAvailable());
+    }
+
+    @Test
+    void testUpdateGameCopy_NotFound() {
+        GameCopyUpdateDto dto = new GameCopyUpdateDto(null, null, false);
+
+        when(gameCopyRepo.findGameCopyById(INVALID_GAME_COPY_ID)).thenReturn(null);
+
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
+            gameManagementService.updateGameCopy(dto, INVALID_GAME_COPY_ID));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Game copy does not exist", exception.getMessage());
+    }
+
+
+    @Test
     void testGetOwnerById_Success() {
         when(gameCopyRepo.findGameCopyById(VALID_GAME_COPY_ID)).thenReturn(validGameCopy);
 
@@ -233,7 +264,7 @@ public class GameManagementServiceTests {
             gameManagementService.getHolderById(INVALID_GAME_COPY_ID));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-     assertEquals("Game copy does not exist", exception.getMessage());
+        assertEquals("Game copy does not exist", exception.getMessage());
     }
 
     @Test
@@ -279,7 +310,6 @@ public class GameManagementServiceTests {
     void testGetHolderById_GameBorrowed_NoValidBorrowRequest() {
         validGameCopy.setIsAvailable(false); // Game is borrowed
 
-        // Create an expired borrow request
         LocalDate today = LocalDate.now();
         BorrowRequest expiredRequest = new BorrowRequest(
             validBorrower, 
