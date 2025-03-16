@@ -9,6 +9,7 @@ import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 
@@ -28,6 +29,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Service
+@Validated
 public class GameManagementService {
     @Autowired
     private GameRepository gameRepo;
@@ -38,13 +40,18 @@ public class GameManagementService {
 
     @Transactional
     public Game createGame(@Valid GameCreationDto gameToCreate){
-        Game g = new Game(
-            gameToCreate.getName(),
-            gameToCreate.getMaxPlayers(),
-            gameToCreate.getMinPlayers(),
-            gameToCreate.getDescription()
-        );
-        return gameRepo.save(g);
+        if (gameToCreate.getMaxPlayers() >= gameToCreate.getMinPlayers()){
+            Game g = new Game(
+                gameToCreate.getName(),
+                gameToCreate.getMaxPlayers(),
+                gameToCreate.getMinPlayers(),
+                gameToCreate.getDescription()
+            );
+            return gameRepo.save(g);
+        }
+        else{
+            throw new BoardGameHubException(HttpStatus.FORBIDDEN, "Min players cannot exceed max players.");
+        }
     }
 
     @Transactional
@@ -56,10 +63,8 @@ public class GameManagementService {
         }
         else{
             //Delete all copies of the game
-            for(GameCopy copy : gameCopyRepo.findAll()){
-                if (copy.getGame().getId() == id){
-                    gameCopyRepo.delete(copy);
-                }
+            for(GameCopy copy : gameCopyRepo.findByGame(g)){
+                gameCopyRepo.delete(copy);
             }
             //Once all copies are removed, remove the game
             gameRepo.delete(g);
