@@ -216,5 +216,28 @@ public class EventService {
         return registrationRepo.save(registration);
     }
 
+    public List<Registration> findRegistrationsByPlayer(int registrantId) {
+        Player registrant = playerRepo.findPlayerById(registrantId);
+        if (registrant == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no registration with ID %s.",
+                                    registrantId));
+        }
+        return registrationRepo.findRegistrationsByPlayer(registrant);
+    }
+
+    public List<Registration> findRegistrationsByEvent(int registeredEventId) {
+        Event registeredEvent = eventRepo.findEventById(registeredEventId);
+        if (registeredEvent == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no registrered event with ID %s.",
+                                    registeredEventId));
+        }
+        return registrationRepo.findRegistrationsByEvent(registeredEvent);
+    }
+
+    public List<Registration> findAllRegistrations() {
+        return registrationRepo.findAll();
+    }
 
 }

@@ -41,25 +41,27 @@ public class RegistrationController {
     public void registerToEvent(@PathVariable int eventId, @PathVariable int playerId) {
         registrationService.registerToEvent(eventId, playerId);
     }
-
+    
     @GetMapping("registrations")
-    public List<RegistrationDto> getAllRegistrations() {
-        return registrationService.getAllRegistrations()
+    public List<RegistrationDto> findAllRegistrations() {
+        return registrationService.findAllRegistrations()
                            .stream()
                            .map(RegistrationDto::new)
                            .collect(Collectors.toList());
+    
+    }
 
     @GetMapping("registrations/event/{eventId}")
-    public List<RegistrationDto> getRegistrationsByEvent(@PathVariable int eventId) {
-        return registrationService.getRegistrationsByEvent(eventId)
+    public List<RegistrationDto> findRegistrationsByEvent(@PathVariable int eventId) {
+        return registrationService.findRegistrationsByEvent(eventId)
                            .stream()
                            .map(RegistrationDto::new)
                            .collect(Collectors.toList());
     }
 
     @GetMapping("registrations/player/{playerId}")
-    public List<RegistrationDto> getRegistrationsByPlayer(@PathVariable int playerId) {
-        return registrationService.getRegistrationsByPlayer(playerId)
+    public List<RegistrationDto> findRegistrationsByPlayer(@PathVariable int playerId) {
+        return registrationService.findRegistrationsByPlayer(playerId)
                            .stream()
                            .map(RegistrationDto::new)
                            .collect(Collectors.toList());
