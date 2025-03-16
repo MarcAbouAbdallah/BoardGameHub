@@ -216,6 +216,7 @@ public class EventService {
         return registrationRepo.save(registration);
     }
 
+    @Transactional
     public List<Registration> findRegistrationsByPlayer(int registrantId) {
         Player registrant = playerRepo.findPlayerById(registrantId);
         if (registrant == null) {
@@ -226,6 +227,7 @@ public class EventService {
         return registrationRepo.findRegistrationsByPlayer(registrant);
     }
 
+    @Transactional
     public List<Registration> findRegistrationsByEvent(int registeredEventId) {
         Event registeredEvent = eventRepo.findEventById(registeredEventId);
         if (registeredEvent == null) {
@@ -236,6 +238,29 @@ public class EventService {
         return registrationRepo.findRegistrationsByEvent(registeredEvent);
     }
 
+    public Registration findRegistration(int registeredEventId, int registrantId) {
+        Event registeredEvent = findEventById(registeredEventId);
+        Player registrant = playerRepo.findPlayerById(registrantId);
+        if (registrant == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no registration with ID %s.",
+                                    registrantId));
+        }
+        if (registeredEvent == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no registrered event with ID %s.",
+                                    registeredEventId));
+        }
+        Registration.Key key = new Registration.Key(registrant, registeredEvent);
+        Registration registration = registrationRepo.findRegistrationByKey(key);
+        if (registration == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            "No registration found for the given player and event.");
+        }
+        return registration;
+    }
+
+    @Transactional
     public List<Registration> findAllRegistrations() {
         return registrationRepo.findAll();
     }

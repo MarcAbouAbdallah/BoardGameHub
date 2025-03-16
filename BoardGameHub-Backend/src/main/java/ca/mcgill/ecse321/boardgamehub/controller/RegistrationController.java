@@ -67,6 +67,12 @@ public class RegistrationController {
                            .collect(Collectors.toList());
     }
 
+    @GetMapping("registrations/{eventId}/{playerId}")
+    public RegistrationDto findRegistration(@PathVariable int eventId, @PathVariable int playerId) {
+        Registration registration = registrationService.findRegistration(eventId, playerId);
+        return new RegistrationDto(registration);
+    }
+
     @DeleteMapping("registrations/{eventId}/{playerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unregisterFromEvent(@PathVariable int eventId, @PathVariable int playerId) {
