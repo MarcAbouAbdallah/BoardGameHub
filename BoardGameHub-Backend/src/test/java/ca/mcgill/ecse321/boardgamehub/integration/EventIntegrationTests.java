@@ -173,7 +173,7 @@ public class EventIntegrationTests {
 
     @Test
     @Order(3)
-    public void testGetEventById_Failure_NotFound() {
+    public void testGetEventById_NotFound() {
         int wrongId = createdEventId + 1;
         ResponseEntity<String> response = client.getForEntity("/events/" + wrongId, String.class);
 
@@ -267,4 +267,74 @@ public class EventIntegrationTests {
                 "Error message for unauthorized event update.");
     }
 
+    @Test
+    @Order(7)
+    public void testUpdateEvent_NotFound() {
+        String newLocation = "New Location";
+
+        EventUpdateDto dto = new EventUpdateDto(null, null, newLocation, null, null, null, null, null);
+
+        int wrongId = createdEventId + 1;
+        String url = "/events/" + wrongId + "?organizerId=" + VALID_ORGANIZER.getId();
+
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.PUT, new HttpEntity<>(dto), String.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+        String error = response.getBody();
+        assertNotNull(error);
+        assertTrue(error.contains("No event has Id " + wrongId),
+                "Error message for invalid event id.");
+    }
+
+    // First write invalid delete tests
+    @Test
+    @Order(8)
+    public void testDeleteEvent_NotFound() {
+        int wrongId = createdEventId + 1;
+        String url = "/events/" + wrongId + "?organizerId=" + VALID_ORGANIZER.getId();
+
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.DELETE, null, String.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+        String error = response.getBody();
+        assertNotNull(error);
+        assertTrue(error.contains("No event has Id " + wrongId),
+                "Error message for invalid event id.");
+    }
+
+    @Test
+    @Order(9)
+    public void testDeleteEvent_Unauthorized() {
+        // Only the organizer can delete the event
+        int unauthorizedId = VALID_ORGANIZER.getId() + 1;
+        Player unauthorizedPlayer = new Player("Unauthorized", "", "123", true);
+        playerRepo.save(unauthorizedPlayer);
+
+        String url = "/events/" + createdEventId + "?organizerId=" + unauthorizedId;
+
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.DELETE, null, String.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+
+        String error = response.getBody();
+        assertNotNull(error);
+        assertTrue(error.contains("You are not the organizer of this event."),
+                "Error message for unauthorized event deletion.");
+    }
+
+    @Test
+    @Order(10)
+    public void testDeleteEvent() {
+        String url = "/events/" + createdEventId + "?organizerId=" + VALID_ORGANIZER.getId();
+
+        ResponseEntity<Void> response = client.exchange(url, HttpMethod.DELETE, null, Void.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
 }

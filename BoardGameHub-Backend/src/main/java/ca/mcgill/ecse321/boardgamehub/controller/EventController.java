@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,13 +52,9 @@ public class EventController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<EventResponseDto> getAllEvents() {
-        List<Event> events = eventService.getallEvents();
-        List<EventResponseDto> eventDTOs = new ArrayList<>();
-        for (Event event : events) {
-            int participantsCount = eventService.getParticipantsCount(event.getId());
-            eventDTOs.add(new EventResponseDto(event, participantsCount));
-        }
-        return eventDTOs;
+        return eventService.getallEvents().stream()
+                .map(event -> new EventResponseDto(event, eventService.getParticipantsCount(event.getId())))
+                .toList();
     }
 
     @PutMapping("/{eventId}")
