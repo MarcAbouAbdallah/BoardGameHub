@@ -1,39 +1,36 @@
 package ca.mcgill.ecse321.boardgamehub.service;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-
-import org.mockito.quality.Strictness;
-import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 
-import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
-import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
-import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
-import ca.mcgill.ecse321.boardgamehub.model.Review;
-import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
+import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.model.Review;
+import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
 
 
 @SpringBootTest
@@ -246,7 +243,7 @@ public class ReviewServiceTests {
     public void testUpdateReview() {
         //Arrange
         Date date = Date.valueOf(LocalDate.now());
-        ReviewUpdateDto dto = new ReviewUpdateDto(0, 4, "NVM, I don't like the game now");
+        ReviewUpdateDto dto = new ReviewUpdateDto(4, "NVM, I don't like the game now");
 
         when(mockReviewRepo.findReviewById(0))
         .thenReturn(new Review(VALID_RATING, VALID_COMMENT, date, VALID_PLAYER, VALID_GAME));
@@ -255,7 +252,7 @@ public class ReviewServiceTests {
         .thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
         //Act
-        Review editedReview = reviewService.editReview(dto);
+        Review editedReview = reviewService.editReview(0, dto);
 
         //Assert
         assertNotNull(editedReview);
@@ -270,11 +267,11 @@ public class ReviewServiceTests {
     public void testUpdateInvalidReview() {
         //Arrange
         //By default repo returns null on invalid search
-        ReviewUpdateDto dto = new ReviewUpdateDto(156678, 4, "NVM, I don't like the game now");
+        ReviewUpdateDto dto = new ReviewUpdateDto(4, "NVM, I don't like the game now");
 
         //Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class,
-                                               () -> reviewService.editReview(dto));
+                                               () -> reviewService.editReview(156678, dto));
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
         assertEquals("No review has Id 156678", e.getMessage());
     }
