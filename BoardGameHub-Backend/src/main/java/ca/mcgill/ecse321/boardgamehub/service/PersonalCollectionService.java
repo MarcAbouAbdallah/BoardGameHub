@@ -52,9 +52,32 @@ public class PersonalCollectionService {
     }
 
     @Transactional
-    public void removeGameFromPersonalCollection(int playerId, int gameId) {
+    public GameCopy associateExistingGameCopyToPersonalCollection(int playerId, int gameCopyId) {
+        // Find the player
         Player player = findPlayerOrThrow(playerId);
-        GameCopy toRemove = findGameCopyInCollection(player, findGameOrThrow(gameId));
+        
+        // Retrieve the existing game copy
+        GameCopy copy = findGameCopyOrThrow(gameCopyId);
+        
+        // Ensure the game copy is not already associated with a player
+        if (copy.getOwner() != null) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Game copy is already associated with a player.");
+        }
+        
+        // Set the owner of the game copy and save the change
+        copy.setOwner(player);
+        return gameCopyRepository.save(copy);
+    }
+
+    @Transactional
+    public void removeGameFromPersonalCollection(int playerId, int gameCopyId) {
+        Player player = findPlayerOrThrow(playerId);
+        GameCopy toRemove = findGameCopyOrThrow(gameCopyId);
+        if (toRemove.getOwner().getId() != player.getId()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Game copy does not belong to the specified player.");
+        }
         gameCopyRepository.delete(toRemove);
     }
 
@@ -68,11 +91,13 @@ public class PersonalCollectionService {
     }
 
     @Transactional
-    public GameCopy lendGameCopy(int playerId, int gameId) {
+    public GameCopy lendGameCopy(int playerId, int gameCopyId) {
         Player player = findPlayerOrThrow(playerId);
-        Game game = findGameOrThrow(gameId);
-
-        GameCopy target = findGameCopyInCollection(player, game);
+        GameCopy target = findGameCopyOrThrow(gameCopyId);
+        if (target.getOwner().getId() != player.getId()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Game copy does not belong to the specified player.");
+        }
         if (!target.getIsAvailable()) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
                     "Game copy is already lent out.");
@@ -82,11 +107,13 @@ public class PersonalCollectionService {
     }
 
     @Transactional
-    public GameCopy returnGameCopy(int playerId, int gameId) {
+    public GameCopy returnGameCopy(int playerId, int gameCopyId) {
         Player player = findPlayerOrThrow(playerId);
-        Game game = findGameOrThrow(gameId);
-
-        GameCopy target = findGameCopyInCollection(player, game);
+        GameCopy target = findGameCopyOrThrow(gameCopyId);
+        if (target.getOwner().getId() != player.getId()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Game copy does not belong to the specified player.");
+        }
         if (target.getIsAvailable()) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
                     "Game copy is already available.");
@@ -95,17 +122,11 @@ public class PersonalCollectionService {
         return gameCopyRepository.save(target);
     }
 
-    // Helper to locate a game copy in a player's collection
-    private GameCopy findGameCopyInCollection(Player player, Game game) {
-        List<GameCopy> copies = gameCopyRepository.findByOwner(player);
-        for (GameCopy copy : copies) {
-            if (copy.getGame().getId() == game.getId()) {
-                return copy;
-            }
-        }
-        throw new BoardGameHubException(
-            HttpStatus.NOT_FOUND,
-            "Game not found in player's collection.");
+    private GameCopy findGameCopyOrThrow(int gameCopyId) {
+        return gameCopyRepository.findById(gameCopyId)
+            .orElseThrow(() -> new BoardGameHubException(
+                HttpStatus.NOT_FOUND,
+                String.format("Game copy with ID %d not found.", gameCopyId)));
     }
 
     private Player findPlayerOrThrow(int playerId) {
