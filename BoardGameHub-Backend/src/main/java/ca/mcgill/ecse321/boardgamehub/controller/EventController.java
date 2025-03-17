@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.boardgamehub.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
