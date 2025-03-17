@@ -7,27 +7,20 @@ import jakarta.validation.constraints.NotNull;
 public class RegistrationDto {
     @NotNull(message = "Registrant ID cannot be empty")
     private int registrantId;
-    //@NotBlank(message = "Registrant name cannot be empty")
-    //private String registrant;
+    @NotBlank(message = "Registrant name cannot be empty")
+    private String registrant;
     @NotNull(message = "RegisteredEvent ID cannot be empty")
     private int registeredEventId;
-    //@NotBlank(message = "RegisteredEvent name cannot be empty")
-    //private String registeredEvent;
+    @NotBlank(message = "RegisteredEvent name cannot be empty")
+    private String registeredEvent;
 
     public RegistrationDto() {}
 
     public RegistrationDto(Registration registration) {
         this.registrantId = registration.getKey().getRegistrant().getId();
-        //this.registrant = registration.getKey().getRegistrant().getName();
+        this.registrant = registration.getKey().getRegistrant().getName();
         this.registeredEventId = registration.getKey().getRegisteredEvent().getId();
-        //this.registeredEvent = registration.getKey().getRegisteredEvent().getName();
-    }
-
-    public RegistrationDto(int registrantId, String registrant, int registeredEventId, String registeredEvent) {
-        this.registrantId = registrantId;
-        //this.registrant = registrant;
-        this.registeredEventId = registeredEventId;
-        //this.registeredEvent = registeredEvent;
+        this.registeredEvent = registration.getKey().getRegisteredEvent().getName();
     }
     
     public int getRegistrantId() {
@@ -37,8 +30,7 @@ public class RegistrationDto {
     public int getRegisteredEventId() {
         return registeredEventId;
     }
-
-    /* 
+    
     public String getRegistrant() {
         return registrant;
     }
@@ -46,7 +38,7 @@ public class RegistrationDto {
     public String getRegisteredEvent() {
         return registeredEvent;
     }
-    */
+    
 
     public void setRegistrantId(int registrantId) {
         this.registrantId = registrantId;
@@ -56,7 +48,6 @@ public class RegistrationDto {
         this.registeredEventId = registeredEventId;
     }
 
-    /* 
     public void setRegistrant(String registrant) {
         this.registrant = registrant;
     }
@@ -64,5 +55,4 @@ public class RegistrationDto {
     public void setRegisteredEvent(String registeredEvent) {
         this.registeredEvent = registeredEvent;
     }
-    */
 }
