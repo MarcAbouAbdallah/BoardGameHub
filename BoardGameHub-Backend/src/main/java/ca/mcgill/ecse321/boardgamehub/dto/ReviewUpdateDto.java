@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public class ReviewUpdateDto {
-    private int id;
     @PositiveOrZero(message = "Rating must be between 0 and 10")
     @Max(value = 10, message = "Rating must be between 0 and 10")
     private int rating;
@@ -15,8 +14,7 @@ public class ReviewUpdateDto {
     protected ReviewUpdateDto() {   
     }
 
-    public ReviewUpdateDto(int id, int rating, String comment) {
-        this.id = id;
+    public ReviewUpdateDto(int rating, String comment) {
         this.rating = rating;
         this.comment = comment;
     }
@@ -25,20 +23,12 @@ public class ReviewUpdateDto {
         this.comment = comment;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public void setRating(int rating) {
         this.rating = rating;
     }
 
     public String getComment() {
         return comment;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public int getRating() {

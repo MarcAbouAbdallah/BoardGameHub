@@ -60,15 +60,15 @@ public class ReviewService {
         return reviewRepo.save(review);
     }
     
-    public Review editReview(@Valid ReviewUpdateDto editedReview) {
+    public Review editReview(int id, @Valid ReviewUpdateDto editedReview) {
 
         Date today = Date.valueOf(LocalDate.now());
 
-        Review review = reviewRepo.findReviewById(editedReview.getId());
+        Review review = reviewRepo.findReviewById(id);
 
         if (review == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
-                                            String.format("No review has Id %d", editedReview.getId()));
+                                            String.format("No review has Id %d", id));
         }
 
         review.setRating(editedReview.getRating());

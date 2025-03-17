@@ -267,7 +267,7 @@ public class ReviewIntegrationTests {
     @Order(9)
     public void testUpdateValidReview() {
         //Arrange
-        ReviewUpdateDto dto = new ReviewUpdateDto(createdReviewId, 4, "NVM, I don't like the game now");
+        ReviewUpdateDto dto = new ReviewUpdateDto(4, "NVM, I don't like the game now");
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");  // This is just an example; adjust as needed.
         
@@ -275,7 +275,7 @@ public class ReviewIntegrationTests {
         HttpEntity<ReviewUpdateDto> httpEntity = new HttpEntity<>(dto, headers);
         
         ResponseEntity<ReviewResponseDto> response = client.exchange(
-            "http://localhost:" + port + "/reviews",
+            "http://localhost:" + port + "/reviews/"+createdReviewId,
             HttpMethod.PUT,
             httpEntity,
             ReviewResponseDto.class
