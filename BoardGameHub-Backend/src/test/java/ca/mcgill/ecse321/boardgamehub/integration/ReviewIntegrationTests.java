@@ -172,12 +172,12 @@ public class ReviewIntegrationTests {
         //Act
         String queryString = String.format("/reviews/game/%s", VALID_GAME.getName());
         ResponseEntity<ReviewResponseDto[]> response = client.getForEntity(queryString, ReviewResponseDto[].class);
-        ReviewResponseDto responseItem = response.getBody()[0];
+        ReviewResponseDto[] responseArray = response.getBody();
+        assertNotNull(responseArray);
+        assertNotNull(responseArray[0]);
+        ReviewResponseDto responseItem = responseArray[0];
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        
-		assertNotNull(response.getBody());
-
 		assertTrue(responseItem.getId() >= 0, "the ID should be a positive int");
 		this.createdReviewId = responseItem.getId();
 		assertEquals(VALID_RATING, responseItem.getRating());
@@ -216,12 +216,14 @@ public class ReviewIntegrationTests {
             null,
             ReviewResponseDto[].class
         );
-        ReviewResponseDto responseItem = response.getBody()[0];
+        //ReviewResponseDto responseItem = response.getBody()[0];
+        ReviewResponseDto[] responseArray = response.getBody();
+        assertNotNull(responseArray);
+        assertNotNull(responseArray[0]);
+        ReviewResponseDto responseItem = responseArray[0];
 
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        
-		assertNotNull(response.getBody());
 
 		assertTrue(responseItem.getId() >= 0, "the ID should be a positive int");
 		this.createdReviewId = responseItem.getId();
