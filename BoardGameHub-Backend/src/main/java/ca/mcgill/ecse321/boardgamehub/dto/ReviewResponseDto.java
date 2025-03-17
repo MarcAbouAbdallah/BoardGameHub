@@ -25,6 +25,17 @@ public class ReviewResponseDto {
         this.reviewDate = review.getDate();
     }
 
+    public static ReviewResponseDto fromReview(Review review) {
+        ReviewResponseDto response = new ReviewResponseDto();
+        response.id = review.getId();
+        response.rating = review.getRating();
+        response.comment = review.getComment();
+        response.reviewerId = review.getReviewer().getId();
+        response.gameName = review.getGame().getName();
+        response.reviewDate = review.getDate();
+        return response;
+    }
+
     public int getId() {
         return id;
     }
