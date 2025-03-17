@@ -1,18 +1,11 @@
 package ca.mcgill.ecse321.boardgamehub.dto;
 
 import java.sql.Date;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Positive;
 
 public class BorrowRequestUpdateDto {
 
     private String comment;
-
-    @FutureOrPresent(message = "Start date must be today or in the future.")
     private Date startDate;
-
-    @Future(message = "End date must be in the future.")
     private Date endDate;
 
     protected BorrowRequestUpdateDto() {}
@@ -47,13 +40,20 @@ public class BorrowRequestUpdateDto {
         this.endDate = endDate;
     }
 
-    public void validate() {
+    /**
+     * Validate the update request using the existing BorrowRequest state. Ensuring that only valid modifications are allowed.
+     */
+    public void validate(BorrowRequest existingRequest) {
         if (comment != null && comment.isBlank()) {
             throw new IllegalArgumentException("Comment cannot be blank.");
         }
 
         if (startDate != null && endDate != null && !startDate.before(endDate)) {
             throw new IllegalArgumentException("Start date must be before end date.");
+        }
+
+        if (endDate != null && endDate.before(existingRequest.getStartDate())) {
+            throw new IllegalArgumentException("End date must be after the existing start date.");
         }
     }
 }
