@@ -58,7 +58,7 @@ public class PlayerIntegrationTests {
     @Order(0)
     public void testCreateValidPlayer() {
         //Arrange
-        PlayerCreationDto request = new PlayerCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, false);
+        PlayerCreationDto request = new PlayerCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
         //Act
         ResponseEntity<PlayerResponseDto> response = client.postForEntity("/players", request, PlayerResponseDto.class);
@@ -77,6 +77,23 @@ public class PlayerIntegrationTests {
 
     @Test
     @Order(1)
+    public void testCreateAlreadyExistingEmailPlayer() {
+        //Arrange
+        PlayerCreationDto request = new PlayerCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+
+        //Act
+        ResponseEntity<PlayerResponseDto> response = client.postForEntity("/players", request, PlayerResponseDto.class);
+
+        //Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        PlayerResponseDto createdPlayer = response.getBody();
+        assertNotNull(createdPlayer);
+        assertEquals(0, createdPlayer.getId());
+    }
+
+    @Test
+    @Order(2)
     public void testLoginValidPlayer() {
         //
         PlayerLoginDto request = new PlayerLoginDto(VALID_EMAIL, VALID_PASSWORD);
@@ -96,7 +113,7 @@ public class PlayerIntegrationTests {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     public void testLoginInvalidEmail() {
         //Arrange
         PlayerLoginDto request = new PlayerLoginDto(INVALID_EMAIL, VALID_PASSWORD);
@@ -113,7 +130,7 @@ public class PlayerIntegrationTests {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void testLoginInvalidPassword() {
         //Arrange
         PlayerLoginDto request = new PlayerLoginDto(VALID_EMAIL, INVALID_PASSWORD);
@@ -130,14 +147,8 @@ public class PlayerIntegrationTests {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void testRetrieveValidPlayer() {
-        //Arrange
-        PlayerCreationDto request = new PlayerCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, false);
-        ResponseEntity<PlayerResponseDto> response = client.postForEntity("/players", request, PlayerResponseDto.class);
-        PlayerResponseDto createdPlayer = response.getBody();
-        VALID_ID = createdPlayer.getId();
-
         //Act
         ResponseEntity<PlayerResponseDto> retrieveResponse = client.getForEntity("/players/" + VALID_ID, PlayerResponseDto.class);
 
@@ -152,7 +163,7 @@ public class PlayerIntegrationTests {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testRetrieveInvalidPlayer() {
         //Arrange
         int invalidId = INVALID_ID;
@@ -169,7 +180,7 @@ public class PlayerIntegrationTests {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void testUpdateValidPlayer() {
         //Arrange
         String newName = "Jane Doe";
@@ -193,7 +204,7 @@ public class PlayerIntegrationTests {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void testUpdateInvalidPlayer() {
         //Arrange
         int invalidId = INVALID_ID;
@@ -211,7 +222,7 @@ public class PlayerIntegrationTests {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     public void testDeleteValidPlayer() {
         //Act
         ResponseEntity<PlayerResponseDto> response = client.exchange("/players/" + VALID_ID, HttpMethod.DELETE, null, PlayerResponseDto.class);
@@ -223,7 +234,7 @@ public class PlayerIntegrationTests {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     public void testDeleteInvalidPlayer() {
         //Arrange
         int invalidId = INVALID_ID;

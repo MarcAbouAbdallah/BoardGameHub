@@ -14,6 +14,8 @@ import ca.mcgill.ecse321.boardgamehub.dto.PlayerCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerLoginDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 
+import java.util.List;
+
 
 @Service
 @Validated
@@ -23,13 +25,22 @@ public class PlayerService {
     
     @Transactional
     public Player registerPlayer(@Valid PlayerCreationDto playerCreationDto) {
-        Player p = new Player(
+
+        List<Player> players = (List<Player>) playerRepository.findAll();
+
+        for (Player p : players) {
+            if (p.getEmail().equals(playerCreationDto.getEmail())) {
+                throw new BoardGameHubException(HttpStatus.CONFLICT, "Email already in use");
+            }
+        }
+
+        Player PlayerToRegister = new Player(
             playerCreationDto.getName(),
             playerCreationDto.getEmail(),
             playerCreationDto.getPassword(),
-            playerCreationDto.getIsGameOwner()
+            false
         );
-        return playerRepository.save(p);
+        return playerRepository.save(PlayerToRegister);
     }
 
     @Transactional
@@ -56,7 +67,7 @@ public class PlayerService {
     }
 
     @Transactional
-    public Player retrievePlayer(int id) {
+    public Player getPlayerById(int id) {
         Player p = playerRepository.findPlayerById(id);
         if (p == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Player does not exist");
@@ -71,6 +82,15 @@ public class PlayerService {
         if (p == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Player does not exist");
         }
+
+        List<Player> players = (List<Player>) playerRepository.findAll();
+        
+        for (Player existingPlayer : players) {
+            if (existingPlayer.getEmail().equals(playerCreationDto.getEmail())) {
+                throw new BoardGameHubException(HttpStatus.CONFLICT, "Email already in use");
+            }
+        }
+
         p.setName(playerCreationDto.getName());
         p.setEmail(playerCreationDto.getEmail());
         p.setPassword(playerCreationDto.getPassword());
