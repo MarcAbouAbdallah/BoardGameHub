@@ -225,7 +225,12 @@ public class EventService {
                                     "There is no registration with ID %s.",
                                     registrantId));
         }
-        return registrationRepo.findRegistrationsByPlayer(registrant);
+        List<Registration> registrations = registrationRepo.findByKey_Registrant(registrant);
+        if (registrations.isEmpty()) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+            "No registration found for player ID " + registrantId + ".");
+        }
+        return registrationRepo.findByKey_Registrant(registrant);
     }
 
     @Transactional
@@ -236,7 +241,12 @@ public class EventService {
                                     "There is no registrered event with ID %s.",
                                     registeredEventId));
         }
-        return registrationRepo.findRegistrationsByEvent(registeredEvent);
+        List<Registration> registrations = registrationRepo.findByKey_RegisteredEvent(registeredEvent);
+        if (registrations.isEmpty()) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+            "No registration found for player ID " + registeredEventId + ".");
+        }
+        return registrationRepo.findByKey_RegisteredEvent(registeredEvent);
     }
 
     @Transactional
