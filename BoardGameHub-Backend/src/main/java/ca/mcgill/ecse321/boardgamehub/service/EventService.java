@@ -225,7 +225,7 @@ public class EventService {
                                     "There is no registration with ID %s.",
                                     registrantId));
         }
-        return registrationRepo.findRegistrationsByPlayer(registrant);
+        return registrationRepo.findByKey_Registrant(registrant);
     }
 
     @Transactional
@@ -236,7 +236,7 @@ public class EventService {
                                     "There is no registrered event with ID %s.",
                                     registeredEventId));
         }
-        return registrationRepo.findRegistrationsByEvent(registeredEvent);
+        return registrationRepo.findByKey_RegisteredEvent(registeredEvent);
     }
 
     @Transactional

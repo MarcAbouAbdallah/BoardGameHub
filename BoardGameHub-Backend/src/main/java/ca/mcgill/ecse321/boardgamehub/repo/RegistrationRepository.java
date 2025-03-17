@@ -10,8 +10,8 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface RegistrationRepository extends CrudRepository<Registration, Registration.Key> {
     public Registration findRegistrationByKey(Registration.Key key);
-    public List<Registration> findRegistrationsByPlayer(Player registrant);
-    public List<Registration> findRegistrationsByEvent(Event registeredEvent);
+    public List<Registration> findByKey_Registrant(Player registrant);
+    public List<Registration> findByKey_RegisteredEvent(Event registeredEvent);
     public List<Registration> findAll();
     public int countByKey_RegisteredEvent(Event registeredEvent);
 }
