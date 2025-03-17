@@ -22,6 +22,7 @@ import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
 import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
+import ca.mcgill.ecse321.boardgamehub.dto.RegistrationDto;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -208,7 +209,7 @@ public class EventService {
     }
 
     @Transactional
-    public Registration findRegistration(int registeredEventId, int registrantId) {
+    public RegistrationDto findRegistration(int registeredEventId, int registrantId) {
         Event registeredEvent = findEventById(registeredEventId);
         Player registrant = playerRepo.findPlayerById(registrantId);
         if (registrant == null) {
@@ -227,7 +228,7 @@ public class EventService {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
                                             "No registration found for the given player and event.");
         }
-        return registration;
+        return new RegistrationDto(registration);
     }
 
     @Transactional
