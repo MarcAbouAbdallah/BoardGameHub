@@ -60,7 +60,7 @@ public class EventServiceTests {
     private static final String VALID_EVENT_DESCRIPTION = "A fun board game event!";
     private static final String VALID_EVENT_LOCATION = "Community Center";
     
-    private static final LocalDate VALID_DATE = LocalDate.of(2025, 5, 1);
+    private static final LocalDate VALID_DATE = LocalDate.of(2026, 5, 1);
     private static final LocalTime VALID_START_TIME = LocalTime.of(18, 0);
     private static final LocalTime VALID_END_TIME = LocalTime.of(22, 0);
     
@@ -130,17 +130,13 @@ public class EventServiceTests {
     @Test
     public void testFindEventByValidId(){
         Event event = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
+        event.setId(VALID_EVENT_ID);
         when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(event);
 
-        Event foundEvent = null;
-        try {
-            foundEvent = eventService.findEventById(VALID_EVENT_ID);
-        } catch (BoardGameHubException e) {
-            fail();
-        }
+        Event foundEvent = eventService.findEventById(VALID_EVENT_ID);
 
         assertNotNull(foundEvent);
-        //assertEquals(VALID_EVENT_ID, foundEvent.getId());
+        assertEquals(VALID_EVENT_ID, foundEvent.getId());
         assertEquals(VALID_EVENT_NAME, foundEvent.getName());
         assertEquals(VALID_EVENT_DESCRIPTION, foundEvent.getDescription());
         assertEquals(VALID_EVENT_LOCATION, foundEvent.getLocation());
@@ -393,5 +389,16 @@ public class EventServiceTests {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("No game found with ID " + VALID_GAME_ID, exception.getMessage());
     }
+
+    @Test
+    public void testGetAllEvents_EmptyList() {
+        when(mockEventRepo.findAll()).thenReturn(new ArrayList<>());
+
+        List<Event> retrievedEvents = eventService.getallEvents();
+
+        assertNotNull(retrievedEvents);
+        assertEquals(0, retrievedEvents.size());
+    }
+    
 
 }
