@@ -252,7 +252,7 @@ public class ReviewServiceTests {
         .thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
         //Act
-        Review editedReview = reviewService.editReview(0, dto);
+        Review editedReview = reviewService.editReview(0, VALID_PLAYER.getId(), dto);
 
         //Assert
         assertNotNull(editedReview);
@@ -271,7 +271,7 @@ public class ReviewServiceTests {
 
         //Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class,
-                                               () -> reviewService.editReview(156678, dto));
+                                               () -> reviewService.editReview(156678, VALID_PLAYER.getId(), dto));
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
         assertEquals("No review has Id 156678", e.getMessage());
     }
@@ -284,14 +284,14 @@ public class ReviewServiceTests {
         .thenReturn(new Review(VALID_RATING, VALID_COMMENT, date, VALID_PLAYER, VALID_GAME));
 
         //Act & Assert
-        assertDoesNotThrow(() -> reviewService.deleteReview(0));
+        assertDoesNotThrow(() -> reviewService.deleteReview(0, VALID_PLAYER.getId()));
         verify(mockReviewRepo, times(1)).delete(any());
     }
 
     @Test
     public void testDeleteInvalidReview() {
         BoardGameHubException e = assertThrows(BoardGameHubException.class,
-                                               () -> reviewService.deleteReview(15));
+                                               () -> reviewService.deleteReview(15, VALID_PLAYER.getId()));
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
         assertEquals("No review has Id 15", e.getMessage());
     }
