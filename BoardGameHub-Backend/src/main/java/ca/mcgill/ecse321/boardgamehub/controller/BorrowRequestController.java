@@ -1,47 +1,83 @@
+package ca.mcgill.ecse321.boardgamehub.controller;
+import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestUpdateDto;
+import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestResponseDto;
+import ca.mcgill.ecse321.boardgamehub.model.BorrowRequest;
+import ca.mcgill.ecse321.boardgamehub.model.BorrowStatus;
+import ca.mcgill.ecse321.boardgamehub.service.BorrowingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
-@RequestMapping("/borrowRequests")
+@RequestMapping("/borrow-requests")
 public class BorrowRequestController {
 
-    private final BorrowingService borrowingService;
-
     @Autowired
-    public BorrowRequestController(BorrowingService borrowingService) {
-        this.borrowingService = borrowingService;
-    }
+    private BorrowingService borrowingService;
 
-    /** Create a new borrow request (POST /borrowRequests) */
     @PostMapping
-    public ResponseEntity<BorrowRequestResponse> createBorrowRequest(@RequestBody @Valid BorrowRequestCreationDto dto) {
-        BorrowRequest borrowRequest = borrowingService.createBorrowRequest(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BorrowRequestResponse.fromBorrowRequest(borrowRequest));
+    @ResponseStatus(HttpStatus.CREATED)
+    public BorrowRequestResponseDto createBorrowRequest(@RequestBody BorrowRequestCreationDto dto) {
+        BorrowRequest createdRequest = borrowingService.createBorrowRequest(dto);
+        return new BorrowRequestResponseDto(createdRequest);
     }
 
-    /**Get all borrow requests (GET /borrowRequests) */
-    @GetMapping
-    public ResponseEntity<List<BorrowRequestResponse>> getAllBorrowRequests() {
-        List<BorrowRequest> requests = borrowingService.getAllBorrowRequests();
-        return ResponseEntity.ok(requests.stream().map(BorrowRequestResponse::fromBorrowRequest).toList());
-    }
-
-    /** get a specific borrow request (GET /borrowRequests/{requestId}) */
     @GetMapping("/{requestId}")
-    public ResponseEntity<BorrowRequestResponse> getBorrowRequestById(@PathVariable Integer requestId) {
-        BorrowRequest borrowRequest = borrowingService.findBorrowRequestById(requestId);
-        return ResponseEntity.ok(BorrowRequestResponse.fromBorrowRequest(borrowRequest));
+    @ResponseStatus(HttpStatus.OK)
+    public BorrowRequestResponseDto getBorrowRequestById(@PathVariable int requestId) {
+        BorrowRequest request = borrowingService.findBorrowRequestById(requestId);
+        return new BorrowRequestResponseDto(request);
     }
 
-    /**Update borrow request status */
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<BorrowRequestResponseDto> getAllBorrowRequests() {
+        return borrowingService.getAllBorrowRequests().stream()
+                .map(BorrowRequestResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @PutMapping("/{requestId}")
+    @ResponseStatus(HttpStatus.OK)
+    public BorrowRequestResponseDto updateBorrowRequest(@PathVariable int requestId,
+                                                        @RequestParam int requesterId,
+                                                        @RequestBody BorrowRequestUpdateDto dto) {
+        BorrowRequest updatedRequest = borrowingService.updateBorrowRequest(dto, requestId, requesterId);
+        return new BorrowRequestResponseDto(updatedRequest);
+    }
+
     @PutMapping("/{requestId}/status")
-    public ResponseEntity<BorrowRequestResponse> updateBorrowRequestStatus(
-            @PathVariable Integer requestId, @RequestParam BorrowStatus status) {
-        BorrowRequest updatedRequest = borrowingService.updateBorrowRequestStatus(requestId, status);
-        return ResponseEntity.ok(BorrowRequestResponse.fromBorrowRequest(updatedRequest));
+    @ResponseStatus(HttpStatus.OK)
+    public BorrowRequestResponseDto updateBorrowRequestStatus(@PathVariable int requestId,
+                                                              @RequestParam int requesteeId,
+                                                              @RequestParam BorrowStatus status) {
+        BorrowRequest updatedRequest = borrowingService.approveOrRejectBorrowRequest(requestId, requesteeId, status);
+        return new BorrowRequestResponseDto(updatedRequest);
     }
 
-    /** Delete a borrow request (DELETE /borrowRequests/{requestId}) */
     @DeleteMapping("/{requestId}")
-    public ResponseEntity<Void> deleteBorrowRequest(@PathVariable Integer requestId) {
-        borrowingService.deleteBorrowRequest(requestId);
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBorrowRequest(@PathVariable int requestId, @RequestParam int requesterId) {
+        borrowingService.deleteBorrowRequest(requestId, requesterId);
+    }
+
+    @GetMapping("/requester/{requesterId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BorrowRequestResponseDto> getRequestsByRequester(@PathVariable int requesterId) {
+        return borrowingService.getRequestsByRequester(requesterId).stream()
+                .map(BorrowRequestResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/requestee/{requesteeId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BorrowRequestResponseDto> getRequestsByRequestee(@PathVariable int requesteeId) {
+        return borrowingService.getRequestsByRequestee(requesteeId).stream()
+                .map(BorrowRequestResponseDto::new)
+                .collect(Collectors.toList());
     }
 }
