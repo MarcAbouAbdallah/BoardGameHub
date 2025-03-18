@@ -210,7 +210,7 @@ public class EventIntegrationTests {
     public void testUpdateEvent() {
         String newLocation = "New Location";
         String newDescription = "New Description";
-        LocalDate newDate = LocalDate.of(2025, 3, 17);
+        LocalDate newDate = LocalDate.of(2027, 3, 17);
         LocalTime newStartTime = LocalTime.of(14, 0);
         LocalTime newEndTime = LocalTime.of(15, 0);
 

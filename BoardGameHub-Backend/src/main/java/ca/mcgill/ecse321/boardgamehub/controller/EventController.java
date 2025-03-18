@@ -33,6 +33,12 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
+    /**
+     * Create an event
+     * 
+     * @param eventToCreate an EventCreationDto containing the event to be created
+     * @return An eventResponseDto containing the created event with its id
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EventResponseDto createEvent(@RequestBody EventCreationDto eventToCreate) {
@@ -40,6 +46,12 @@ public class EventController {
         return new EventResponseDto(createdEvent, 0);
     }
 
+    /**
+     * Get a particular event by its id
+     * 
+     * @param eventId The id of the event to get
+     * @return An eventResponseDto containing the event with the given id
+     */
     @GetMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventResponseDto getEventById(@PathVariable int eventId) {
@@ -48,6 +60,11 @@ public class EventController {
         return new EventResponseDto(event, participantsCount);
     }
 
+    /**
+     * Get all events
+     * 
+     * @return A List of eventResponseDto containing all events
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<EventResponseDto> getAllEvents() {
@@ -55,7 +72,15 @@ public class EventController {
                 .map(event -> new EventResponseDto(event, eventService.getParticipantsCount(event.getId())))
                 .toList();
     }
-
+    
+    /**
+     * Updating an event
+     * 
+     * @param eventId The id of the event to update
+     * @param eventToUpdate An EventUpdateDto containing the updated event
+     * @param organizerId The id of the user making the update (to check if they are the organizer)
+     * @return An eventResponseDto containing the updated event
+     */
     @PutMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventResponseDto updateEvent(@PathVariable int eventId, @RequestBody EventUpdateDto eventToUpdate, @RequestParam int organizerId) {
@@ -64,6 +89,13 @@ public class EventController {
         return new EventResponseDto(updatedEvent, participantsCount);
     }
 
+    /**
+     * Delete an event
+     * 
+     * @param eventId The id of the event to delete
+     * @param organizerId The id of the user making the delete request (to check if they are the organizer)
+     * @return void
+     */
     @DeleteMapping("/{eventId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteEvent(@PathVariable int eventId, @RequestParam int organizerId) {
