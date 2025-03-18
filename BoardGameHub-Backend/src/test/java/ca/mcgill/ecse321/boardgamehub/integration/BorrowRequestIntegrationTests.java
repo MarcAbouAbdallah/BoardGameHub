@@ -194,6 +194,58 @@ public class BorrowRequestIntegrationTests {
 
     @Test
     @Order(5)
+    public void testGetRequestsbyRequester(){
+        ResponseEntity<BorrowRequestResponseDto[]> response = client.getForEntity(
+                "/borrow-requests/requester/" + REQUESTER.getId(), BorrowRequestResponseDto[].class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        BorrowRequestResponseDto[] requests = response.getBody();
+        assertNotNull(requests);
+        assertEquals(1, requests.length);
+
+        BorrowRequestResponseDto borrow_request = requests[0];
+        assertNotNull(borrow_request);
+
+        // Compare with the created borrow request (from test 0)
+        assertEquals(createdBorrowRequestId, borrow_request.getId());
+        assertEquals(REQUESTER.getId(), borrow_request.getRequesterId());
+        assertEquals(REQUESTEE.getId(), borrow_request.getRequesteeId());
+        assertEquals(GAME_COPY.getId(), borrow_request.getGameCopyId());
+        assertEquals(COMMENT, borrow_request.getComment());
+        assertEquals(START_DATE, borrow_request.getStartDate());
+        assertEquals(END_DATE, borrow_request.getEndDate());
+    }
+
+    @Test
+    @Order(6)
+    public void testGetRequestsbyRequestee(){
+        ResponseEntity<BorrowRequestResponseDto[]> response = client.getForEntity(
+                "/borrow-requests/requestee/" + REQUESTEE.getId(), BorrowRequestResponseDto[].class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        BorrowRequestResponseDto[] requests = response.getBody();
+        assertNotNull(requests);
+        assertEquals(1, requests.length);
+
+        BorrowRequestResponseDto borrow_request = requests[0];
+        assertNotNull(borrow_request);
+
+        // Compare with the created borrow request (from test 0)
+        assertEquals(createdBorrowRequestId, borrow_request.getId());
+        assertEquals(REQUESTER.getId(), borrow_request.getRequesterId());
+        assertEquals(REQUESTEE.getId(), borrow_request.getRequesteeId());
+        assertEquals(GAME_COPY.getId(), borrow_request.getGameCopyId());
+        assertEquals(COMMENT, borrow_request.getComment());
+        assertEquals(START_DATE, borrow_request.getStartDate());
+        assertEquals(END_DATE, borrow_request.getEndDate());
+    }
+
+    @Test
+    @Order(7)
     public void testUpdateBorrowRequest() {
         BorrowRequestUpdateDto updateDto = new BorrowRequestUpdateDto(
                 "Updated comment",
@@ -217,7 +269,7 @@ public class BorrowRequestIntegrationTests {
     }
 
     @Test
-    @Order(6)
+    @Order(8)
     public void testUpdateBorrowRequest_Unauthorized() {
         BorrowRequestUpdateDto updateDto = new BorrowRequestUpdateDto(
                 "Invalid update",
@@ -240,7 +292,7 @@ public class BorrowRequestIntegrationTests {
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     public void testUpdateBorrowRequest_NotFound() {
         BorrowRequestUpdateDto updateDto = new BorrowRequestUpdateDto(
                 "Invalid update",
@@ -263,7 +315,7 @@ public class BorrowRequestIntegrationTests {
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     public void testUpdateBorrowRequestStatus_Unauthorized() {
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.ACCEPTED);
 
@@ -282,7 +334,7 @@ public class BorrowRequestIntegrationTests {
     }
 
     @Test
-    @Order(9)
+    @Order(11)
     public void testUpdateBorrowRequestStatus_InvalidStatus() {
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.PENDING);
 
@@ -300,7 +352,7 @@ public class BorrowRequestIntegrationTests {
     }
 
     @Test
-    @Order(10)
+    @Order(12)
     public void testUpdateValidBorrowRequestStatus() {
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.ACCEPTED);
 
@@ -318,7 +370,7 @@ public class BorrowRequestIntegrationTests {
     }
 
     @Test
-    @Order(11)
+    @Order(13)
     public void testUpdateBorrowRequestStatus_InvalidRequestStatus() {
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.ACCEPTED);
 
@@ -337,7 +389,7 @@ public class BorrowRequestIntegrationTests {
     }
 
     @Test
-    @Order(12)
+    @Order(14)
     public void testDeleteBorrowRequest_Unauthorized() {
 
         // The user trying to delete the request is not the requester (userId != REQUESTER.getId())
@@ -354,7 +406,7 @@ public class BorrowRequestIntegrationTests {
     }
 
     @Test
-    @Order(13)
+    @Order(15)
     public void testDeleteBorrowRequest() {
         String url = "/borrow-requests/" + createdBorrowRequestId + "?userId=" + REQUESTER.getId();
 

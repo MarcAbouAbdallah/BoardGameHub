@@ -59,6 +59,34 @@ public class BorrowRequestController {
     }
 
     /**
+     * Get all borrow requests sent by a player
+     * 
+     * @param requesterId The id of the requester
+     * @return A List of BorrowRequestResponseDto containing all borrow requests sent by the player
+     */
+    @GetMapping("/requester/{requesterId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BorrowRequestResponseDto> getRequestsByRequester(@PathVariable int requesterId) {
+        return borrowingService.getRequestsByRequester(requesterId).stream()
+                .map(BorrowRequestResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all borrow requests received by a player
+     * 
+     * @param requesteeId The id of the requestee
+     * @return A List of BorrowRequestResponseDto containing all borrow requests received by the player
+     */
+    @GetMapping("/requestee/{requesteeId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BorrowRequestResponseDto> getRequestsByRequestee(@PathVariable int requesteeId) {
+        return borrowingService.getRequestsByRequestee(requesteeId).stream()
+                .map(BorrowRequestResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Update a borrow request
      * 
      * @param requestId The id of the request to update
@@ -103,33 +131,5 @@ public class BorrowRequestController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBorrowRequest(@PathVariable int requestId, @RequestParam int userId) {
         borrowingService.deleteBorrowRequest(requestId, userId);
-    }
-
-    /**
-     * Get all borrow requests sent by a player
-     * 
-     * @param requesterId The id of the requester
-     * @return A List of BorrowRequestResponseDto containing all borrow requests sent by the player
-     */
-    @GetMapping("/requester/{requesterId}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<BorrowRequestResponseDto> getRequestsByRequester(@PathVariable int requesterId) {
-        return borrowingService.getRequestsByRequester(requesterId).stream()
-                .map(BorrowRequestResponseDto::new)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get all borrow requests received by a player
-     * 
-     * @param requesteeId The id of the requestee
-     * @return A List of BorrowRequestResponseDto containing all borrow requests received by the player
-     */
-    @GetMapping("/requestee/{requesteeId}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<BorrowRequestResponseDto> getRequestsByRequestee(@PathVariable int requesteeId) {
-        return borrowingService.getRequestsByRequestee(requesteeId).stream()
-                .map(BorrowRequestResponseDto::new)
-                .collect(Collectors.toList());
     }
 }
