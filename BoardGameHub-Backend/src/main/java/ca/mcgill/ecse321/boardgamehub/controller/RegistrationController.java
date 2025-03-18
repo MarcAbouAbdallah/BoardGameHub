@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
 import ca.mcgill.ecse321.boardgamehub.dto.RegistrationDto;
@@ -30,8 +31,9 @@ public class RegistrationController {
      */
     @PostMapping("registrations/{eventId}/{playerId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerToEvent(@PathVariable int eventId, @PathVariable int playerId) {
-        registrationService.registerToEvent(eventId, playerId);
+    public ResponseEntity<Registration> registerToEvent(@PathVariable int eventId, @PathVariable int playerId) {
+        Registration registration = registrationService.registerToEvent(eventId, playerId);
+        return new ResponseEntity<>(registration, HttpStatus.CREATED);
     }
     
     /**
@@ -41,8 +43,7 @@ public class RegistrationController {
      */
     @GetMapping("registrations")
     public List<RegistrationDto> findAllRegistrations() {
-        return registrationService.findAllRegistrations()
-                           .stream()
+        return registrationService.findAllRegistrations().stream()
                            .map(RegistrationDto::new)
                            .collect(Collectors.toList());
     
@@ -56,8 +57,7 @@ public class RegistrationController {
      */
     @GetMapping("registrations/event/{eventId}")
     public List<RegistrationDto> findRegistrationsByEvent(@PathVariable int eventId) {
-        return registrationService.findRegistrationsByEvent(eventId)
-                           .stream()
+        return registrationService.findRegistrationsByEvent(eventId).stream()
                            .map(RegistrationDto::new)
                            .collect(Collectors.toList());
     }
@@ -70,8 +70,7 @@ public class RegistrationController {
      */
     @GetMapping("registrations/player/{playerId}")
     public List<RegistrationDto> findRegistrationsByPlayer(@PathVariable int playerId) {
-        return registrationService.findRegistrationsByPlayer(playerId)
-                           .stream()
+        return registrationService.findRegistrationsByPlayer(playerId).stream()
                            .map(RegistrationDto::new)
                            .collect(Collectors.toList());
     }
