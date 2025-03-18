@@ -13,19 +13,15 @@ public class PlayerCreationDto {
     @Size(min = 8, message = "Password length must be at least 8 characters long")
     @NotBlank(message = "Password is required")
     private String password;
-    private boolean isGameOwner = false; 
+    private Boolean isGameOwner; 
 
     protected PlayerCreationDto() {}
 
     public PlayerCreationDto(String name, String email, String password) {
-        this(name, email, password, false);
-    }
-
-    public PlayerCreationDto(String name, String email, String password, boolean isGameOwner) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.isGameOwner = isGameOwner;
+        this.isGameOwner = false;
     }
 
     public String getName() {
@@ -40,7 +36,7 @@ public class PlayerCreationDto {
         return password;
     }
 
-    public boolean getIsGameOwner() {
+    public Boolean getIsGameOwner() {
         return isGameOwner;
     }
 }

@@ -25,6 +25,7 @@ import org.springframework.http.HttpEntity;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerLoginDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerResponseDto;
+import ca.mcgill.ecse321.boardgamehub.dto.PlayerUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 
 
@@ -187,7 +188,7 @@ public class PlayerIntegrationTests {
         String newEmail = "jane.doe@mail.mcgill.ca";
         String newPassword = "newpassword";
 
-        PlayerCreationDto request = new PlayerCreationDto(newName, newEmail, newPassword, true); 
+        PlayerUpdateDto request = new PlayerUpdateDto(newName, newEmail, newPassword, true); 
 
         //Act
         ResponseEntity<PlayerResponseDto> response = client.exchange("/players/" + VALID_ID, HttpMethod.PUT, new HttpEntity<>(request), PlayerResponseDto.class);
@@ -211,7 +212,7 @@ public class PlayerIntegrationTests {
         String newName = "Jane Doe";
         String newEmail = "jane.doe@mail.mcgill.ca";
         String newPassword = "newpassword";
-        PlayerCreationDto request = new PlayerCreationDto(newName, newEmail, newPassword, true);
+        PlayerUpdateDto request = new PlayerUpdateDto(newName, newEmail, newPassword, true);
 
         //Act
         ResponseEntity<PlayerResponseDto> response = client.exchange("/players/" + invalidId, HttpMethod.PUT, new HttpEntity<>(request), PlayerResponseDto.class);

@@ -21,6 +21,7 @@ import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerLoginDto;
+import ca.mcgill.ecse321.boardgamehub.dto.PlayerUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 
 import ca.mcgill.ecse321.boardgamehub.model.Player;
@@ -195,7 +196,7 @@ public class PlayerServiceTests {
         when(mockPlayerRepository.findPlayerById(id)).thenReturn(John);
         when(mockPlayerRepository.save(any(Player.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
-        PlayerCreationDto updatedJohn = new PlayerCreationDto("Jane Doe", "jane.doe@mail.mcgill.ca", "password456", true);
+        PlayerUpdateDto updatedJohn = new PlayerUpdateDto("Jane Doe", "jane.doe@mail.mcgill.ca", "password456", true);
 
         //Act
         Player updatedPlayer = playerService.updatePlayer(id, updatedJohn);
@@ -214,7 +215,7 @@ public class PlayerServiceTests {
         int id = 0;
         when(mockPlayerRepository.findPlayerById(id)).thenReturn(null);
 
-        PlayerCreationDto updatedJohn = new PlayerCreationDto("Jane Doe", "jane.doe@mail.mcgill.ca", "password456", true);
+        PlayerUpdateDto updatedJohn = new PlayerUpdateDto("Jane Doe", "jane.doe@mail.mcgill.ca", "password456", true);
 
         //Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {

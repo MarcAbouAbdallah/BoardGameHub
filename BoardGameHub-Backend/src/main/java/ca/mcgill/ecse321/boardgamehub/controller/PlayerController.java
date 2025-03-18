@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerLoginDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerResponseDto;
+import ca.mcgill.ecse321.boardgamehub.dto.PlayerUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.service.PlayerService;
 
@@ -72,7 +73,7 @@ public class PlayerController {
      */
     @PutMapping("/players/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PlayerResponseDto updatePlayer(@PathVariable int id, @RequestBody PlayerCreationDto playerToUpdate) {
+    public PlayerResponseDto updatePlayer(@PathVariable int id, @RequestBody PlayerUpdateDto playerToUpdate) {
         Player updatedPlayer = playerService.updatePlayer(id, playerToUpdate);
         return new PlayerResponseDto(updatedPlayer);
     }
