@@ -64,4 +64,4 @@ The scope of this deliverable includes completing the code with the service & co
 |Jerome Courtemanche||||
 |Bora Denizasan||||
 |Mubeen Mohammed||||
-|Raphaël Verger||||
+|Raphaël Verger|Developer|Implemented the "PersonalCollectionService" and "GameCopyController" along with their respective tests; and contributed to project documentation.|~16h|

@@ -1,12 +1,10 @@
 package ca.mcgill.ecse321.boardgamehub.integration;
 
-import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.junit.jupiter.api.AfterAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,18 +19,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import ca.mcgill.ecse321.boardgamehub.dto.ErrorDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventResponseDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
-import ca.mcgill.ecse321.boardgamehub.dto.ReviewResponseDto;
-import ca.mcgill.ecse321.boardgamehub.dto.ReviewUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
@@ -71,7 +65,7 @@ public class EventIntegrationTests {
     private static final String NAME = "Monopoly Event";
     private static final String LOCATION = "McGill";
     private static final String DESCRIPTION = "Fun event";
-    private static final LocalDate DATE = LocalDate.of(2025, 3, 16);
+    private static final LocalDate DATE = LocalDate.of(2026, 5, 20);
     private static final LocalTime START_TIME = LocalTime.of(13, 0);
     private static final LocalTime END_TIME = LocalTime.of(14, 0);
     private static final int MAX_PARTICIPANTS = 4;
@@ -288,7 +282,6 @@ public class EventIntegrationTests {
                 "Error message for invalid event id.");
     }
 
-    // First write invalid delete tests
     @Test
     @Order(8)
     public void testDeleteEvent_NotFound() {
