@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import jakarta.validation.Valid;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerLoginDto;
+import ca.mcgill.ecse321.boardgamehub.dto.PlayerUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class PlayerService {
             playerCreationDto.getName(),
             playerCreationDto.getEmail(),
             playerCreationDto.getPassword(),
-            false
+            playerCreationDto.getIsGameOwner()
         );
         return playerRepository.save(PlayerToRegister);
     }
@@ -77,7 +78,7 @@ public class PlayerService {
     }
 
     @Transactional
-    public Player updatePlayer(int id, @Valid PlayerCreationDto playerCreationDto) {
+    public Player updatePlayer(int id, @Valid PlayerUpdateDto playerUpdateDto) {
         Player p = playerRepository.findPlayerById(id);
         if (p == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Player does not exist");
@@ -86,15 +87,25 @@ public class PlayerService {
         List<Player> players = (List<Player>) playerRepository.findAll();
         
         for (Player existingPlayer : players) {
-            if (existingPlayer.getEmail().equals(playerCreationDto.getEmail())) {
+            if (existingPlayer.getEmail().equals(playerUpdateDto.getEmail())) {
                 throw new BoardGameHubException(HttpStatus.CONFLICT, "Email already in use");
             }
         }
 
-        p.setName(playerCreationDto.getName());
-        p.setEmail(playerCreationDto.getEmail());
-        p.setPassword(playerCreationDto.getPassword());
-        p.setIsGameOwner(playerCreationDto.getIsGameOwner());
+        playerUpdateDto.validate();
+
+        if (playerUpdateDto.getName() != null) {
+            p.setName(playerUpdateDto.getName());
+        }
+        if (playerUpdateDto.getEmail() != null) {
+            p.setEmail(playerUpdateDto.getEmail());
+        }
+        if (playerUpdateDto.getPassword() != null) {
+            p.setPassword(playerUpdateDto.getPassword());
+        }
+        if (playerUpdateDto.getIsGameOwner() != null) {
+            p.setIsGameOwner(playerUpdateDto.getIsGameOwner());
+        }
         return playerRepository.save(p);
     }
     
