@@ -60,15 +60,20 @@ public class ReviewService {
         return reviewRepo.save(review);
     }
     
-    public Review editReview(int id, @Valid ReviewUpdateDto editedReview) {
+    public Review editReview(int reviewId, int reviewerId, @Valid ReviewUpdateDto editedReview) {
 
         Date today = Date.valueOf(LocalDate.now());
 
-        Review review = reviewRepo.findReviewById(id);
+        Review review = reviewRepo.findReviewById(reviewId);
 
         if (review == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
-                                            String.format("No review has Id %d", id));
+                                            String.format("No review has Id %d", reviewId));
+        }
+
+        if (review.getReviewer().getId() != reviewerId) {
+            throw new BoardGameHubException(HttpStatus.UNAUTHORIZED, 
+                                            "Request sender is not the creator of this review.");
         }
 
         review.setRating(editedReview.getRating());
@@ -79,12 +84,17 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(int id) {
-        Review review = reviewRepo.findReviewById(id);
+    public void deleteReview(int reviewId, int reviewerId) {
+        Review review = reviewRepo.findReviewById(reviewId);
 
         if (review == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
-                                            String.format("No review has Id %d", id));
+                                            String.format("No review has Id %d", reviewId));
+        }
+
+        if (review.getReviewer().getId() != reviewerId) {
+            throw new BoardGameHubException(HttpStatus.UNAUTHORIZED, 
+                                            "Request sender is not the creator of this review.");
         }
 
         reviewRepo.delete(review);

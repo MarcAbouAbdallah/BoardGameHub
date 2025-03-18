@@ -172,12 +172,12 @@ public class ReviewIntegrationTests {
         //Act
         String queryString = String.format("/reviews/game/%s", VALID_GAME.getName());
         ResponseEntity<ReviewResponseDto[]> response = client.getForEntity(queryString, ReviewResponseDto[].class);
-        ReviewResponseDto responseItem = response.getBody()[0];
+        ReviewResponseDto[] responseArray = response.getBody();
+        assertNotNull(responseArray);
+        assertNotNull(responseArray[0]);
+        ReviewResponseDto responseItem = responseArray[0];
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        
-		assertNotNull(response.getBody());
-
 		assertTrue(responseItem.getId() >= 0, "the ID should be a positive int");
 		this.createdReviewId = responseItem.getId();
 		assertEquals(VALID_RATING, responseItem.getRating());
@@ -216,12 +216,14 @@ public class ReviewIntegrationTests {
             null,
             ReviewResponseDto[].class
         );
-        ReviewResponseDto responseItem = response.getBody()[0];
+        //ReviewResponseDto responseItem = response.getBody()[0];
+        ReviewResponseDto[] responseArray = response.getBody();
+        assertNotNull(responseArray);
+        assertNotNull(responseArray[0]);
+        ReviewResponseDto responseItem = responseArray[0];
 
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        
-		assertNotNull(response.getBody());
 
 		assertTrue(responseItem.getId() >= 0, "the ID should be a positive int");
 		this.createdReviewId = responseItem.getId();
@@ -265,6 +267,32 @@ public class ReviewIntegrationTests {
 
     @Test
     @Order(9)
+    public void testupdateValidReviewUnauthorized() {
+        //Arrange
+        ReviewUpdateDto dto = new ReviewUpdateDto(4, "NVM, I don't like the game now");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");  // This is just an example; adjust as needed.
+        
+        // Wrap the body (dto) and headers in HttpEntity
+        HttpEntity<ReviewUpdateDto> httpEntity = new HttpEntity<>(dto, headers);
+        int unauthedId = VALID_PLAYER.getId()+1;
+
+        ResponseEntity<ErrorDto> removeResponse = client.exchange(
+            "http://localhost:" + port + "/reviews/"+createdReviewId+"?reviewerId="+unauthedId,
+            HttpMethod.PUT,
+            httpEntity,
+            ErrorDto.class
+        );
+        assertEquals(HttpStatus.UNAUTHORIZED, removeResponse.getStatusCode());
+        ErrorDto responseDto = removeResponse.getBody();
+		assertNotNull(responseDto);
+        assertIterableEquals(
+		    List.of("Request sender is not the creator of this review."),
+		    responseDto.getErrors());
+    }
+
+    @Test
+    @Order(10)
     public void testUpdateValidReview() {
         //Arrange
         ReviewUpdateDto dto = new ReviewUpdateDto(4, "NVM, I don't like the game now");
@@ -275,7 +303,7 @@ public class ReviewIntegrationTests {
         HttpEntity<ReviewUpdateDto> httpEntity = new HttpEntity<>(dto, headers);
         
         ResponseEntity<ReviewResponseDto> response = client.exchange(
-            "http://localhost:" + port + "/reviews/"+createdReviewId,
+            "http://localhost:" + port + "/reviews/"+createdReviewId+"?reviewerId="+VALID_PLAYER.getId(),
             HttpMethod.PUT,
             httpEntity,
             ReviewResponseDto.class
@@ -295,11 +323,11 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     public void testDeleteInvalidReview() {
         int invalidId = createdReviewId+1;
         ResponseEntity<ErrorDto> response = client.exchange(
-            "http://localhost:"+port+"/reviews/"+invalidId,
+            "http://localhost:"+port+"/reviews/"+invalidId+"?reviewerId="+VALID_PLAYER.getId(),
             HttpMethod.DELETE,
             null,
             ErrorDto.class
@@ -315,11 +343,31 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
+    public void testDeleteValidReviewUnauthorized() {
+        
+        int unauthedId = VALID_PLAYER.getId()+1;
+
+        ResponseEntity<ErrorDto> removeResponse = client.exchange(
+            "http://localhost:"+port+"/reviews/"+createdReviewId+"?reviewerId="+unauthedId,
+            HttpMethod.DELETE,
+            null,
+            ErrorDto.class
+        );
+        assertEquals(HttpStatus.UNAUTHORIZED, removeResponse.getStatusCode());
+        ErrorDto responseDto = removeResponse.getBody();
+		assertNotNull(responseDto);
+        assertIterableEquals(
+		    List.of("Request sender is not the creator of this review."),
+		    responseDto.getErrors());
+    }
+
+    @Test
+    @Order(13)
     public void testDeleteValidReview() {
         // Remove the review copy
         ResponseEntity<Void> removeResponse = client.exchange(
-            "http://localhost:"+port+"/reviews/"+createdReviewId,
+            "http://localhost:"+port+"/reviews/"+createdReviewId+"?reviewerId="+VALID_PLAYER.getId(),
             HttpMethod.DELETE,
             null,
             Void.class
