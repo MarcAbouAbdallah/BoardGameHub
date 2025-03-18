@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 
 import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestUpdateDto;
+import ca.mcgill.ecse321.boardgamehub.dto.BorrowStatusUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.model.*;
 import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
@@ -216,7 +217,8 @@ public class BorrowingServiceTests {
         when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
         when(mockBorrowRequestRepo.save(request)).thenReturn(request);
         
-        BorrowRequest approvedRequest = borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, BorrowStatus.ACCEPTED);
+        BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.ACCEPTED);
+        BorrowRequest approvedRequest = borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, statusDto);
         
         assertNotNull(approvedRequest);
         assertEquals(BorrowStatus.ACCEPTED, approvedRequest.getStatus());
@@ -233,7 +235,8 @@ public class BorrowingServiceTests {
         when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
         when(mockBorrowRequestRepo.save(request)).thenReturn(request);
         
-        BorrowRequest rejectedRequest = borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, BorrowStatus.DECLINED);
+        BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.DECLINED);
+        BorrowRequest rejectedRequest = borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, statusDto);
         
         assertNotNull(rejectedRequest);
         assertEquals(BorrowStatus.DECLINED, rejectedRequest.getStatus());
@@ -245,12 +248,13 @@ public class BorrowingServiceTests {
 
         request.setId(VALID_BORROW_REQUEST_ID);
         REQUESTEE.setId(VALID_REQUESTEE_ID);
-        request.setStatus(BorrowStatus.ACCEPTED);
+        request.setStatus(BorrowStatus.ACCEPTED); // The request is already accepted
 
         when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
         
+        BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.DECLINED);
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, BorrowStatus.ACCEPTED);
+            borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, statusDto);
         });
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -266,9 +270,10 @@ public class BorrowingServiceTests {
         request.setStatus(BorrowStatus.PENDING);
 
         when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
-        
+
+        BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.ACCEPTED);
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, BorrowStatus.ACCEPTED);
+            borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, statusDto);
         });
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
@@ -285,8 +290,9 @@ public class BorrowingServiceTests {
 
         when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
         
+        BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.PENDING);
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, BorrowStatus.PENDING);
+            borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, statusDto);
         });
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -306,7 +312,7 @@ public class BorrowingServiceTests {
         
         assertNotNull(updatedRequest);
         assertEquals("Updated comment", updatedRequest.getComment());
-        // Rest is unchanged
+        // Dates are unchanged in the request (null in updateDTO)
         assertEquals(Date.valueOf(START_DATE), updatedRequest.getStartDate());
         assertEquals(Date.valueOf(END_DATE), updatedRequest.getEndDate());
     }

@@ -90,8 +90,6 @@ public class EventIntegrationTests {
     @Test
     @Order(0)
     public void testCreateValidEvent() {
-        System.out.println(VALID_ORGANIZER.getId());
-        
         EventCreationDto dto = new EventCreationDto(NAME, LOCATION, DESCRIPTION, DATE, START_TIME, END_TIME,
                 MAX_PARTICIPANTS, VALID_ORGANIZER.getId(), VALID_GAMECOPY.getId());
 
@@ -146,7 +144,7 @@ public class EventIntegrationTests {
 
     @Test
     @Order(2)
-    public void testGetEventById() {
+    public void testGetEventByValidId() {
         ResponseEntity<EventResponseDto> response = client.getForEntity("/events/" + createdEventId, EventResponseDto.class);
 
         assertNotNull(response);

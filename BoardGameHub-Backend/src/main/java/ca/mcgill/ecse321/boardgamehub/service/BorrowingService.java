@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 
 import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestUpdateDto;
+import ca.mcgill.ecse321.boardgamehub.dto.BorrowStatusUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.model.*;
 import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
@@ -74,27 +75,27 @@ public class BorrowingService {
     }
 
     @Transactional
-    public BorrowRequest approveOrRejectBorrowRequest(int requestId, int requesteeId, BorrowStatus status) {
+    public BorrowRequest approveOrRejectBorrowRequest(int requestId, int userId, BorrowStatusUpdateDto statusDto) {
         BorrowRequest request = findBorrowRequestById(requestId);
-        if (request.getRequestee().getId() != requesteeId) {
+        if (request.getRequestee().getId() != userId) {
             throw new BoardGameHubException(HttpStatus.FORBIDDEN, "You are not allowed to approve or reject this request.");
         }
         if (request.getStatus() != BorrowStatus.PENDING) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be modified.");
         }
-        if (status != BorrowStatus.ACCEPTED && status != BorrowStatus.DECLINED) {
+        if (statusDto.getStatus() != BorrowStatus.ACCEPTED && statusDto.getStatus() != BorrowStatus.DECLINED) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "The request must either be accepted or declined");
         }
-        request.setStatus(status);
+        request.setStatus(statusDto.getStatus());
         return borrowRequestRepo.save(request);
     }
 
     @Transactional
-    public BorrowRequest updateBorrowRequest(@Valid BorrowRequestUpdateDto updateDto, int requestId, int requesterId) {
+    public BorrowRequest updateBorrowRequest(@Valid BorrowRequestUpdateDto updateDto, int requestId, int userId) {
         BorrowRequest request = findBorrowRequestById(requestId);
 
         // Only the requester can udpate the request's content
-        if (request.getRequester().getId() != requesterId) {
+        if (request.getRequester().getId() != userId) {
             throw new BoardGameHubException(HttpStatus.FORBIDDEN, "Only the requester can update this request.");
         }
 
@@ -109,10 +110,10 @@ public class BorrowingService {
     }
 
     @Transactional
-    public void deleteBorrowRequest(int requestId, int requesterId) {
+    public void deleteBorrowRequest(int requestId, int userId) {
         BorrowRequest request = findBorrowRequestById(requestId);
 
-        if (request.getRequester().getId() != requesterId) {
+        if (request.getRequester().getId() != userId) {
             throw new BoardGameHubException(HttpStatus.FORBIDDEN, "Only the requester can delete this request.");
         }
         borrowRequestRepo.delete(request);

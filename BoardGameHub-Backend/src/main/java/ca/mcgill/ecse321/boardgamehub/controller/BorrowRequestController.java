@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.boardgamehub.controller;
 import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestUpdateDto;
+import ca.mcgill.ecse321.boardgamehub.dto.BorrowStatusUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestResponseDto;
 import ca.mcgill.ecse321.boardgamehub.model.BorrowRequest;
 import ca.mcgill.ecse321.boardgamehub.model.BorrowStatus;
@@ -44,25 +45,25 @@ public class BorrowRequestController {
     @PutMapping("/{requestId}")
     @ResponseStatus(HttpStatus.OK)
     public BorrowRequestResponseDto updateBorrowRequest(@PathVariable int requestId,
-                                                        @RequestParam int requesterId,
+                                                        @RequestParam int userId,
                                                         @RequestBody BorrowRequestUpdateDto dto) {
-        BorrowRequest updatedRequest = borrowingService.updateBorrowRequest(dto, requestId, requesterId);
+        BorrowRequest updatedRequest = borrowingService.updateBorrowRequest(dto, requestId, userId);
         return new BorrowRequestResponseDto(updatedRequest);
     }
 
     @PutMapping("/{requestId}/status")
     @ResponseStatus(HttpStatus.OK)
     public BorrowRequestResponseDto updateBorrowRequestStatus(@PathVariable int requestId,
-                                                              @RequestParam int requesteeId,
-                                                              @RequestParam BorrowStatus status) {
-        BorrowRequest updatedRequest = borrowingService.approveOrRejectBorrowRequest(requestId, requesteeId, status);
+                                                              @RequestParam int userId,
+                                                              @RequestBody BorrowStatusUpdateDto status) {
+        BorrowRequest updatedRequest = borrowingService.approveOrRejectBorrowRequest(requestId, userId, status);
         return new BorrowRequestResponseDto(updatedRequest);
     }
 
     @DeleteMapping("/{requestId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBorrowRequest(@PathVariable int requestId, @RequestParam int requesterId) {
-        borrowingService.deleteBorrowRequest(requestId, requesterId);
+    public void deleteBorrowRequest(@PathVariable int requestId, @RequestParam int userId) {
+        borrowingService.deleteBorrowRequest(requestId, userId);
     }
 
     @GetMapping("/requester/{requesterId}")
