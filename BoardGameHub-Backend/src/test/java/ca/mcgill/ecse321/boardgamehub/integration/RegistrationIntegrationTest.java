@@ -118,7 +118,10 @@ public class RegistrationIntegrationTest {
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertTrue(response.getBody().contains("No event has Id " + INVALID_EVENT_ID));
+
+        String error = response.getBody();
+        assertNotNull(error);
+        assertTrue(error.contains("No event has Id " + INVALID_EVENT_ID));
     }
 
     @Test

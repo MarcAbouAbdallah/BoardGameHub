@@ -4,7 +4,6 @@ import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.dto.BorrowStatusUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.dto.BorrowRequestResponseDto;
 import ca.mcgill.ecse321.boardgamehub.model.BorrowRequest;
-import ca.mcgill.ecse321.boardgamehub.model.BorrowStatus;
 import ca.mcgill.ecse321.boardgamehub.service.BorrowingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
