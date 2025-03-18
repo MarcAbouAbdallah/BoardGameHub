@@ -238,7 +238,7 @@ public class EventService {
         Event registeredEvent = eventRepo.findEventById(registeredEventId);
         if (registeredEvent == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
-                                    "There is no registrered event with ID %s.",
+                                    "There is no registered event with ID %s.",
                                     registeredEventId));
         }
         List<Registration> registrations = registrationRepo.findByKey_RegisteredEvent(registeredEvent);
@@ -260,7 +260,7 @@ public class EventService {
         }
         if (registeredEvent == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
-                                    "There is no registrered event with ID %s.",
+                                    "There is no registered event with ID %s.",
                                     registeredEventId));
         }
         Registration.Key key = new Registration.Key(registrant, registeredEvent);

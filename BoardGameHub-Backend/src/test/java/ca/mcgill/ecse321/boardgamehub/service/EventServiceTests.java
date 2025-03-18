@@ -391,6 +391,7 @@ public class EventServiceTests {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("No game found with ID " + VALID_GAME_ID, exception.getMessage());
     }
+
     @Test
     public void testGetAllEvents_EmptyList() {
         when(mockEventRepo.findAll()).thenReturn(new ArrayList<>());
@@ -405,6 +406,8 @@ public class EventServiceTests {
     public void testFindRegistration_Success() {
         Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
         Registration registration = new Registration(new Registration.Key(VALID_PLAYER, VALID_EVENT));
+        VALID_PLAYER.setId(4);
+        VALID_EVENT.setId(3);
 
         when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(VALID_EVENT);
         when(mockPlayerRepo.findPlayerById(VALID_PLAYER_ID)).thenReturn(VALID_PLAYER);
@@ -433,7 +436,7 @@ public class EventServiceTests {
                 eventService.findRegistration(VALID_EVENT_ID, VALID_PLAYER_ID));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("No registration found for the player and event.", exception.getMessage());
+        assertEquals("No registration found for the given player and event.", exception.getMessage());
     }
 
     @Test
@@ -461,12 +464,14 @@ public class EventServiceTests {
                 eventService.findRegistration(VALID_EVENT_ID, INVALID_PLAYER_ID));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("No player has Id " + INVALID_PLAYER_ID, exception.getMessage());
+        assertEquals("There is no registration with ID " + INVALID_PLAYER_ID + ".", exception.getMessage());
     }
 
     @Test
     public void testFindRegistrationsByRegistrant_Success() {
         Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
+        VALID_PLAYER.setId(4);
+        VALID_EVENT.setId(3);
 
         Registration registration = new Registration(new Registration.Key(VALID_PLAYER, VALID_EVENT));
 
@@ -509,11 +514,11 @@ public class EventServiceTests {
     @Test
     public void testFindRegistrationsByRegisteredEvent_Success() {
         Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
-
+        VALID_EVENT.setId(3);
         Registration registration = new Registration(new Registration.Key(VALID_PLAYER, VALID_EVENT));
 
-        when(mockPlayerRepo.findPlayerById(VALID_PLAYER_ID)).thenReturn(VALID_PLAYER);
-        when(mockRegistrationRepo.findByKey_Registrant(VALID_PLAYER)).thenReturn(List.of(registration));
+        when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(VALID_EVENT);
+        when(mockRegistrationRepo.findByKey_RegisteredEvent(VALID_EVENT)).thenReturn(List.of(registration));
 
         List<Registration> result = eventService.findRegistrationsByEvent(VALID_EVENT_ID);
 
@@ -547,14 +552,15 @@ public class EventServiceTests {
                 eventService.findRegistrationsByEvent(INVALID_EVENT_ID));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("There is no registrered event with ID " + INVALID_EVENT_ID + ".", exception.getMessage());
+        assertEquals("There is no registered event with ID " + INVALID_EVENT_ID + ".", exception.getMessage());
     }   
 
     @Test
     public void testFindAllRegistrations_Success() {
         Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
-
         Registration registration = new Registration(new Registration.Key(VALID_PLAYER, VALID_EVENT));
+        VALID_PLAYER.setId(4);
+        VALID_EVENT.setId(3);
         
         when(mockRegistrationRepo.findAll()).thenReturn(List.of(registration));
 
