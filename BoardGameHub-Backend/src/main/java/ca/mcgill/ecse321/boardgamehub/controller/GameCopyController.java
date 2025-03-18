@@ -1,21 +1,18 @@
 package ca.mcgill.ecse321.boardgamehub.controller;
 
-import ca.mcgill.ecse321.boardgamehub.middleware.RequireUser;
-import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
+import ca.mcgill.ecse321.boardgamehub.dto.GameCopyCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameCopyResponseDto;
+import ca.mcgill.ecse321.boardgamehub.dto.GameCopySearchDto;
+import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.service.PersonalCollectionService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controller class for handling a player's personal collection of GameCopies.
- */
 @RestController
-@RequestMapping("/gameCopies")
+@RequestMapping("/gamecopies")
 public class GameCopyController {
 
     private final PersonalCollectionService collectionService;
@@ -27,14 +24,14 @@ public class GameCopyController {
 
     /**
      * Retrieve the entire personal collection of a given player.
-     * 
-     * @param playerId The ID of the player
+     *
+     * @param searchDto A DTO carrying the playerId.
      * @return A list of GameCopyResponseDto objects
      */
-    @GetMapping("/{playerId}")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<GameCopyResponseDto> getPersonalCollection(@PathVariable Integer playerId) {
-        List<GameCopy> collection = collectionService.getPersonalCollection(playerId);
+    public List<GameCopyResponseDto> getPersonalCollection(@RequestBody GameCopySearchDto searchDto) {
+        List<GameCopy> collection = collectionService.getPersonalCollection(searchDto.getPlayerId());
         return collection.stream()
             .map(GameCopyResponseDto::fromGameCopy)
             .toList();
@@ -42,86 +39,80 @@ public class GameCopyController {
 
     /**
      * Retrieve only the available GameCopies in a player's collection.
-     * 
-     * @param playerId The ID of the player
+     *
+     * @param searchDto A DTO carrying the playerId.
      * @return A list of GameCopyResponseDto objects that are currently available
      */
-    @GetMapping("/{playerId}/available")
+    @GetMapping("/available")
     @ResponseStatus(HttpStatus.OK)
-    public List<GameCopyResponseDto> getAvailableGameCopies(@PathVariable Integer playerId) {
-        List<GameCopy> available = collectionService.getAvailableGames(playerId);
+    public List<GameCopyResponseDto> getAvailableGameCopies(@RequestBody GameCopySearchDto searchDto) {
+        List<GameCopy> available = collectionService.getAvailableGames(searchDto.getPlayerId());
         return available.stream()
             .map(GameCopyResponseDto::fromGameCopy)
             .toList();
     }
 
     /**
-     * Add a new GameCopy to the player's personal collection.
-     * 
-     * @param playerId The ID of the owner/player
-     * @param gameId   The ID of the Game to add
-     * @return The newly added GameCopy as a GameCopyResponseDto
+     * Retrieve a specific GameCopy by its ID.
+     *
+     * @param gameCopyId The ID of the GameCopy to retrieve.
+     * @return The GameCopy as a GameCopyResponseDto.
      */
-    @PostMapping("/{playerId}/add")
-    @RequireUser
-    @ResponseStatus(HttpStatus.CREATED)
-    public GameCopyResponseDto addGameToPersonalCollection(
-            @PathVariable Integer playerId, 
-            @RequestParam Integer gameId) {
+    @GetMapping("/{gameCopyId}")
+    @ResponseStatus(HttpStatus.OK)
+    public GameCopyResponseDto getGameCopyById(@PathVariable int gameCopyId) {
+        GameCopy copy = collectionService.getGameCopyById(gameCopyId);
+        return GameCopyResponseDto.fromGameCopy(copy);
+    }
 
-        GameCopy newCopy = collectionService.addGameToPersonalCollection(playerId, gameId);
+    /**
+     * Create a new GameCopy in the player's personal collection by specifying a game ID.
+     * This endpoint creates a new copy based on an existing game.
+     *
+     * @param creationDto A DTO carrying the playerId and the gameId to add.
+     * @return The newly added GameCopy as a GameCopyResponseDto.
+     */
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public GameCopyResponseDto addGameToPersonalCollection(@RequestBody GameCopyCreationDto creationDto) {
+        GameCopy newCopy = collectionService.addGameToPersonalCollection(creationDto.getPlayerId(), creationDto.getGameId());
         return GameCopyResponseDto.fromGameCopy(newCopy);
     }
 
     /**
-     * Remove a GameCopy from the player's personal collection.
-     * 
-     * @param playerId The ID of the owner/player
-     * @param gameId   The ID of the Game to remove
+     * Update the availability of a specific GameCopy using its game copy ID.
+     * If isAvailable = false, the game copy is lent out; if true, it is returned.
+     *
+     * @param gameCopyId The ID of the GameCopy to update.
+     * @param dto        A DTO containing the new availability status and the ownerId (for permission checking).
+     * @return The updated GameCopy as a GameCopyResponseDto.
      */
-    @DeleteMapping("/{playerId}/remove")
-    @RequireUser
+    @PatchMapping("/{gameCopyId}")
+    @ResponseStatus(HttpStatus.OK)
+    public GameCopyResponseDto updateGameAvailability(
+            @PathVariable int gameCopyId,
+            @RequestBody GameCopyResponseDto dto
+    ) {
+        int playerId = dto.getOwnerId();
+        boolean isAvailable = dto.getIsAvailable();
+        GameCopy updated;
+        if (isAvailable) {
+            updated = collectionService.returnGameCopy(playerId, gameCopyId);
+        } else {
+            updated = collectionService.lendGameCopy(playerId, gameCopyId);
+        }
+        return GameCopyResponseDto.fromGameCopy(updated);
+    }
+
+    /**
+     * Remove a GameCopy from the player's personal collection by game copy ID.
+     *
+     * @param gameCopyId The ID of the GameCopy to remove.
+     */
+    @DeleteMapping("/{gameCopyId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeGameFromPersonalCollection(
-            @PathVariable Integer playerId,
-            @RequestParam Integer gameId) {
-
-        collectionService.removeGameFromPersonalCollection(playerId, gameId);
-    }
-
-    /**
-     * Lend out (make unavailable) a specific GameCopy.
-     * 
-     * @param playerId The ID of the owner/player
-     * @param gameId   The ID of the Game to lend
-     * @return The updated GameCopy as a GameCopyResponseDto
-     */
-    @PostMapping("/{playerId}/lend")
-    @RequireUser
-    @ResponseStatus(HttpStatus.OK)
-    public GameCopyResponseDto lendGameCopy(
-            @PathVariable Integer playerId, 
-            @RequestParam Integer gameId) {
-
-        GameCopy lentCopy = collectionService.lendGameCopy(playerId, gameId);
-        return GameCopyResponseDto.fromGameCopy(lentCopy);
-    }
-
-    /**
-     * Return (make available) a specific GameCopy.
-     * 
-     * @param playerId The ID of the owner/player
-     * @param gameId   The ID of the Game to return
-     * @return The updated GameCopy as a GameCopyResponseDto
-     */
-    @PostMapping("/{playerId}/return")
-    @RequireUser
-    @ResponseStatus(HttpStatus.OK)
-    public GameCopyResponseDto returnGameCopy(
-            @PathVariable Integer playerId, 
-            @RequestParam Integer gameId) {
-
-        GameCopy returnedCopy = collectionService.returnGameCopy(playerId, gameId);
-        return GameCopyResponseDto.fromGameCopy(returnedCopy);
+    public void removeGameFromPersonalCollection(@PathVariable int gameCopyId,
+                                                @RequestParam int userId) {
+        collectionService.removeGameCopy(userId, gameCopyId);
     }
 }

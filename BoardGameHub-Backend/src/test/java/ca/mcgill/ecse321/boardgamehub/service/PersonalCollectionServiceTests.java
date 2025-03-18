@@ -1,15 +1,8 @@
 package ca.mcgill.ecse321.boardgamehub.service;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +15,7 @@ import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -42,14 +36,18 @@ public class PersonalCollectionServiceTests {
     private GameRepository mockGameRepo;
     @Mock
     private GameCopyRepository mockGameCopyRepo;
+
     @InjectMocks
     private PersonalCollectionService personalCollectionService;
     
     private static final int VALID_PLAYER_ID = 0;
     private static final int VALID_GAME_ID = 0;
+    private static final int VALID_GAME_COPY_ID = 1;
+    private static final int OTHER_PLAYER_ID = 2;
+
     private static final Player VALID_PLAYER = new Player("John", "john@mail.com", "jhKLEHGH75*(#$&", true);
     private static final Game VALID_GAME = new Game("Monopoly", 4, 2, "A board game about capitalism basically.");
-    
+
     @BeforeEach
     public void setUp() {
         VALID_PLAYER.setId(VALID_PLAYER_ID);
@@ -58,18 +56,16 @@ public class PersonalCollectionServiceTests {
     
     @Test
     public void testGetPersonalCollectionValid() {
-        // Arrange
         when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
         
         List<GameCopy> collection = new ArrayList<>();
         GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+        gameCopy.setId(VALID_GAME_COPY_ID);
         collection.add(gameCopy);
         when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(collection);
         
-        // Act
         List<GameCopy> result = personalCollectionService.getPersonalCollection(VALID_PLAYER_ID);
         
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(VALID_GAME.getId(), result.get(0).getGame().getId());
@@ -77,10 +73,8 @@ public class PersonalCollectionServiceTests {
     
     @Test
     public void testGetPersonalCollectionInvalidPlayer() {
-        // Arrange: Player not found
         when(mockPlayerRepo.findById(123)).thenReturn(Optional.empty());
         
-        // Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
             personalCollectionService.getPersonalCollection(123);
         });
@@ -90,17 +84,13 @@ public class PersonalCollectionServiceTests {
     
     @Test
     public void testAddGameToPersonalCollectionValid() {
-        // Arrange
         when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
         when(mockGameRepo.findById(VALID_GAME_ID)).thenReturn(Optional.of(VALID_GAME));
-        // Player does not yet own this game
         when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(new ArrayList<>());
         when(mockGameCopyRepo.save(any(GameCopy.class))).thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
         
-        // Act
         GameCopy added = personalCollectionService.addGameToPersonalCollection(VALID_PLAYER_ID, VALID_GAME_ID);
         
-        // Assert
         assertNotNull(added);
         assertTrue(added.getIsAvailable());
         assertEquals(VALID_GAME, added.getGame());
@@ -109,17 +99,14 @@ public class PersonalCollectionServiceTests {
     
     @Test
     public void testAddGameToPersonalCollectionAlreadyOwned() {
-        // Arrange
         when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
         when(mockGameRepo.findById(VALID_GAME_ID)).thenReturn(Optional.of(VALID_GAME));
         
-        // Return a list with a copy that has the same game
         List<GameCopy> collection = new ArrayList<>();
         GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
         collection.add(gameCopy);
         when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(collection);
         
-        // Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
             personalCollectionService.addGameToPersonalCollection(VALID_PLAYER_ID, VALID_GAME_ID);
         });
@@ -128,52 +115,65 @@ public class PersonalCollectionServiceTests {
     }
     
     @Test
-    public void testRemoveGameFromPersonalCollectionValid() {
+    public void testRemoveGameCopy_ValidOwnership() {
         // Arrange
-        when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
-        when(mockGameRepo.findById(VALID_GAME_ID)).thenReturn(Optional.of(VALID_GAME));
-        
-        List<GameCopy> collection = new ArrayList<>();
         GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
-        collection.add(gameCopy);
-        when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(collection);
-        
-        // Act & Assert
-        assertDoesNotThrow(() -> personalCollectionService.removeGameFromPersonalCollection(VALID_PLAYER_ID, VALID_GAME_ID));
+        gameCopy.setId(VALID_GAME_COPY_ID);
+
+        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
+
+        // Act & Assert: Should not throw, and the repo should delete the game copy
+        assertDoesNotThrow(() -> personalCollectionService.removeGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID));
         verify(mockGameCopyRepo, times(1)).delete(gameCopy);
     }
-    
+
     @Test
-    public void testRemoveGameFromPersonalCollectionNotFound() {
+    public void testRemoveGameCopy_NotOwner() {
+        // Arrange: The copy's owner is VALID_PLAYER, but we pass OTHER_PLAYER_ID
+        Player otherPlayer = new Player("Jane", "jane@mail.com", "pwd", false);
+        otherPlayer.setId(OTHER_PLAYER_ID);
+
+        // The copy belongs to VALID_PLAYER
+        GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+        gameCopy.setId(VALID_GAME_COPY_ID);
+
+        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
+
+        // Act & Assert: Expect 403 FORBIDDEN
+        BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
+            personalCollectionService.removeGameCopy(OTHER_PLAYER_ID, VALID_GAME_COPY_ID);
+        });
+        assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+        assertEquals("You are not the owner of this game copy. Deletion is not allowed.", e.getMessage());
+    }
+
+    @Test
+    public void testRemoveGameCopy_NotFound() {
         // Arrange
-        when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
-        when(mockGameRepo.findById(VALID_GAME_ID)).thenReturn(Optional.of(VALID_GAME));
-        // Player's collection is empty
-        when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(new ArrayList<>());
+        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.empty());
         
         // Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
-            personalCollectionService.removeGameFromPersonalCollection(VALID_PLAYER_ID, VALID_GAME_ID);
+            personalCollectionService.removeGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
         });
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-        assertEquals("Game not found in player's collection.", e.getMessage());
+        assertEquals(String.format("Game copy with ID %d not found.", VALID_GAME_COPY_ID), e.getMessage());
     }
-    
+
     @Test
     public void testGetAvailableGames() {
-        // Arrange
         when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
         List<GameCopy> collection = new ArrayList<>();
         GameCopy availableCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+        availableCopy.setId(VALID_GAME_COPY_ID);
         GameCopy lentCopy = new GameCopy(false, VALID_GAME, VALID_PLAYER);
+        lentCopy.setId(VALID_GAME_COPY_ID + 1);
         collection.add(availableCopy);
         collection.add(lentCopy);
         when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(collection);
         
-        // Act
         List<GameCopy> availableGames = personalCollectionService.getAvailableGames(VALID_PLAYER_ID);
         
-        // Assert
         assertNotNull(availableGames);
         assertEquals(1, availableGames.size());
         assertTrue(availableGames.get(0).getIsAvailable());
@@ -181,38 +181,27 @@ public class PersonalCollectionServiceTests {
     
     @Test
     public void testLendGameCopyValid() {
-        // Arrange
         when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
-        when(mockGameRepo.findById(VALID_GAME_ID)).thenReturn(Optional.of(VALID_GAME));
-        List<GameCopy> collection = new ArrayList<>();
-        // Initially available
         GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
-        collection.add(gameCopy);
-        when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(collection);
+        gameCopy.setId(VALID_GAME_COPY_ID);
+        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
         when(mockGameCopyRepo.save(any(GameCopy.class))).thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
         
-        // Act
-        GameCopy lent = personalCollectionService.lendGameCopy(VALID_PLAYER_ID, VALID_GAME_ID);
+        GameCopy lent = personalCollectionService.lendGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
         
-        // Assert
         assertNotNull(lent);
         assertFalse(lent.getIsAvailable());
     }
     
     @Test
     public void testLendGameCopyAlreadyLent() {
-        // Arrange
         when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
-        when(mockGameRepo.findById(VALID_GAME_ID)).thenReturn(Optional.of(VALID_GAME));
-        List<GameCopy> collection = new ArrayList<>();
-        // Already lent out
         GameCopy gameCopy = new GameCopy(false, VALID_GAME, VALID_PLAYER);
-        collection.add(gameCopy);
-        when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(collection);
+        gameCopy.setId(VALID_GAME_COPY_ID);
+        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
         
-        // Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
-            personalCollectionService.lendGameCopy(VALID_PLAYER_ID, VALID_GAME_ID);
+            personalCollectionService.lendGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
         });
         assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
         assertEquals("Game copy is already lent out.", e.getMessage());
@@ -220,38 +209,27 @@ public class PersonalCollectionServiceTests {
     
     @Test
     public void testReturnGameCopyValid() {
-        // Arrange
         when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
-        when(mockGameRepo.findById(VALID_GAME_ID)).thenReturn(Optional.of(VALID_GAME));
-        List<GameCopy> collection = new ArrayList<>();
-        // Initially lent out (not available)
         GameCopy gameCopy = new GameCopy(false, VALID_GAME, VALID_PLAYER);
-        collection.add(gameCopy);
-        when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(collection);
+        gameCopy.setId(VALID_GAME_COPY_ID);
+        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
         when(mockGameCopyRepo.save(any(GameCopy.class))).thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
         
-        // Act
-        GameCopy returned = personalCollectionService.returnGameCopy(VALID_PLAYER_ID, VALID_GAME_ID);
+        GameCopy returned = personalCollectionService.returnGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
         
-        // Assert
         assertNotNull(returned);
         assertTrue(returned.getIsAvailable());
     }
     
     @Test
     public void testReturnGameCopyAlreadyAvailable() {
-        // Arrange
         when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
-        when(mockGameRepo.findById(VALID_GAME_ID)).thenReturn(Optional.of(VALID_GAME));
-        List<GameCopy> collection = new ArrayList<>();
-        // Already available
         GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
-        collection.add(gameCopy);
-        when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(collection);
+        gameCopy.setId(VALID_GAME_COPY_ID);
+        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
         
-        // Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
-            personalCollectionService.returnGameCopy(VALID_PLAYER_ID, VALID_GAME_ID);
+            personalCollectionService.returnGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
         });
         assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
         assertEquals("Game copy is already available.", e.getMessage());

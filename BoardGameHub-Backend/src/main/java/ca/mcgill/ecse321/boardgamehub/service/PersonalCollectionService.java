@@ -58,9 +58,16 @@ public class PersonalCollectionService {
     }
 
     @Transactional
-    public void removeGameFromPersonalCollection(int playerId, int gameId) {
-        Player player = findPlayerOrThrow(playerId);
-        GameCopy toRemove = findGameCopyInCollection(player, findGameOrThrow(gameId));
+    public void removeGameCopy(int userId, int gameCopyId) {
+        // Retrieve the game copy to remove
+        GameCopy toRemove = findGameCopyOrThrow(gameCopyId);
+
+        // Permission check: Only the owner can delete
+        if (toRemove.getOwner() == null || toRemove.getOwner().getId() != userId) {
+            throw new BoardGameHubException(HttpStatus.FORBIDDEN,
+                    "You are not the owner of this game copy. Deletion is not allowed.");
+        }
+
         gameCopyRepository.delete(toRemove);
     }
 
@@ -74,44 +81,51 @@ public class PersonalCollectionService {
     }
 
     @Transactional
-    public GameCopy lendGameCopy(int playerId, int gameId) {
+    public GameCopy lendGameCopy(int playerId, int gameCopyId) {
         Player player = findPlayerOrThrow(playerId);
-        Game game = findGameOrThrow(gameId);
+        GameCopy target = findGameCopyOrThrow(gameCopyId);
 
-        GameCopy target = findGameCopyInCollection(player, game);
+        if (target.getOwner().getId() != player.getId()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Game copy does not belong to the specified player.");
+        }
         if (!target.getIsAvailable()) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
                     "Game copy is already lent out.");
         }
+
         target.setIsAvailable(false);
         return gameCopyRepository.save(target);
     }
 
     @Transactional
-    public GameCopy returnGameCopy(int playerId, int gameId) {
+    public GameCopy returnGameCopy(int playerId, int gameCopyId) {
         Player player = findPlayerOrThrow(playerId);
-        Game game = findGameOrThrow(gameId);
+        GameCopy target = findGameCopyOrThrow(gameCopyId);
 
-        GameCopy target = findGameCopyInCollection(player, game);
+        if (target.getOwner().getId() != player.getId()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Game copy does not belong to the specified player.");
+        }
         if (target.getIsAvailable()) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
                     "Game copy is already available.");
         }
+
         target.setIsAvailable(true);
         return gameCopyRepository.save(target);
     }
 
-    // Helper to locate a game copy in a player's collection
-    private GameCopy findGameCopyInCollection(Player player, Game game) {
-        List<GameCopy> copies = gameCopyRepository.findByOwner(player);
-        for (GameCopy copy : copies) {
-            if (copy.getGame().getId() == game.getId()) {
-                return copy;
-            }
-        }
-        throw new BoardGameHubException(
-            HttpStatus.NOT_FOUND,
-            "Game not found in player's collection.");
+    @Transactional(readOnly = true)
+    public GameCopy getGameCopyById(int gameCopyId) {
+        return findGameCopyOrThrow(gameCopyId);
+    }
+
+    private GameCopy findGameCopyOrThrow(int gameCopyId) {
+        return gameCopyRepository.findById(gameCopyId)
+            .orElseThrow(() -> new BoardGameHubException(
+                HttpStatus.NOT_FOUND,
+                String.format("Game copy with ID %d not found.", gameCopyId)));
     }
 
     private Player findPlayerOrThrow(int playerId) {

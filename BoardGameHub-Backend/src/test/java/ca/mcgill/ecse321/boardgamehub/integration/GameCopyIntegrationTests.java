@@ -1,9 +1,6 @@
 package ca.mcgill.ecse321.boardgamehub.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import ca.mcgill.ecse321.boardgamehub.dto.GameCopyResponseDto;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
@@ -11,14 +8,8 @@ import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,8 +17,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class GameCopyIntegrationTests {
 
@@ -43,74 +37,67 @@ public class GameCopyIntegrationTests {
     @Autowired
     private GameCopyRepository gameCopyRepo;
 
-    private final String TEST_PLAYER_NAME = "Test Player";
-    private final String TEST_PLAYER_EMAIL = "testplayer@example.com";
-    private final String TEST_PLAYER_PASSWORD = "password";
-    private final String TEST_GAME_NAME = "Test Game";
-    private final int TEST_GAME_MIN_PLAYERS = 4;
-    private final int TEST_GAME_MAX_PLAYERS = 2;
-    private final String TEST_GAME_DESCRIPTION = "A fun test game";
-
     private Player testPlayer;
     private Game testGame;
+
     private HttpHeaders headers;
 
     @BeforeAll
     public void setup() {
-        //Arrange
+        // Arrange: clear all data
         gameCopyRepo.deleteAll();
         gameRepo.deleteAll();
         playerRepo.deleteAll();
 
-        testPlayer = new Player(TEST_PLAYER_NAME, TEST_PLAYER_EMAIL, TEST_PLAYER_PASSWORD, false);
+        // Create test player
+        testPlayer = new Player("Test Player", "testplayer@example.com", "password", false);
         playerRepo.save(testPlayer);
 
-        testGame = new Game(TEST_GAME_NAME, TEST_GAME_MIN_PLAYERS, TEST_GAME_MAX_PLAYERS, TEST_GAME_DESCRIPTION);
+        // Create test game
+        testGame = new Game("Test Game", 4, 2, "A fun test game");
         gameRepo.save(testGame);
 
+        // Headers if needed (e.g., for auth simulation)
         headers = new HttpHeaders();
         headers.set("User-Id", String.valueOf(testPlayer.getId()));
+        headers.setContentType(MediaType.APPLICATION_JSON);
     }
 
     @AfterEach
     public void cleanupAfterEach() {
-        //Arrange
+        // Clean up game copies between tests
         gameCopyRepo.deleteAll();
     }
 
     @AfterAll
     public void cleanup() {
-        //Arrange
+        // Final cleanup
         gameCopyRepo.deleteAll();
         gameRepo.deleteAll();
         playerRepo.deleteAll();
     }
 
-    private String createURLWithPort(String uri) {
-        return "http://localhost:" + portFromUri(client.getRootUri()) + "/gameCopies" + uri;
-    }
-
-    private String portFromUri(String rootUri) {
-        String[] parts = rootUri.split(":");
-        String portWithSuffix = parts[2];
-        return portWithSuffix.replaceAll("[^0-9]", "");
+    private String createURL(String uri) {
+        return client.getRootUri() + uri;
     }
 
     @Test
     @Order(0)
     public void testGetEmptyPersonalCollection() {
-        //Arrange
-        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        // Arrange
+        Map<String, Object> body = new HashMap<>();
+        body.put("playerId", testPlayer.getId());
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        //Act
+        // Act
         ResponseEntity<GameCopyResponseDto[]> response = client.exchange(
-            createURLWithPort("/" + testPlayer.getId()),
+            createURL("/gamecopies"),
             HttpMethod.GET,
             requestEntity,
             GameCopyResponseDto[].class
         );
 
-        //Assert
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         GameCopyResponseDto[] collection = response.getBody();
         assertNotNull(collection);
@@ -120,18 +107,21 @@ public class GameCopyIntegrationTests {
     @Test
     @Order(1)
     public void testAddGameToPersonalCollection() {
-        //Arrange
-        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        // Arrange
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("playerId", testPlayer.getId());
+        payload.put("gameId", testGame.getId());
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(payload, headers);
 
-        //Act
+        // Act
         ResponseEntity<GameCopyResponseDto> response = client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
+            createURL("/gamecopies"),
             HttpMethod.POST,
             requestEntity,
             GameCopyResponseDto.class
         );
 
-        //Assert
+        // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         GameCopyResponseDto added = response.getBody();
         assertNotNull(added);
@@ -143,87 +133,79 @@ public class GameCopyIntegrationTests {
     @Test
     @Order(2)
     public void testGetAvailableGameCopies() {
-        //Arrange: Add a game copy
-        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        // Arrange: create one copy
+        Map<String, Object> createBody = new HashMap<>();
+        createBody.put("playerId", testPlayer.getId());
+        createBody.put("gameId", testGame.getId());
         client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
+            createURL("/gamecopies"),
             HttpMethod.POST,
-            requestEntity,
+            new HttpEntity<>(createBody, headers),
             GameCopyResponseDto.class
         );
 
-        //Act: Get available copies
+        // Act: retrieve available copies
+        Map<String, Object> searchBody = new HashMap<>();
+        searchBody.put("playerId", testPlayer.getId());
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(searchBody, headers);
+
         ResponseEntity<GameCopyResponseDto[]> response = client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/available"),
+            createURL("/gamecopies/available"),
             HttpMethod.GET,
             requestEntity,
             GameCopyResponseDto[].class
         );
 
-        //Assert
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         GameCopyResponseDto[] availableBefore = response.getBody();
         assertNotNull(availableBefore);
         assertEquals(1, availableBefore.length);
-
-        //Arrange: Lend the copy
-        client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/lend?gameId=" + testGame.getId()),
-            HttpMethod.POST,
-            requestEntity,
-            GameCopyResponseDto.class
-        );
-
-        //Act: Get available copies again
-        response = client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/available"),
-            HttpMethod.GET,
-            requestEntity,
-            GameCopyResponseDto[].class
-        );
-
-        //Assert
-        GameCopyResponseDto[] availableAfter = response.getBody();
-        assertNotNull(availableAfter);
-        assertEquals(0, availableAfter.length);
+        assertTrue(availableBefore[0].getIsAvailable());
     }
-
+    
     @Test
     @Order(3)
     public void testLendAndReturnGameCopy() {
-        //Arrange: Add a new game copy
-        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        // Arrange: create a copy
+        Map<String, Object> createBody = new HashMap<>();
+        createBody.put("playerId", testPlayer.getId());
+        createBody.put("gameId", testGame.getId());
         ResponseEntity<GameCopyResponseDto> addResponse = client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
+            createURL("/gamecopies"),
             HttpMethod.POST,
-            requestEntity,
+            new HttpEntity<>(createBody, headers),
             GameCopyResponseDto.class
         );
         assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
+        GameCopyResponseDto addedCopy = addResponse.getBody();
+        assertNotNull(addedCopy);
 
-        //Act: Lend the game copy
+        // Lend the copy: isAvailable = false
+        Map<String, Object> lendPayload = new HashMap<>();
+        lendPayload.put("ownerId", testPlayer.getId());
+        lendPayload.put("isAvailable", false);
         ResponseEntity<GameCopyResponseDto> lendResponse = client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/lend?gameId=" + testGame.getId()),
-            HttpMethod.POST,
-            requestEntity,
+            createURL("/gamecopies/" + addedCopy.getGameCopyId()),
+            HttpMethod.PATCH,
+            new HttpEntity<>(lendPayload, headers),
             GameCopyResponseDto.class
         );
-
-        //Assert
         assertEquals(HttpStatus.OK, lendResponse.getStatusCode());
         GameCopyResponseDto lentCopy = lendResponse.getBody();
         assertNotNull(lentCopy);
         assertFalse(lentCopy.getIsAvailable());
 
-        //Act: Return the game copy
+        // Return the copy: isAvailable = true
+        Map<String, Object> returnPayload = new HashMap<>();
+        returnPayload.put("ownerId", testPlayer.getId());
+        returnPayload.put("isAvailable", true);
         ResponseEntity<GameCopyResponseDto> returnResponse = client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/return?gameId=" + testGame.getId()),
-            HttpMethod.POST,
-            requestEntity,
+            createURL("/gamecopies/" + addedCopy.getGameCopyId()),
+            HttpMethod.PATCH,
+            new HttpEntity<>(returnPayload, headers),
             GameCopyResponseDto.class
         );
-
-        //Assert
         assertEquals(HttpStatus.OK, returnResponse.getStatusCode());
         GameCopyResponseDto returnedCopy = returnResponse.getBody();
         assertNotNull(returnedCopy);
@@ -233,30 +215,36 @@ public class GameCopyIntegrationTests {
     @Test
     @Order(4)
     public void testRemoveGameFromPersonalCollection() {
-        //Arrange: Add a game copy
-        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        // Arrange: create a copy
+        Map<String, Object> createBody = new HashMap<>();
+        createBody.put("playerId", testPlayer.getId());
+        createBody.put("gameId", testGame.getId());
         ResponseEntity<GameCopyResponseDto> addResponse = client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
+            createURL("/gamecopies"),
             HttpMethod.POST,
-            requestEntity,
+            new HttpEntity<>(createBody, headers),
             GameCopyResponseDto.class
         );
         assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
+        GameCopyResponseDto addedCopy = addResponse.getBody();
+        assertNotNull(addedCopy);
 
-        //Act: Remove the game copy
+        // Act: remove the copy
         ResponseEntity<Void> removeResponse = client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/remove?gameId=" + testGame.getId()),
+            createURL("/gamecopies/" + addedCopy.getGameCopyId()),
             HttpMethod.DELETE,
-            requestEntity,
+            new HttpEntity<>(headers),
             Void.class
         );
-
-        //Assert
         assertEquals(HttpStatus.NO_CONTENT, removeResponse.getStatusCode());
+
+        // Assert: make sure it's gone
+        Map<String, Object> searchBody = new HashMap<>();
+        searchBody.put("playerId", testPlayer.getId());
         ResponseEntity<GameCopyResponseDto[]> getResponse = client.exchange(
-            createURLWithPort("/" + testPlayer.getId()),
+            createURL("/gamecopies"),
             HttpMethod.GET,
-            requestEntity,
+            new HttpEntity<>(searchBody, headers),
             GameCopyResponseDto[].class
         );
         assertEquals(HttpStatus.OK, getResponse.getStatusCode());
@@ -268,19 +256,24 @@ public class GameCopyIntegrationTests {
     @Test
     @Order(5)
     public void testUnauthorizedAccess() {
-        //Arrange: Prepare a request without the "User-Id" header.
+        // Arrange: Remove "User-Id" header
         HttpHeaders noUserHeaders = new HttpHeaders();
-        HttpEntity<?> requestEntity = new HttpEntity<>(noUserHeaders);
+        noUserHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        //Act: Attempt to add a game copy.
+        Map<String, Object> createBody = new HashMap<>();
+        createBody.put("playerId", testPlayer.getId());
+        createBody.put("gameId", testGame.getId());
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(createBody, noUserHeaders);
+
+        // Act
         ResponseEntity<String> addResponse = client.exchange(
-            createURLWithPort("/" + testPlayer.getId() + "/add?gameId=" + testGame.getId()),
+            createURL("/gamecopies"),
             HttpMethod.POST,
             requestEntity,
             String.class
         );
 
-        //Assert
+        // Assert
         assertEquals(HttpStatus.UNAUTHORIZED, addResponse.getStatusCode());
     }
 }

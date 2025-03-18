@@ -1,39 +1,31 @@
 package ca.mcgill.ecse321.boardgamehub.dto;
 
-import ca.mcgill.ecse321.boardgamehub.model.Game;
-import ca.mcgill.ecse321.boardgamehub.model.Player;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.AssertTrue;
-
 public class GameCopyCreationDto {
-    @NotNull(message = "Game cannot be empty.")
-    private Game game;
-
-    @NotNull(message = "Owner cannot be empty.")
-    private Player owner;
-
-    @AssertTrue(message = "isAvailable must be true")
-    private boolean isAvailable;
-
-    protected GameCopyCreationDto() {}
-
-    public GameCopyCreationDto(Game game, Player owner, boolean isAvailable) {
-        this.game = game;
-        this.owner = owner;
-        this.isAvailable = isAvailable;
+    
+    private int playerId;
+    private int gameId;
+    
+    public GameCopyCreationDto() {
     }
-
-    //getters
-
-    public boolean getIsAvailable(){
-        return isAvailable;
+    
+    public GameCopyCreationDto(int playerId, int gameId) {
+        this.playerId = playerId;
+        this.gameId = gameId;
     }
-
-    public Game getGame(){
-        return game;
+    
+    public int getPlayerId() {
+        return playerId;
     }
-
-    public Player getOwner(){
-        return owner;
+    
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
+    
+    public int getGameId() {
+        return gameId;
+    }
+    
+    public void setGameId(int gameId) {
+        this.gameId = gameId;
     }
 }
