@@ -214,7 +214,7 @@ public class EventIntegrationTests {
 
         EventUpdateDto dto = new EventUpdateDto(null, newDescription, newLocation, newDate, newStartTime, newEndTime, null, null);
 
-        String url = "/events/" + createdEventId + "?organizerId=" + VALID_ORGANIZER.getId();
+        String url = "/events/" + createdEventId + "?userId=" + VALID_ORGANIZER.getId();
 
         ResponseEntity<EventResponseDto> response = client.exchange(url, HttpMethod.PUT, new HttpEntity<>(dto), EventResponseDto.class);
 
@@ -246,7 +246,7 @@ public class EventIntegrationTests {
         Player unauthorizedPlayer = new Player("Unauthorized", "", "123", true);
         playerRepo.save(unauthorizedPlayer);
 
-        String url = "/events/" + createdEventId + "?organizerId=" + unauthorizedId;
+        String url = "/events/" + createdEventId + "?userId=" + unauthorizedId;
 
         ResponseEntity<String> response = client.exchange(url, HttpMethod.PUT, new HttpEntity<>(dto), String.class);
 
@@ -267,7 +267,7 @@ public class EventIntegrationTests {
         EventUpdateDto dto = new EventUpdateDto(null, null, newLocation, null, null, null, null, null);
 
         int wrongId = createdEventId + 1;
-        String url = "/events/" + wrongId + "?organizerId=" + VALID_ORGANIZER.getId();
+        String url = "/events/" + wrongId + "?userId=" + VALID_ORGANIZER.getId();
 
         ResponseEntity<String> response = client.exchange(url, HttpMethod.PUT, new HttpEntity<>(dto), String.class);
 
@@ -284,7 +284,7 @@ public class EventIntegrationTests {
     @Order(8)
     public void testDeleteEvent_NotFound() {
         int wrongId = createdEventId + 1;
-        String url = "/events/" + wrongId + "?organizerId=" + VALID_ORGANIZER.getId();
+        String url = "/events/" + wrongId + "?userId=" + VALID_ORGANIZER.getId();
 
         ResponseEntity<String> response = client.exchange(url, HttpMethod.DELETE, null, String.class);
 
@@ -305,7 +305,7 @@ public class EventIntegrationTests {
         Player unauthorizedPlayer = new Player("Unauthorized", "", "123", true);
         playerRepo.save(unauthorizedPlayer);
 
-        String url = "/events/" + createdEventId + "?organizerId=" + unauthorizedId;
+        String url = "/events/" + createdEventId + "?userId=" + unauthorizedId;
 
         ResponseEntity<String> response = client.exchange(url, HttpMethod.DELETE, null, String.class);
 
@@ -321,7 +321,7 @@ public class EventIntegrationTests {
     @Test
     @Order(10)
     public void testDeleteEvent() {
-        String url = "/events/" + createdEventId + "?organizerId=" + VALID_ORGANIZER.getId();
+        String url = "/events/" + createdEventId + "?userId=" + VALID_ORGANIZER.getId();
 
         ResponseEntity<Void> response = client.exchange(url, HttpMethod.DELETE, null, Void.class);
 

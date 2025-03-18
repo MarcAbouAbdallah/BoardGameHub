@@ -89,14 +89,15 @@ public class EventService {
     }
 
     @Transactional
-    public void deleteEvent(int evenId, int playerId) {
-        Event event = findEventById(evenId);
-        Player player = playerRepo.findPlayerById(playerId);
+    public void deleteEvent(int eventId, int userId) {
+        Event event = findEventById(eventId);
+        Player player = playerRepo.findPlayerById(userId);
         if (player == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
-                                            String.format("No player has Id %d", playerId));
+                                            String.format("No player has Id %d", userId));
         }
 
+        // Check that the user is the event organizer
         if (!event.getOrganizer().equals(player)) {
             throw new BoardGameHubException(HttpStatus.FORBIDDEN, 
                                             "You are not the organizer of this event.");
@@ -106,13 +107,13 @@ public class EventService {
     }
 
     @Transactional
-    public Event updateEvent(@Valid EventUpdateDto eventDTO, int eventId, int organizerId) {
+    public Event updateEvent(@Valid EventUpdateDto eventDTO, int eventId, int userId) {
         Event event = findEventById(eventId);
 
-        Player player = playerRepo.findPlayerById(organizerId);
+        Player player = playerRepo.findPlayerById(userId);
         if (player == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
-                                            String.format("No player has Id %d", organizerId));
+                                            String.format("No player has Id %d", userId));
         }
 
         if (!event.getOrganizer().equals(player)) {
