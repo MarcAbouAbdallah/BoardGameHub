@@ -5,10 +5,10 @@ import jakarta.validation.constraints.Positive;
 
 public class GameCreationDto {
     @NotBlank(message = "Game name cannot be empty.")
-    private String gameName;
+    private String name;
 
     @NotBlank(message = "Game description cannot be empty.")
-    private String gameDescription;
+    private String description;
 
     @Positive(message = "MaxPlayers must be a positive number")
     private int maxPlayers;
@@ -19,14 +19,14 @@ public class GameCreationDto {
     protected GameCreationDto() {}
 
     public GameCreationDto(String name, String description, int maxPlayers, int minPlayers) {
-        this.gameName = name;
-        this.gameDescription = description;
+        this.name = name;
+        this.description = description;
         this.maxPlayers = maxPlayers;
         this.minPlayers = minPlayers;
     }
 
     public String getName(){
-        return gameName;
+        return name;
     }
 
     public int getMaxPlayers(){
@@ -38,6 +38,6 @@ public class GameCreationDto {
     }
 
     public String getDescription(){
-        return gameDescription;
+        return description;
     }
 }
