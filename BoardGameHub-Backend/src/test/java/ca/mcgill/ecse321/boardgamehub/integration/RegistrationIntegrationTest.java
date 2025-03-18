@@ -150,9 +150,8 @@ public class RegistrationIntegrationTest {
     @Test
     @Order(4)
     public void testFindRegistrationsByNonExistentPlayer() {
-        int VALID_EVENT_ID = VALID_EVENT.getId();
         int INVALID_PLAYER_ID = 99999;
-        String url = "/registrations/" + VALID_EVENT_ID + "/" + INVALID_PLAYER_ID;
+        String url = "/registrations/player/" + INVALID_PLAYER_ID;
         
         ResponseEntity<Void> response = client.getForEntity(url, Void.class);
 
@@ -162,6 +161,95 @@ public class RegistrationIntegrationTest {
 
     @Test
     @Order(5)
+    public void testFindRegistrationsByEvent() {
+        int VALID_EVENT_ID = VALID_EVENT.getId();
+        String url = "/registrations/event/" + VALID_EVENT_ID;
+        
+        ResponseEntity<RegistrationDto[]> response = client.getForEntity(url, RegistrationDto[].class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        RegistrationDto[] registrations = response.getBody();
+        assertNotNull(registrations);
+        assertTrue(registrations.length > 0);
+
+        boolean found = false;
+        for (RegistrationDto registrationDto : registrations) {
+            if (registrationDto.getRegistrantId() == VALID_PLAYER.getId() &&
+                registrationDto.getRegisteredEventId() == VALID_EVENT_ID) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
+    }
+
+    @Test
+    @Order(6)
+    public void testFindRegistrationsByNonExistentEvent() {
+        int INVALID_EVENT_ID = 99999;
+        String url = "/registrations/event/" + INVALID_EVENT_ID;
+        
+        ResponseEntity<Void> response = client.getForEntity(url, Void.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(7)
+    public void testFindAllRegistrations() {
+        String url = "/registrations";
+        
+        ResponseEntity<RegistrationDto[]> response = client.getForEntity(url, RegistrationDto[].class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        RegistrationDto[] registrations = response.getBody();
+        assertNotNull(registrations);
+        assertTrue(registrations.length > 0);
+
+        RegistrationDto registration = registrations[0];
+        assertNotNull(registration);
+        assertNotNull(registration.getRegisteredEvent());
+        assertNotNull(registration.getRegistrant());
+    }
+
+    @Test
+    @Order(8)
+    public void testFindRegistration() {
+        int VALID_EVENT_ID = VALID_EVENT.getId();
+        int VALID_PLAYER_ID = VALID_PLAYER.getId();
+        String url = "/registrations/" + VALID_EVENT_ID + "/" + VALID_PLAYER_ID;
+        
+        ResponseEntity<RegistrationDto> response = client.getForEntity(url, RegistrationDto.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        
+        RegistrationDto registrationDto = response.getBody();
+        assertNotNull(registrationDto);
+        assertEquals(VALID_EVENT_ID, registrationDto.getRegisteredEventId());
+        assertEquals(VALID_PLAYER_ID, registrationDto.getRegistrantId());
+    }
+
+    @Test
+    @Order(9)
+    public void testFindRegistrationWithNonExistentId() {
+        int INVALID_EVENT_ID = 99999;
+        int INVALID_PLAYER_ID = 99999;
+        String url = "/registrations/" + INVALID_EVENT_ID + "/" + INVALID_PLAYER_ID;
+        
+        ResponseEntity<Void> response = client.getForEntity(url, Void.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+}
+
+    @Test
+    @Order(10)
     public void testDeleteValidRegistration() {
         int VALID_EVENT_ID = VALID_EVENT.getId();
         int VALID_PLAYER_ID = VALID_PLAYER.getId();
@@ -174,7 +262,7 @@ public class RegistrationIntegrationTest {
     }
 
     @Test
-    @Order(6)
+    @Order(11)
     public void testDeleteNonExistentRegistration() {
         int INVALID_EVENT_ID = 99999;
         int INVALID_PLAYER_ID = 99999;
