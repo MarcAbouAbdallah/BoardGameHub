@@ -1,15 +1,21 @@
 package ca.mcgill.ecse321.boardgamehub.service;
 
+import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
+import ca.mcgill.ecse321.boardgamehub.model.BorrowRequest;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,14 +25,16 @@ public class PersonalCollectionService {
     private final PlayerRepository playerRepository;
     private final GameRepository gameRepository;
     private final GameCopyRepository gameCopyRepository;
+    private final BorrowRequestRepository borrowRequestRepository;
 
     @Autowired
     public PersonalCollectionService(PlayerRepository playerRepository,
                                          GameRepository gameRepository,
-                                         GameCopyRepository gameCopyRepository) {
+                                         GameCopyRepository gameCopyRepository, BorrowRequestRepository borrowRequestRepository) {
         this.playerRepository = playerRepository;
         this.gameRepository = gameRepository;
         this.gameCopyRepository = gameCopyRepository;
+        this.borrowRequestRepository = borrowRequestRepository;
     }
 
     @Transactional(readOnly = true)
@@ -127,5 +135,48 @@ public class PersonalCollectionService {
     private Game findGameOrThrow(Integer gameId) {
         return gameRepository.findById(gameId)
             .orElseThrow(() -> new IllegalArgumentException("Game with ID " + gameId + " not found."));
+    }
+
+    public Player getOwnerById(int id){
+        GameCopy copy = gameCopyRepository.findGameCopyById(id);
+        if (copy == null){
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Game copy does not exist");
+        }
+        else{
+            return copy.getOwner();
+        }
+    }
+
+    public Player getHolderById(int id){
+        GameCopy copy = gameCopyRepository.findGameCopyById(id);
+        if (copy == null){
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Game copy does not exist");
+        }
+        else{
+            //game being avaiable implies that whoever owns it currently has it
+            if (copy.getIsAvailable()){
+                return copy.getOwner();
+            }
+            else{
+                //This may need to be updated to use the actual BorrowRequestService once that's implemented
+                List<BorrowRequest> requests = borrowRequestRepository.findByRequestee(copy.getOwner());
+                for (BorrowRequest borrowRequest : requests) {
+
+                    //Set todays date
+                    LocalDate today = LocalDate.now();
+                    Date sqlDate = Date.valueOf(today);
+
+                    /* Borrow requests are valid from the day they start so we need to 
+                    check if the request started before tomorrow not before today */
+                    Date sqlTomorrow = Date.valueOf(today.plusDays(1));
+
+                    if (borrowRequest.getGame().getId() == id && borrowRequest.getEndDate().after(sqlDate) && borrowRequest.getStartDate().before(sqlTomorrow)){
+                        return borrowRequest.getRequester();
+                    }
+                }
+                //No valid borrowrequest was found
+                throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Current holder of game not found");
+            }
+        }
     }
 }

@@ -146,4 +146,6 @@ public class PersonalCollectionServiceTests {
         );
         assertTrue(exception.getMessage().contains("Game copy is already available"), "Expected exception for returning an available game copy.");
     }
+
+    
 }
