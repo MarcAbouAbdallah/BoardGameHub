@@ -28,6 +28,7 @@ public class RegistrationController {
      * 
      * @param eventId the ID of the event to register for
      * @param playerId the ID of the player registering for the event
+     * @return A Response Entity
      */
     @PostMapping("registrations/{eventId}/{playerId}")
     @ResponseStatus(HttpStatus.CREATED)
