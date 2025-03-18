@@ -63,5 +63,5 @@ The scope of this deliverable includes completing the code with the service & co
 |Marleine Atalla||||
 |Jerome Courtemanche||||
 |Bora Denizasan||||
-|Mubeen Mohammed||||
+|Mubeen Mohammed|Developer|Implemented the PlayerService and PlayerController along with their respective unit and integration test. Reviewed other teammates pull request and contributed to project documentation|~15h|
 |Raphaël Verger|Developer|Implemented the "PersonalCollectionService" and "GameCopyController" along with their respective tests; and contributed to project documentation.|~16h|
