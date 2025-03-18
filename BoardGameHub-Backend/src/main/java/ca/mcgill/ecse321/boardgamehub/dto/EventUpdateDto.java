@@ -3,6 +3,10 @@ package ca.mcgill.ecse321.boardgamehub.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.springframework.http.HttpStatus;
+
+import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
+
 public class EventUpdateDto {
     private String name;
     private String description;
@@ -49,5 +53,32 @@ public class EventUpdateDto {
 
     public Integer getGame() { return gameId; }
     public void setGame(Integer game) { this.gameId = game; }
+
+    public void validate(){
+        
+        if (name != null && name.isBlank()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,"Event name cannot be blank.");
+        }
+
+        if (location != null && location.isBlank()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,"Event location cannot be blank.");
+        }
+
+        if (maxParticipants != null && maxParticipants <= 0) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,"Maximum participants must be greater than zero.");
+        }
+
+        if (date != null && date.isBefore(LocalDate.now())) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,"Event date must be in the future.");
+        }
+
+        if (startTime != null && endTime != null && !startTime.isBefore(endTime)) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,"Start time must be before end time.");
+        }
+
+        if ((startTime == null && endTime != null) || (startTime != null && endTime == null)) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,"Both start and end time must be provided.");
+        }
+    }
 }
 

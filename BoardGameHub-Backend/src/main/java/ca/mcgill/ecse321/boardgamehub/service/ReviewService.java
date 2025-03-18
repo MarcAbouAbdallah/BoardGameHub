@@ -7,21 +7,22 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewCreationDto;
-import ca.mcgill.ecse321.boardgamehub.dto.ReviewSearchDto;
+import ca.mcgill.ecse321.boardgamehub.dto.ReviewUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
+import ca.mcgill.ecse321.boardgamehub.model.Game;
+import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.model.Review;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
-import ca.mcgill.ecse321.boardgamehub.model.Review;
-import ca.mcgill.ecse321.boardgamehub.model.Game;
-import ca.mcgill.ecse321.boardgamehub.model.Player;
-
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Service
+@Validated
 public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepo;
@@ -58,6 +59,36 @@ public class ReviewService {
 
         return reviewRepo.save(review);
     }
+    
+    public Review editReview(int id, @Valid ReviewUpdateDto editedReview) {
+
+        Date today = Date.valueOf(LocalDate.now());
+
+        Review review = reviewRepo.findReviewById(id);
+
+        if (review == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            String.format("No review has Id %d", id));
+        }
+
+        review.setRating(editedReview.getRating());
+        review.setComment(editedReview.getComment());
+        review.setDate(today);
+
+        return reviewRepo.save(review);
+    }
+
+    @Transactional
+    public void deleteReview(int id) {
+        Review review = reviewRepo.findReviewById(id);
+
+        if (review == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            String.format("No review has Id %d", id));
+        }
+
+        reviewRepo.delete(review);
+    }
 
     public Review findReviewById(int id) {
         Review review = reviewRepo.findReviewById(id);
@@ -68,20 +99,30 @@ public class ReviewService {
         return review;
     }
 
-    public List<Review> findByReviewerAndGame(@Valid ReviewSearchDto dto) {
-        Player reviewer = playerRepo.findPlayerById(dto.getReviewerId());
+    public List<Review> findByReviewerAndGame(String gameName, int reviewerId) {
+        Player reviewer = playerRepo.findPlayerById(reviewerId);
         if (reviewer == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
                                     "There is no person with ID %d.",
-                                    dto.getReviewerId()));
+                                    reviewerId));
         }
 
-        Game game = gameRepo.findGameByName(dto.getGameName());
+        Game game = gameRepo.findGameByName(gameName);
         if (game == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
                                     "There is no game with name %s.",
-                                    dto.getGameName()));
+                                    gameName));
         }
         return reviewRepo.findByReviewerAndGame(reviewer, game);
+    }
+
+    public List<Review> findByGame(String gameName) {
+        Game game = gameRepo.findGameByName(gameName);
+        if (game == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no game with name %s.",
+                                    gameName));
+        }
+        return reviewRepo.findByGame(game);
     }
 }

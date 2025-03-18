@@ -3,10 +3,12 @@ package ca.mcgill.ecse321.boardgamehub.service;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 
@@ -21,11 +23,11 @@ import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
 import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
-
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Service
+@Validated
 public class EventService {
     @Autowired
     private EventRepository eventRepo;
@@ -39,6 +41,7 @@ public class EventService {
 
     @Transactional
     public Event createEvent(@Valid EventCreationDto eventToCreate) {
+        validateDto(eventToCreate);
 
         Player organizer = playerRepo.findPlayerById(eventToCreate.getOrganizer());
         if (organizer == null) {
@@ -106,11 +109,19 @@ public class EventService {
     public Event updateEvent(@Valid EventUpdateDto eventDTO, int eventId, int organizerId) {
         Event event = findEventById(eventId);
 
-        if (event.getOrganizer().getId() != (organizerId)) {
-            throw new BoardGameHubException(HttpStatus.FORBIDDEN, "You are not authorized to update this event.");
+        Player player = playerRepo.findPlayerById(organizerId);
+        if (player == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            String.format("No player has Id %d", organizerId));
         }
 
-        // Updating non-null fields
+        if (!event.getOrganizer().equals(player)) {
+            throw new BoardGameHubException(HttpStatus.FORBIDDEN, 
+                                            "You are not the organizer of this event.");
+        }
+
+        eventDTO.validate();
+
         if (eventDTO.getName() != null) event.setName(eventDTO.getName());
         if (eventDTO.getDescription() != null) event.setDescription(eventDTO.getDescription());
         if (eventDTO.getLocation() != null) event.setLocation(eventDTO.getLocation());
@@ -119,7 +130,6 @@ public class EventService {
         if (eventDTO.getEndTime() != null) event.setEndTime(Time.valueOf(eventDTO.getEndTime()));
         if (eventDTO.getMaxParticipants() != null) event.setMaxParticipants(eventDTO.getMaxParticipants());
 
-        // If the game is changed, this checks it exists
         if (eventDTO.getGame() != null) {
             GameCopy newGame = gameRepo.findGameCopyById(eventDTO.getGame());
             if (newGame == null) {
@@ -131,7 +141,37 @@ public class EventService {
         return eventRepo.save(event);
     }
 
+    public int getParticipantsCount(int eventId) {
+        Event event = findEventById(eventId);
+        return (int) registrationRepo.countByKey_RegisteredEvent(event);
+    }
 
+    public void validateDto(EventCreationDto eventToCreate) {
+        if (eventToCreate.getName().isBlank()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Event name cannot be blank.");
+        }
+
+        if (eventToCreate.getLocation().isBlank()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Event location cannot be blank.");
+        }
+
+        if (eventToCreate.getDescription().isBlank()) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Event description cannot be blank.");
+        }
+
+        if (eventToCreate.getMaxParticipants() <= 0) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Maximum participants must be greater than zero.");
+        }
+
+        if (eventToCreate.getDate().isBefore(LocalDate.now())) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Event date must be in the future.");
+        }
+
+        if (eventToCreate.getStartTime().isAfter(eventToCreate.getEndTime())) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "End time must be after start time.");
+        }
+    }
+  
     @Transactional
     public Registration registerToEvent(int eventId, int playerId) {
         Event event = findEventById(eventId);
@@ -141,7 +181,7 @@ public class EventService {
                                             String.format("No player has Id %d", playerId));
         }
 
-        int participants = (int) registrationRepo.countByKey_RegisteredEvent(event);
+        int participants = getParticipantsCount(eventId);
 
         if (participants >= event.getMaxParticipants()) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, 
@@ -177,5 +217,64 @@ public class EventService {
         registrationRepo.delete(registration);
     }
 
+    @Transactional
+    public List<Registration> findRegistrationsByPlayer(int registrantId) {
+        Player registrant = playerRepo.findPlayerById(registrantId);
+        if (registrant == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no registration with ID %s.",
+                                    registrantId));
+        }
+        List<Registration> registrations = registrationRepo.findByKey_Registrant(registrant);
+        if (registrations.isEmpty()) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+            "No registration found for player ID " + registrantId + ".");
+        }
+        return registrationRepo.findByKey_Registrant(registrant);
+    }
+
+    @Transactional
+    public List<Registration> findRegistrationsByEvent(int registeredEventId) {
+        Event registeredEvent = eventRepo.findEventById(registeredEventId);
+        if (registeredEvent == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no registrered event with ID %s.",
+                                    registeredEventId));
+        }
+        List<Registration> registrations = registrationRepo.findByKey_RegisteredEvent(registeredEvent);
+        if (registrations.isEmpty()) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+            "No registration found for player ID " + registeredEventId + ".");
+        }
+        return registrationRepo.findByKey_RegisteredEvent(registeredEvent);
+    }
+
+    @Transactional
+    public Registration findRegistration(int registeredEventId, int registrantId) {
+        Event registeredEvent = findEventById(registeredEventId);
+        Player registrant = playerRepo.findPlayerById(registrantId);
+        if (registrant == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no registration with ID %s.",
+                                    registrantId));
+        }
+        if (registeredEvent == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no registrered event with ID %s.",
+                                    registeredEventId));
+        }
+        Registration.Key key = new Registration.Key(registrant, registeredEvent);
+        Registration registration = registrationRepo.findRegistrationByKey(key);
+        if (registration == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
+                                            "No registration found for the given player and event.");
+        }
+        return registration;
+    }
+
+    @Transactional
+    public List<Registration> findAllRegistrations() {
+        return registrationRepo.findAll();
+    }
 
 }

@@ -14,6 +14,8 @@ import ca.mcgill.ecse321.boardgamehub.dto.PlayerCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerLoginDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 
+import java.util.List;
+
 
 @Service
 @Validated
@@ -21,22 +23,28 @@ public class PlayerService {
     @Autowired
     private PlayerRepository playerRepository;
     
-
-
-
     @Transactional
-    public Player RegisterPlayer(@Valid PlayerCreationDto playerCreationDto) {
-        Player p = new Player(
+    public Player registerPlayer(@Valid PlayerCreationDto playerCreationDto) {
+
+        List<Player> players = (List<Player>) playerRepository.findAll();
+
+        for (Player p : players) {
+            if (p.getEmail().equals(playerCreationDto.getEmail())) {
+                throw new BoardGameHubException(HttpStatus.CONFLICT, "Email already in use");
+            }
+        }
+
+        Player PlayerToRegister = new Player(
             playerCreationDto.getName(),
             playerCreationDto.getEmail(),
             playerCreationDto.getPassword(),
-            playerCreationDto.getIsGameOwner()
+            false
         );
-        return playerRepository.save(p);
+        return playerRepository.save(PlayerToRegister);
     }
 
     @Transactional
-    public Player Login(@Valid PlayerLoginDto playerLoginDto) {
+    public Player login(@Valid PlayerLoginDto playerLoginDto) {
         Player player = playerRepository.findPlayerByEmail(playerLoginDto.getEmail());
         if (player == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Incorrect email or account does not exist");
@@ -49,7 +57,7 @@ public class PlayerService {
     }
 
     @Transactional
-    public void DeletePlayer(int id) {
+    public void deletePlayer(int id) {
         Player p = playerRepository.findPlayerById(id);
         if (p == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Player does not exist");
@@ -59,7 +67,7 @@ public class PlayerService {
     }
 
     @Transactional
-    public Player RetrievePlayer(int id) {
+    public Player getPlayerById(int id) {
         Player p = playerRepository.findPlayerById(id);
         if (p == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Player does not exist");
@@ -67,5 +75,28 @@ public class PlayerService {
         return p;
         
     }
+
+    @Transactional
+    public Player updatePlayer(int id, @Valid PlayerCreationDto playerCreationDto) {
+        Player p = playerRepository.findPlayerById(id);
+        if (p == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, "Player does not exist");
+        }
+
+        List<Player> players = (List<Player>) playerRepository.findAll();
+        
+        for (Player existingPlayer : players) {
+            if (existingPlayer.getEmail().equals(playerCreationDto.getEmail())) {
+                throw new BoardGameHubException(HttpStatus.CONFLICT, "Email already in use");
+            }
+        }
+
+        p.setName(playerCreationDto.getName());
+        p.setEmail(playerCreationDto.getEmail());
+        p.setPassword(playerCreationDto.getPassword());
+        p.setIsGameOwner(playerCreationDto.getIsGameOwner());
+        return playerRepository.save(p);
+    }
+    
 
 }
