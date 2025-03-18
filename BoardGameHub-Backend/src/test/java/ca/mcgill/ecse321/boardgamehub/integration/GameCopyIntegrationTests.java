@@ -134,13 +134,12 @@ public class GameCopyIntegrationTests {
     @Order(2)
     public void testGetAvailableGameCopies() {
         // Arrange: create one copy
-        Map<String, Object> createBody = new HashMap<>();
-        createBody.put("playerId", testPlayer.getId());
-        createBody.put("gameId", testGame.getId());
-        client.exchange(
+        Map<String, Object> createPayload = new HashMap<>();
+        createPayload.put("playerId", testPlayer.getId());
+        createPayload.put("gameId", testGame.getId());
+        client.postForEntity(
             createURL("/gamecopies"),
-            HttpMethod.POST,
-            new HttpEntity<>(createBody, headers),
+            new HttpEntity<>(createPayload, headers),
             GameCopyResponseDto.class
         );
 
@@ -158,23 +157,22 @@ public class GameCopyIntegrationTests {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        GameCopyResponseDto[] availableBefore = response.getBody();
-        assertNotNull(availableBefore);
-        assertEquals(1, availableBefore.length);
-        assertTrue(availableBefore[0].getIsAvailable());
+        GameCopyResponseDto[] available = response.getBody();
+        assertNotNull(available);
+        assertEquals(1, available.length);
+        assertTrue(available[0].getIsAvailable());
     }
-    
+
     @Test
     @Order(3)
     public void testLendAndReturnGameCopy() {
         // Arrange: create a copy
-        Map<String, Object> createBody = new HashMap<>();
-        createBody.put("playerId", testPlayer.getId());
-        createBody.put("gameId", testGame.getId());
-        ResponseEntity<GameCopyResponseDto> addResponse = client.exchange(
+        Map<String, Object> createPayload = new HashMap<>();
+        createPayload.put("playerId", testPlayer.getId());
+        createPayload.put("gameId", testGame.getId());
+        ResponseEntity<GameCopyResponseDto> addResponse = client.postForEntity(
             createURL("/gamecopies"),
-            HttpMethod.POST,
-            new HttpEntity<>(createBody, headers),
+            new HttpEntity<>(createPayload, headers),
             GameCopyResponseDto.class
         );
         assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
@@ -216,29 +214,29 @@ public class GameCopyIntegrationTests {
     @Order(4)
     public void testRemoveGameFromPersonalCollection() {
         // Arrange: create a copy
-        Map<String, Object> createBody = new HashMap<>();
-        createBody.put("playerId", testPlayer.getId());
-        createBody.put("gameId", testGame.getId());
-        ResponseEntity<GameCopyResponseDto> addResponse = client.exchange(
+        Map<String, Object> createPayload = new HashMap<>();
+        createPayload.put("playerId", testPlayer.getId());
+        createPayload.put("gameId", testGame.getId());
+        ResponseEntity<GameCopyResponseDto> addResponse = client.postForEntity(
             createURL("/gamecopies"),
-            HttpMethod.POST,
-            new HttpEntity<>(createBody, headers),
+            new HttpEntity<>(createPayload, headers),
             GameCopyResponseDto.class
         );
         assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
         GameCopyResponseDto addedCopy = addResponse.getBody();
         assertNotNull(addedCopy);
 
-        // Act: remove the copy
-        ResponseEntity<Void> removeResponse = client.exchange(
-            createURL("/gamecopies/" + addedCopy.getGameCopyId()),
+        // Act: DELETE /gamecopies/{gameCopyId}?userId={testPlayer.getId()}
+        ResponseEntity<Void> deleteResponse = client.exchange(
+            createURL("/gamecopies/" + addedCopy.getGameCopyId() + "?userId=" + testPlayer.getId()),
             HttpMethod.DELETE,
             new HttpEntity<>(headers),
             Void.class
         );
-        assertEquals(HttpStatus.NO_CONTENT, removeResponse.getStatusCode());
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, deleteResponse.getStatusCode());
 
-        // Assert: make sure it's gone
+        // Act: GET /gamecopies with body {playerId} to verify deletion
         Map<String, Object> searchBody = new HashMap<>();
         searchBody.put("playerId", testPlayer.getId());
         ResponseEntity<GameCopyResponseDto[]> getResponse = client.exchange(
@@ -247,6 +245,7 @@ public class GameCopyIntegrationTests {
             new HttpEntity<>(searchBody, headers),
             GameCopyResponseDto[].class
         );
+        // Assert
         assertEquals(HttpStatus.OK, getResponse.getStatusCode());
         GameCopyResponseDto[] collection = getResponse.getBody();
         assertNotNull(collection);
@@ -255,25 +254,134 @@ public class GameCopyIntegrationTests {
 
     @Test
     @Order(5)
-    public void testUnauthorizedAccess() {
-        // Arrange: Remove "User-Id" header
-        HttpHeaders noUserHeaders = new HttpHeaders();
-        noUserHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-        Map<String, Object> createBody = new HashMap<>();
-        createBody.put("playerId", testPlayer.getId());
-        createBody.put("gameId", testGame.getId());
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(createBody, noUserHeaders);
-
-        // Act
-        ResponseEntity<String> addResponse = client.exchange(
+    public void testRemoveGameFromPersonalCollection_Unauthorized() {
+        // Arrange: Create a game copy as testPlayer
+        Map<String, Object> createPayload = new HashMap<>();
+        createPayload.put("playerId", testPlayer.getId());
+        createPayload.put("gameId", testGame.getId());
+        ResponseEntity<GameCopyResponseDto> addResponse = client.postForEntity(
             createURL("/gamecopies"),
-            HttpMethod.POST,
-            requestEntity,
+            new HttpEntity<>(createPayload, headers),
+            GameCopyResponseDto.class
+        );
+        assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
+        GameCopyResponseDto addedCopy = addResponse.getBody();
+        assertNotNull(addedCopy);
+
+        // Arrange: Create an unauthorized player (different from testPlayer)
+        Player unauthorizedPlayer = new Player("Unauthorized User", "unauth@example.com", "pwd123", false);
+        playerRepo.save(unauthorizedPlayer);
+
+        // Act: Attempt to DELETE using unauthorized user's ID in the query parameter
+        ResponseEntity<String> deleteResponse = client.exchange(
+            createURL("/gamecopies/" + addedCopy.getGameCopyId() + "?userId=" + unauthorizedPlayer.getId()),
+            HttpMethod.DELETE,
+            new HttpEntity<>(headers),
             String.class
         );
 
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, addResponse.getStatusCode());
+        // Assert: Expect FORBIDDEN (403)
+        assertEquals(HttpStatus.FORBIDDEN, deleteResponse.getStatusCode());
+        String errorBody = deleteResponse.getBody();
+        assertNotNull(errorBody);
+        assertTrue(errorBody.contains("not the owner") || errorBody.contains("Deletion is not allowed"),
+                "Error message should indicate the user is not the owner.");
+    }
+
+    @Test
+    @Order(6)
+    public void testUnauthorizedLendGameCopy() {
+        // Arrange: Create a game copy with testPlayer as owner
+        Map<String, Object> createPayload = new HashMap<>();
+        createPayload.put("playerId", testPlayer.getId());
+        createPayload.put("gameId", testGame.getId());
+        ResponseEntity<GameCopyResponseDto> addResponse = client.postForEntity(
+            createURL("/gamecopies"),
+            new HttpEntity<>(createPayload, headers),
+            GameCopyResponseDto.class
+        );
+        assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
+        GameCopyResponseDto createdCopy = addResponse.getBody();
+        assertNotNull(createdCopy);
+
+        // Arrange: Create an unauthorized player
+        Player unauthorizedPlayer = new Player("Unauthorized", "unauth@example.com", "pwd123", false);
+        playerRepo.save(unauthorizedPlayer);
+
+        // Arrange: Build lend payload using unauthorized player's ID
+        Map<String, Object> lendPayload = new HashMap<>();
+        lendPayload.put("ownerId", unauthorizedPlayer.getId());
+        lendPayload.put("isAvailable", false);
+        
+        // Act: Attempt to lend using the unauthorized owner's ID
+        ResponseEntity<String> lendResponse = client.exchange(
+            createURL("/gamecopies/" + createdCopy.getGameCopyId()),
+            HttpMethod.PATCH,
+            new HttpEntity<>(lendPayload, headers),
+            String.class
+        );
+        
+        // Assert: Expect BAD_REQUEST (400) with error message indicating ownership mismatch
+        assertEquals(HttpStatus.BAD_REQUEST, lendResponse.getStatusCode());
+        String error = lendResponse.getBody();
+        assertNotNull(error);
+        assertTrue(error.contains("does not belong to the specified player"),
+                "Error message should indicate the game copy is not owned by the provided userId.");
+    }
+
+    @Test
+    @Order(7)
+    public void testUnauthorizedReturnGameCopy() {
+        // Arrange: Create a game copy with testPlayer as owner and lend it out properly
+        Map<String, Object> createPayload = new HashMap<>();
+        createPayload.put("playerId", testPlayer.getId());
+        createPayload.put("gameId", testGame.getId());
+        ResponseEntity<GameCopyResponseDto> addResponse = client.postForEntity(
+            createURL("/gamecopies"),
+            new HttpEntity<>(createPayload, headers),
+            GameCopyResponseDto.class
+        );
+        assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
+        GameCopyResponseDto createdCopy = addResponse.getBody();
+        assertNotNull(createdCopy);
+
+        // Lend the copy with testPlayer (authorized)
+        Map<String, Object> lendPayload = new HashMap<>();
+        lendPayload.put("ownerId", testPlayer.getId());
+        lendPayload.put("isAvailable", false);
+        ResponseEntity<GameCopyResponseDto> lendResponse = client.exchange(
+            createURL("/gamecopies/" + createdCopy.getGameCopyId()),
+            HttpMethod.PATCH,
+            new HttpEntity<>(lendPayload, headers),
+            GameCopyResponseDto.class
+        );
+        assertEquals(HttpStatus.OK, lendResponse.getStatusCode());
+        GameCopyResponseDto lentCopy = lendResponse.getBody();
+        assertNotNull(lentCopy);
+        assertFalse(lentCopy.getIsAvailable());
+
+        // Arrange: Create an unauthorized player for the return attempt
+        Player unauthorizedPlayer = new Player("Unauthorized", "unauth@example.com", "pwd123", false);
+        playerRepo.save(unauthorizedPlayer);
+
+        // Build return payload using unauthorized player's ID
+        Map<String, Object> returnPayload = new HashMap<>();
+        returnPayload.put("ownerId", unauthorizedPlayer.getId());
+        returnPayload.put("isAvailable", true);
+
+        // Act: Attempt to return using the unauthorized owner's ID
+        ResponseEntity<String> returnResponse = client.exchange(
+            createURL("/gamecopies/" + createdCopy.getGameCopyId()),
+            HttpMethod.PATCH,
+            new HttpEntity<>(returnPayload, headers),
+            String.class
+        );
+        
+        // Assert: Expect BAD_REQUEST (400) with error message indicating ownership mismatch
+        assertEquals(HttpStatus.BAD_REQUEST, returnResponse.getStatusCode());
+        String error = returnResponse.getBody();
+        assertNotNull(error);
+        assertTrue(error.contains("does not belong to the specified player"),
+                "Error message should indicate the game copy is not owned by the provided userId.");
     }
 }
