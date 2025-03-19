@@ -224,4 +224,22 @@ public class PlayerServiceTests {
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
         assertEquals("Player does not exist", e.getMessage());
     }
+
+    @Test
+    public void testUpdateEmailAlreadyInUse() {
+        //Arrange
+        int id = 0;
+        Player John = new Player(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, false);
+        when(mockPlayerRepository.findPlayerById(id)).thenReturn(John);
+        when(mockPlayerRepository.findAll()).thenReturn(java.util.List.of(John));
+
+        PlayerUpdateDto updatedJohn = new PlayerUpdateDto("Jane Doe", VALID_EMAIL, "password456", true);
+
+        //Act & Assert
+        BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
+            playerService.updatePlayer(id, updatedJohn);
+        });
+        assertEquals(HttpStatus.CONFLICT, e.getStatus());
+        assertEquals("Email already in use", e.getMessage());
+    }
 }
