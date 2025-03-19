@@ -79,7 +79,6 @@ public class ReviewServiceTests {
         assertEquals(VALID_PLAYER_ID, createdReview.getReviewer().getId());
         assertEquals(VALID_GAME_NAME, createdReview.getGame().getName());
         assertEquals(date, createdReview.getDate());
-        //Should there be an assertion for the date as it is created autonomously in the service...??
     }
 
     @Test
@@ -145,8 +144,6 @@ public class ReviewServiceTests {
         when(mockReviewRepo.findByReviewerAndGame(VALID_PLAYER, VALID_GAME))
         .thenReturn(reviewList);
 
-        //ReviewSearchDto dto = new ReviewSearchDto(VALID_PLAYER_ID, VALID_GAME_NAME);
-
         //Act
         List<Review> foundReviewList = reviewService.findByReviewerAndGame(VALID_GAME_NAME, VALID_PLAYER_ID);
         Review foundReview = foundReviewList.get(0);
@@ -173,8 +170,6 @@ public class ReviewServiceTests {
          * for player first and then game)
         */
 
-        //ReviewSearchDto dto = new ReviewSearchDto(1588809,VALID_GAME_NAME);
-
         //Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class,
                                                () -> reviewService.findByReviewerAndGame(VALID_GAME_NAME, 1588809));
@@ -188,8 +183,6 @@ public class ReviewServiceTests {
         //By default repo returns null on invalid search.
         when(mockPlayerRepo.findPlayerById(0))
         .thenReturn(VALID_PLAYER);
-
-        //ReviewSearchDto dto = new ReviewSearchDto(VALID_PLAYER.getId(),"Risk");
 
         //Act & Assert
         BoardGameHubException e = assertThrows(BoardGameHubException.class,

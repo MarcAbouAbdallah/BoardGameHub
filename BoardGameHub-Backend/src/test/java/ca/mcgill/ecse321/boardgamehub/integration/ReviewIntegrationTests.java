@@ -184,8 +184,7 @@ public class ReviewIntegrationTests {
 		assertEquals(VALID_COMMENT, responseItem.getComment());
         assertEquals(VALID_PLAYER.getId(), responseItem.getReviewerId());
         assertEquals(VALID_GAME.getName(), responseItem.getGameName());
-        //assertEquals(Date.valueOf(LocalDate.now()), response.getBody().getReviewDate());
-		//No real way to get the date for assertions since it is created in service... Will ask TA about this.
+		//No real way to get the date for assertions since it is created in service
     }
 
     @Test
@@ -216,7 +215,6 @@ public class ReviewIntegrationTests {
             null,
             ReviewResponseDto[].class
         );
-        //ReviewResponseDto responseItem = response.getBody()[0];
         ReviewResponseDto[] responseArray = response.getBody();
         assertNotNull(responseArray);
         assertNotNull(responseArray[0]);
@@ -231,8 +229,7 @@ public class ReviewIntegrationTests {
 		assertEquals(VALID_COMMENT, responseItem.getComment());
         assertEquals(VALID_PLAYER.getId(), responseItem.getReviewerId());
         assertEquals(VALID_GAME.getName(), responseItem.getGameName());
-        //assertEquals(Date.valueOf(LocalDate.now()), response.getBody().getReviewDate());
-		//No real way to get the date for assertions since it is created in service... Will ask TA about this.
+		//No real way to get the date for assertions since it is created in service
     }
 
     @Test
@@ -271,7 +268,7 @@ public class ReviewIntegrationTests {
         //Arrange
         ReviewUpdateDto dto = new ReviewUpdateDto(4, "NVM, I don't like the game now");
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");  // This is just an example; adjust as needed.
+        headers.set("Content-Type", "application/json");
         
         // Wrap the body (dto) and headers in HttpEntity
         HttpEntity<ReviewUpdateDto> httpEntity = new HttpEntity<>(dto, headers);
@@ -297,7 +294,7 @@ public class ReviewIntegrationTests {
         //Arrange
         ReviewUpdateDto dto = new ReviewUpdateDto(4, "NVM, I don't like the game now");
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");  // This is just an example; adjust as needed.
+        headers.set("Content-Type", "application/json");
         
         // Wrap the body (dto) and headers in HttpEntity
         HttpEntity<ReviewUpdateDto> httpEntity = new HttpEntity<>(dto, headers);
