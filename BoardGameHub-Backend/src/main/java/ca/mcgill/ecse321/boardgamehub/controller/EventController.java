@@ -50,7 +50,7 @@ public class EventController {
      * Get a particular event by its id
      * 
      * @param eventId The id of the event to get
-     * @return An eventResponseDto containing the event with the given id
+     * @return An eventResponseDto containing the event and its current participants count
      */
     @GetMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
@@ -63,7 +63,7 @@ public class EventController {
     /**
      * Get all events
      * 
-     * @return A List of eventResponseDto containing all events
+     * @return A List of eventResponseDto containing all events with their participants count
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -78,13 +78,13 @@ public class EventController {
      * 
      * @param eventId The id of the event to update
      * @param eventToUpdate An EventUpdateDto containing the updated event
-     * @param organizerId The id of the user making the update (to check if they are the organizer)
+     * @param userId The id of the user making the update (to check if they are the event organizer)
      * @return An eventResponseDto containing the updated event
      */
     @PutMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public EventResponseDto updateEvent(@PathVariable int eventId, @RequestBody EventUpdateDto eventToUpdate, @RequestParam int organizerId) {
-        Event updatedEvent = eventService.updateEvent(eventToUpdate, eventId, organizerId);
+    public EventResponseDto updateEvent(@PathVariable int eventId, @RequestBody EventUpdateDto eventToUpdate, @RequestParam int userId) {
+        Event updatedEvent = eventService.updateEvent(eventToUpdate, eventId, userId);
         int participantsCount = eventService.getParticipantsCount(eventId);
         return new EventResponseDto(updatedEvent, participantsCount);
     }
@@ -93,12 +93,12 @@ public class EventController {
      * Delete an event
      * 
      * @param eventId The id of the event to delete
-     * @param organizerId The id of the user making the delete request (to check if they are the organizer)
+     * @param userId The id of the user making the delete request (to check if they are the organizer)
      * @return void
      */
     @DeleteMapping("/{eventId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteEvent(@PathVariable int eventId, @RequestParam int organizerId) {
-        eventService.deleteEvent(eventId, organizerId);
+    public void deleteEvent(@PathVariable int eventId, @RequestParam int userId) {
+        eventService.deleteEvent(eventId, userId);
     }
 }

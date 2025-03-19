@@ -68,6 +68,7 @@ public class PlayerIntegrationTests {
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         PlayerResponseDto createdPlayer = response.getBody();
+        assertNotNull(createdPlayer);
         VALID_ID = createdPlayer.getId();
         assertNotNull(createdPlayer);
         assertEquals(VALID_NAME, createdPlayer.getName());

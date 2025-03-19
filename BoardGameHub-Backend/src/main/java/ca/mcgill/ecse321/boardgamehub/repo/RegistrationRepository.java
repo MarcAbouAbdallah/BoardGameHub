@@ -12,6 +12,5 @@ public interface RegistrationRepository extends CrudRepository<Registration, Reg
     public Registration findRegistrationByKey(Registration.Key key);
     public List<Registration> findByKey_Registrant(Player registrant);
     public List<Registration> findByKey_RegisteredEvent(Event registeredEvent);
-    public List<Registration> findAll();
     public int countByKey_RegisteredEvent(Event registeredEvent);
 }

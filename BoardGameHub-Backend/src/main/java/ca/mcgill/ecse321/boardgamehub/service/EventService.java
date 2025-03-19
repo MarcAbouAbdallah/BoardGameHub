@@ -89,14 +89,15 @@ public class EventService {
     }
 
     @Transactional
-    public void deleteEvent(int evenId, int playerId) {
-        Event event = findEventById(evenId);
-        Player player = playerRepo.findPlayerById(playerId);
+    public void deleteEvent(int eventId, int userId) {
+        Event event = findEventById(eventId);
+        Player player = playerRepo.findPlayerById(userId);
         if (player == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
-                                            String.format("No player has Id %d", playerId));
+                                            String.format("No player has Id %d", userId));
         }
 
+        // Check that the user is the event organizer
         if (!event.getOrganizer().equals(player)) {
             throw new BoardGameHubException(HttpStatus.FORBIDDEN, 
                                             "You are not the organizer of this event.");
@@ -106,13 +107,13 @@ public class EventService {
     }
 
     @Transactional
-    public Event updateEvent(@Valid EventUpdateDto eventDTO, int eventId, int organizerId) {
+    public Event updateEvent(@Valid EventUpdateDto eventDTO, int eventId, int userId) {
         Event event = findEventById(eventId);
 
-        Player player = playerRepo.findPlayerById(organizerId);
+        Player player = playerRepo.findPlayerById(userId);
         if (player == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
-                                            String.format("No player has Id %d", organizerId));
+                                            String.format("No player has Id %d", userId));
         }
 
         if (!event.getOrganizer().equals(player)) {
@@ -222,7 +223,7 @@ public class EventService {
         Player registrant = playerRepo.findPlayerById(registrantId);
         if (registrant == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
-                                    "There is no registration with ID %s.",
+                                    "There is no registrant with ID %s.",
                                     registrantId));
         }
         List<Registration> registrations = registrationRepo.findByKey_Registrant(registrant);
@@ -234,34 +235,34 @@ public class EventService {
     }
 
     @Transactional
-    public List<Registration> findRegistrationsByEvent(int registeredEventId) {
-        Event registeredEvent = eventRepo.findEventById(registeredEventId);
+    public List<Registration> findRegistrationsByEvent(int eventId) {
+        Event registeredEvent = eventRepo.findEventById(eventId);
         if (registeredEvent == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
                                     "There is no registered event with ID %s.",
-                                    registeredEventId));
+                                    eventId));
         }
         List<Registration> registrations = registrationRepo.findByKey_RegisteredEvent(registeredEvent);
         if (registrations.isEmpty()) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, 
-            "No registration found for player ID " + registeredEventId + ".");
+            "No registration found for event ID " + eventId + ".");
         }
         return registrationRepo.findByKey_RegisteredEvent(registeredEvent);
     }
 
     @Transactional
-    public Registration findRegistration(int registeredEventId, int registrantId) {
-        Event registeredEvent = findEventById(registeredEventId);
+    public Registration findRegistration(int eventId, int registrantId) {
+        Event registeredEvent = findEventById(eventId);
         Player registrant = playerRepo.findPlayerById(registrantId);
         if (registrant == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
-                                    "There is no registration with ID %s.",
+                                    "There is no registrant with ID %s.",
                                     registrantId));
         }
         if (registeredEvent == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
                                     "There is no registered event with ID %s.",
-                                    registeredEventId));
+                                    eventId));
         }
         Registration.Key key = new Registration.Key(registrant, registeredEvent);
         Registration registration = registrationRepo.findRegistrationByKey(key);
@@ -274,7 +275,7 @@ public class EventService {
 
     @Transactional
     public List<Registration> findAllRegistrations() {
-        return registrationRepo.findAll();
+        return (List<Registration>) registrationRepo.findAll();
     }
 
 }
