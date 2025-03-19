@@ -234,6 +234,4 @@ public class PersonalCollectionServiceTests {
         assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
         assertEquals("Game copy is already available.", e.getMessage());
     }
-
-    
 }
