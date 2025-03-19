@@ -4,11 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,12 +12,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
-import ca.mcgill.ecse321.boardgamehub.dto.GameCopyCreationDto;
-import ca.mcgill.ecse321.boardgamehub.dto.GameCopyUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
-import ca.mcgill.ecse321.boardgamehub.model.BorrowRequest;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
@@ -47,12 +39,12 @@ public class GameManagementServiceTests {
     private static final int VALID_GAME_ID = 1;
     private static final int INVALID_GAME_ID = 99;
     private static final int VALID_GAME_COPY_ID = 2;
-    private static final int INVALID_GAME_COPY_ID = 100;
 
+    @SuppressWarnings("unused")
+    private Player validBorrower;
     private Game validGame;
     private GameCopy validGameCopy;
     private Player validPlayer;
-    private Player validBorrower;
 
     @BeforeEach
     void setup() {
@@ -82,6 +74,17 @@ public class GameManagementServiceTests {
         assertEquals("A strategy game", createdGame.getDescription());
         assertEquals(2, createdGame.getMaxPlayers());
         assertEquals(2, createdGame.getMinPlayers());
+    }
+
+    @Test
+    void testCreateGame_Failure() {
+        GameCreationDto dto = new GameCreationDto("Chess", "A strategy game", 3, 5);
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            gameManagementService.createGame(dto);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+        assertEquals("Min players cannot exceed max players.", exception.getMessage());
     }
 
 
@@ -123,13 +126,12 @@ public class GameManagementServiceTests {
     @Test
     void testUpdateGame_NotFound() {
         GameUpdateDto dto = new GameUpdateDto("Updated Chess", "New Description", 4, 2);
-        when(gameRepo.findGameById(INVALID_GAME_ID)).thenReturn(null);
 
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
             gameManagementService.updateGame(dto, INVALID_GAME_ID));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("Game does not exist", exception.getMessage());
+        assertEquals(String.format("No game has Id %d", INVALID_GAME_ID), exception.getMessage());
     }
 
     @Test

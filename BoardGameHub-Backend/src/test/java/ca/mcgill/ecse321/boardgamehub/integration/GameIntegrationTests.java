@@ -2,8 +2,7 @@ package ca.mcgill.ecse321.boardgamehub.integration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,14 +22,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import ca.mcgill.ecse321.boardgamehub.dto.EventResponseDto;
+import ca.mcgill.ecse321.boardgamehub.dto.ErrorDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameResponseDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameUpdateDto;
-import ca.mcgill.ecse321.boardgamehub.model.Game;
-import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
-import ca.mcgill.ecse321.boardgamehub.model.Player;
-import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 
@@ -70,6 +65,20 @@ public class GameIntegrationTests {
     }
 
     @Test
+    @Order(0)
+    public void testCreateGame_Fail() {
+        GameCreationDto gameDto = new GameCreationDto(NAME, DESCRIPTION, MAX_PLAYERS, MAX_PLAYERS+1);
+        ResponseEntity<ErrorDto> response = client.postForEntity("/games", gameDto, ErrorDto.class);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
+        assertIterableEquals(
+		    List.of("Min players cannot exceed max players."),
+		    responseDto.getErrors());
+    }
+
+    @Test
     @Order(1)
     public void testCreateGame() {
         GameCreationDto gameDto = new GameCreationDto(NAME, DESCRIPTION, MAX_PLAYERS, MIN_PLAYERS);
@@ -89,6 +98,19 @@ public class GameIntegrationTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Catan", response.getBody().getName());
+    }
+
+    @Test
+    @Order(2)
+    public void testGetGameById_Fail() {
+        ResponseEntity<ErrorDto> response = client.getForEntity("/games/" + gameId+1, ErrorDto.class);
+        
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
+        assertIterableEquals(
+		    List.of("Game does not exist"),
+		    responseDto.getErrors());
     }
 
     @Test
@@ -115,7 +137,43 @@ public class GameIntegrationTests {
     }
 
     @Test
+    @Order(4)
+    public void testUpdateGame_Fail() {
+        GameUpdateDto updateDto = new GameUpdateDto(null, null, null, null);
+        updateDto.setDescription("Updated strategy game");
+        HttpEntity<GameUpdateDto> requestEntity = new HttpEntity<>(updateDto);
+        int invalidId = gameId+1;
+        ResponseEntity<ErrorDto> response = client.exchange("/games/" + invalidId, HttpMethod.PUT, requestEntity, ErrorDto.class);
+        
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
+        assertIterableEquals(
+		    List.of(String.format("No game has Id %d", invalidId)),
+		    responseDto.getErrors());
+    }
+
+    @Test
     @Order(5)
+    public void testDeleteGame_Fail() {
+        int invalidId = gameId+1;
+        ResponseEntity<ErrorDto> response = client.exchange(
+            getApiUrl("/games/" + invalidId),
+            HttpMethod.DELETE,
+            null,
+            ErrorDto.class
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        ErrorDto responseDto = response.getBody();
+		assertNotNull(responseDto);
+        assertIterableEquals(
+		    List.of(String.format("Game does not exist", invalidId)),
+		    responseDto.getErrors());
+    }
+
+    @Test
+    @Order(6)
     public void testDeleteGame() {
         client.delete(getApiUrl("/games/" + gameId));
         ResponseEntity<GameResponseDto> response = client.getForEntity("/games/" + gameId, GameResponseDto.class);
