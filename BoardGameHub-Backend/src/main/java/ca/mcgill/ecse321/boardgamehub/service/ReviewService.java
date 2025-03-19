@@ -31,7 +31,7 @@ public class ReviewService {
     @Autowired
     private GameRepository gameRepo;
 
-    @Transactional//Is this really necessary in this case?(Tut reference)
+    @Transactional
     public Review createReview(@Valid ReviewCreationDto reviewToCreate) {
 
         Date today = Date.valueOf(LocalDate.now());
@@ -60,7 +60,8 @@ public class ReviewService {
         return reviewRepo.save(review);
     }
     
-    public Review editReview(int reviewId, int reviewerId, @Valid ReviewUpdateDto editedReview) {
+    @Transactional
+    public Review editReview(int reviewId, int userId, @Valid ReviewUpdateDto editedReview) {
 
         Date today = Date.valueOf(LocalDate.now());
 
@@ -71,7 +72,7 @@ public class ReviewService {
                                             String.format("No review has Id %d", reviewId));
         }
 
-        if (review.getReviewer().getId() != reviewerId) {
+        if (review.getReviewer().getId() != userId) {
             throw new BoardGameHubException(HttpStatus.UNAUTHORIZED, 
                                             "Request sender is not the creator of this review.");
         }
@@ -84,7 +85,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(int reviewId, int reviewerId) {
+    public void deleteReview(int reviewId, int userId) {
         Review review = reviewRepo.findReviewById(reviewId);
 
         if (review == null) {
@@ -92,7 +93,7 @@ public class ReviewService {
                                             String.format("No review has Id %d", reviewId));
         }
 
-        if (review.getReviewer().getId() != reviewerId) {
+        if (review.getReviewer().getId() != userId) {
             throw new BoardGameHubException(HttpStatus.UNAUTHORIZED, 
                                             "Request sender is not the creator of this review.");
         }

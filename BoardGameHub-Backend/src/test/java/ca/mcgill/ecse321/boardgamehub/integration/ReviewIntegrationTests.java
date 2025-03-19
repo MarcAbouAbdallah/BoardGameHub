@@ -278,7 +278,7 @@ public class ReviewIntegrationTests {
         int unauthedId = VALID_PLAYER.getId()+1;
 
         ResponseEntity<ErrorDto> removeResponse = client.exchange(
-            "http://localhost:" + port + "/reviews/"+createdReviewId+"?reviewerId="+unauthedId,
+            "http://localhost:" + port + "/reviews/"+createdReviewId+"?userId="+unauthedId,
             HttpMethod.PUT,
             httpEntity,
             ErrorDto.class
@@ -303,7 +303,7 @@ public class ReviewIntegrationTests {
         HttpEntity<ReviewUpdateDto> httpEntity = new HttpEntity<>(dto, headers);
         
         ResponseEntity<ReviewResponseDto> response = client.exchange(
-            "http://localhost:" + port + "/reviews/"+createdReviewId+"?reviewerId="+VALID_PLAYER.getId(),
+            "http://localhost:" + port + "/reviews/"+createdReviewId+"?userId="+VALID_PLAYER.getId(),
             HttpMethod.PUT,
             httpEntity,
             ReviewResponseDto.class
@@ -327,7 +327,7 @@ public class ReviewIntegrationTests {
     public void testDeleteInvalidReview() {
         int invalidId = createdReviewId+1;
         ResponseEntity<ErrorDto> response = client.exchange(
-            "http://localhost:"+port+"/reviews/"+invalidId+"?reviewerId="+VALID_PLAYER.getId(),
+            "http://localhost:"+port+"/reviews/"+invalidId+"?userId="+VALID_PLAYER.getId(),
             HttpMethod.DELETE,
             null,
             ErrorDto.class
@@ -349,7 +349,7 @@ public class ReviewIntegrationTests {
         int unauthedId = VALID_PLAYER.getId()+1;
 
         ResponseEntity<ErrorDto> removeResponse = client.exchange(
-            "http://localhost:"+port+"/reviews/"+createdReviewId+"?reviewerId="+unauthedId,
+            "http://localhost:"+port+"/reviews/"+createdReviewId+"?userId="+unauthedId,
             HttpMethod.DELETE,
             null,
             ErrorDto.class
@@ -367,7 +367,7 @@ public class ReviewIntegrationTests {
     public void testDeleteValidReview() {
         // Remove the review copy
         ResponseEntity<Void> removeResponse = client.exchange(
-            "http://localhost:"+port+"/reviews/"+createdReviewId+"?reviewerId="+VALID_PLAYER.getId(),
+            "http://localhost:"+port+"/reviews/"+createdReviewId+"?userId="+VALID_PLAYER.getId(),
             HttpMethod.DELETE,
             null,
             Void.class
