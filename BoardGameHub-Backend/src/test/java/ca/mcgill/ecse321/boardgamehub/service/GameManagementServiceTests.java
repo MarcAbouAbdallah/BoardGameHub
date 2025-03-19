@@ -3,13 +3,14 @@ package ca.mcgill.ecse321.boardgamehub.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
 import ca.mcgill.ecse321.boardgamehub.dto.GameCreationDto;
@@ -18,30 +19,25 @@ import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
-import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 
-@ExtendWith(MockitoExtension.class)
+
+@SpringBootTest
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class GameManagementServiceTests {
     @Mock
     private GameRepository gameRepo;
     
     @Mock
     private GameCopyRepository gameCopyRepo;
-    
-    @Mock
-    private BorrowRequestRepository borrowRequestRepo;
 
     @InjectMocks
     private GameManagementService gameManagementService;
 
     private static final int VALID_GAME_ID = 1;
     private static final int INVALID_GAME_ID = 99;
-    private static final int VALID_GAME_COPY_ID = 2;
 
-    @SuppressWarnings("unused")
-    private Player validBorrower;
     private Game validGame;
     private GameCopy validGameCopy;
     private Player validPlayer;
@@ -52,15 +48,13 @@ public class GameManagementServiceTests {
         validGame.setId(VALID_GAME_ID);
         
         validPlayer = new Player("Alice", "alice@email.com", "securePass", false);
-        validBorrower = new Player("Bob", "bob@gmail.com", "Bob@123", false);
         
         validGameCopy = new GameCopy(true, validGame, validPlayer);
-        validGameCopy.setId(VALID_GAME_COPY_ID);
     }
 
     @Test
     void testCreateGame_Success() {
-        GameCreationDto dto = new GameCreationDto("Chess", "A strategy game", 2, 2);
+        GameCreationDto dto = new GameCreationDto("Catan", "A strategy game", 4, 3);
         when(gameRepo.save(any(Game.class))).thenAnswer(invocation -> {
             Game game = invocation.getArgument(0);
             game.setId(VALID_GAME_ID);
@@ -70,10 +64,10 @@ public class GameManagementServiceTests {
         Game createdGame = gameManagementService.createGame(dto);
 
         assertNotNull(createdGame);
-        assertEquals("Chess", createdGame.getName());
+        assertEquals("Catan", createdGame.getName());
         assertEquals("A strategy game", createdGame.getDescription());
-        assertEquals(2, createdGame.getMaxPlayers());
-        assertEquals(2, createdGame.getMinPlayers());
+        assertEquals(4, createdGame.getMaxPlayers());
+        assertEquals(3, createdGame.getMinPlayers());
     }
 
     @Test
@@ -91,10 +85,14 @@ public class GameManagementServiceTests {
     @Test
     void testDeleteGame_Success() {
         when(gameRepo.findGameById(VALID_GAME_ID)).thenReturn(validGame);
-        doNothing().when(gameRepo).delete(validGame);
+        when(gameCopyRepo.findByGame(validGame)).thenReturn(List.of(validGameCopy));
 
         assertDoesNotThrow(() -> gameManagementService.deleteGame(VALID_GAME_ID));
         verify(gameRepo, times(1)).delete(validGame);
+
+        // Check that the copy associated to the game is deleted
+        verify(gameCopyRepo, times(1)).delete(validGameCopy);
+
     }
 
     @Test
