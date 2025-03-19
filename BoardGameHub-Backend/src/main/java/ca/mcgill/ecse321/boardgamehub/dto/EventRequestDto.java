@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class EventCreationDto {
+public class EventRequestDto {
     @NotBlank(message = "Event name cannot be empty.")
     private String eventName;
 
@@ -33,9 +33,9 @@ public class EventCreationDto {
     @NotNull(message = "Oganizer Id is required.")
     private int organizerId;
 
-    protected EventCreationDto() {}
+    protected EventRequestDto() {}
 
-    public EventCreationDto(String name, String location, String description, LocalDate date, LocalTime startTime, LocalTime endTime, int maxParticipants, int organizer, int game) {
+    public EventRequestDto(String name, String location, String description, LocalDate date, LocalTime startTime, LocalTime endTime, int maxParticipants, int organizer, int game) {
         this.eventName = name;
         this.eventLocation = location;
         this.eventDescription = description;

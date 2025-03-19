@@ -85,9 +85,11 @@ public class GameIntegrationTests {
         ResponseEntity<GameResponseDto> response = client.postForEntity("/games", gameDto, GameResponseDto.class);
         
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Catan", response.getBody().getName());
-        gameId = response.getBody().getId();
+
+        GameResponseDto responseBody = response.getBody();
+        assertNotNull(responseBody);
+        assertEquals("Catan", responseBody.getName());
+        gameId = responseBody.getId();
     }
 
     @Test
@@ -96,12 +98,14 @@ public class GameIntegrationTests {
         ResponseEntity<GameResponseDto> response = client.getForEntity("/games/" + gameId, GameResponseDto.class);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Catan", response.getBody().getName());
+
+        GameResponseDto responseBody = response.getBody();
+        assertNotNull(responseBody);
+        assertEquals("Catan", responseBody.getName());
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     public void testGetGameById_Fail() {
         ResponseEntity<ErrorDto> response = client.getForEntity("/games/" + gameId+1, ErrorDto.class);
         
@@ -114,17 +118,19 @@ public class GameIntegrationTests {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void testGetAllGames() {
         ResponseEntity<GameResponseDto[]> response = client.getForEntity("/games", GameResponseDto[].class);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().length > 0);
+
+        GameResponseDto[] responseBody = response.getBody();
+        assertNotNull(responseBody);
+        assertTrue(responseBody.length > 0);
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void testUpdateGame() {
         GameUpdateDto updateDto = new GameUpdateDto(null, null, null, null);
         updateDto.setDescription("Updated strategy game");
@@ -132,12 +138,14 @@ public class GameIntegrationTests {
         ResponseEntity<GameResponseDto> response = client.exchange("/games/" + gameId, HttpMethod.PUT, requestEntity, GameResponseDto.class);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Updated strategy game", response.getBody().getDescription());
+        
+        GameResponseDto responseBody = response.getBody();
+        assertNotNull(responseBody);
+        assertEquals("Updated strategy game", responseBody.getDescription());
     }
 
     @Test
-    @Order(4)
+    @Order(6)
     public void testUpdateGame_Fail() {
         GameUpdateDto updateDto = new GameUpdateDto(null, null, null, null);
         updateDto.setDescription("Updated strategy game");
@@ -154,7 +162,7 @@ public class GameIntegrationTests {
     }
 
     @Test
-    @Order(5)
+    @Order(7)
     public void testDeleteGame_Fail() {
         int invalidId = gameId+1;
         ResponseEntity<ErrorDto> response = client.exchange(
@@ -173,7 +181,7 @@ public class GameIntegrationTests {
     }
 
     @Test
-    @Order(6)
+    @Order(8)
     public void testDeleteGame() {
         client.delete(getApiUrl("/games/" + gameId));
         ResponseEntity<GameResponseDto> response = client.getForEntity("/games/" + gameId, GameResponseDto.class);

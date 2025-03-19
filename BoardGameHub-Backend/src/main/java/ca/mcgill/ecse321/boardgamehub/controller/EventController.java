@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.validation.annotation.Validated;
 
-import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.EventRequestDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventResponseDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
 
@@ -36,12 +36,12 @@ public class EventController {
     /**
      * Create an event
      * 
-     * @param eventToCreate an EventCreationDto containing the event to be created
+     * @param eventToCreate an EventRequestDto containing the event to be created
      * @return An eventResponseDto containing the created event with its id
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventResponseDto createEvent(@RequestBody EventCreationDto eventToCreate) {
+    public EventResponseDto createEvent(@RequestBody EventRequestDto eventToCreate) {
         Event createdEvent = eventService.createEvent(eventToCreate);
         return new EventResponseDto(createdEvent, 0);
     }

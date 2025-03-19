@@ -21,7 +21,7 @@ import ca.mcgill.ecse321.boardgamehub.model.Event;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
-import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.EventRequestDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -40,7 +40,7 @@ public class EventService {
 
 
     @Transactional
-    public Event createEvent(@Valid EventCreationDto eventToCreate) {
+    public Event createEvent(@Valid EventRequestDto eventToCreate) {
         validateDto(eventToCreate);
 
         Player organizer = playerRepo.findPlayerById(eventToCreate.getOrganizer());
@@ -147,7 +147,7 @@ public class EventService {
         return (int) registrationRepo.countByKey_RegisteredEvent(event);
     }
 
-    public void validateDto(EventCreationDto eventToCreate) {
+    public void validateDto(EventRequestDto eventToCreate) {
         if (eventToCreate.getName().isBlank()) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Event name cannot be blank.");
         }

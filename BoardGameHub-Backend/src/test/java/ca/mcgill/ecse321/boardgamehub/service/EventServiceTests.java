@@ -24,7 +24,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
-import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.EventRequestDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.dto.RegistrationDto;
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
@@ -73,7 +73,7 @@ public class EventServiceTests {
 
     @Test
     public void testCreateValidEvent() {
-        EventCreationDto eventToCreate = new EventCreationDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
+        EventRequestDto eventToCreate = new EventRequestDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
         when(mockPlayerRepo.findPlayerById(VALID_ORGANIZER_ID)).thenReturn(VALID_ORGANIZER);
         when(mockGameRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(VALID_GAME);
         when(mockEventRepo.save(any(Event.class))).thenAnswer((InvocationOnMock invocation) -> {
@@ -104,7 +104,7 @@ public class EventServiceTests {
 
     @Test
     public void testCreateEventWithInvalidOrganizer() {
-        EventCreationDto eventToCreate = new EventCreationDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
+        EventRequestDto eventToCreate = new EventRequestDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
         when(mockPlayerRepo.findPlayerById(VALID_ORGANIZER_ID)).thenReturn(null);
 
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
@@ -117,7 +117,7 @@ public class EventServiceTests {
 
     @Test
     public void testCreateEventWithInvalidGame() {
-        EventCreationDto eventToCreate = new EventCreationDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
+        EventRequestDto eventToCreate = new EventRequestDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
         when(mockPlayerRepo.findPlayerById(VALID_ORGANIZER_ID)).thenReturn(VALID_ORGANIZER);
         when(mockGameRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(null);
 
