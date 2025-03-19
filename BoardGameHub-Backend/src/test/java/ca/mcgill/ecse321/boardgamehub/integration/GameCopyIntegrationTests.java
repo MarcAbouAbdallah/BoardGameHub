@@ -384,4 +384,37 @@ public class GameCopyIntegrationTests {
         assertTrue(error.contains("does not belong to the specified player"),
                 "Error message should indicate the game copy is not owned by the provided userId.");
     }
+
+    @Test
+    @Order(8)
+    public void testGetGameCopyById() {
+        // Arrange: Create a new game copy
+        Map<String, Object> createPayload = new HashMap<>();
+        createPayload.put("playerId", testPlayer.getId());
+        createPayload.put("gameId", testGame.getId());
+        ResponseEntity<GameCopyResponseDto> addResponse = client.postForEntity(
+            createURL("/gamecopies"),
+            new HttpEntity<>(createPayload, headers),
+            GameCopyResponseDto.class
+        );
+        assertEquals(HttpStatus.CREATED, addResponse.getStatusCode());
+        GameCopyResponseDto createdCopy = addResponse.getBody();
+        assertNotNull(createdCopy);
+
+        // Act: Retrieve the game copy by its ID using GET /gamecopies/{gameCopyId}
+        ResponseEntity<GameCopyResponseDto> getResponse = client.exchange(
+            createURL("/gamecopies/" + createdCopy.getGameCopyId()),
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            GameCopyResponseDto.class
+        );
+
+        // Assert: Verify that the retrieved copy matches the created copy
+        assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        GameCopyResponseDto retrievedCopy = getResponse.getBody();
+        assertNotNull(retrievedCopy);
+        assertEquals(createdCopy.getGameCopyId(), retrievedCopy.getGameCopyId());
+        assertEquals(createdCopy.getOwnerId(), retrievedCopy.getOwnerId());
+        assertEquals(createdCopy.getGameId(), retrievedCopy.getGameId());
+    }
 }
