@@ -24,7 +24,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import ca.mcgill.ecse321.boardgamehub.dto.EventCreationDto;
+import ca.mcgill.ecse321.boardgamehub.dto.EventRequestDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventResponseDto;
 import ca.mcgill.ecse321.boardgamehub.dto.EventUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
@@ -90,7 +90,7 @@ public class EventIntegrationTests {
     @Test
     @Order(0)
     public void testCreateValidEvent() {
-        EventCreationDto dto = new EventCreationDto(NAME, LOCATION, DESCRIPTION, DATE, START_TIME, END_TIME,
+        EventRequestDto dto = new EventRequestDto(NAME, LOCATION, DESCRIPTION, DATE, START_TIME, END_TIME,
                 MAX_PARTICIPANTS, VALID_ORGANIZER.getId(), VALID_GAMECOPY.getId());
 
         ResponseEntity<EventResponseDto> response = client.postForEntity("/events", dto, EventResponseDto.class);
@@ -119,7 +119,7 @@ public class EventIntegrationTests {
     @Test
     @Order(1)
     public void testCreateEvent_Failure_InvalidData() {
-        EventCreationDto request = new EventCreationDto(
+        EventRequestDto request = new EventRequestDto(
                 NAME,
                 LOCATION,
                 DESCRIPTION,
