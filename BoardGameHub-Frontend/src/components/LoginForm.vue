@@ -3,15 +3,43 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { playerService } from "../services/playerService";
+
 const router = useRouter();
+const email = ref("");
+const password = ref("");
+const error = ref("");
+
+const handleSubmit = async () => {
+  try {
+    const playerData = {
+      email: email.value,
+      password: password.value,
+    };
+    console.log(playerData);
+    const response = await playerService.loginPlayer(playerData);
+    console.log(response);
+    if (response.status === 200) {
+      router.push("/home");
+    } else {
+      error.value = "Invalid email or password.";
+    }
+  } catch (err) {
+    error.value = "An error occurred. Please try again.";
+  }
+};
 </script>
 
 <template>
   <div class="flex flex-col gap-6">
     <Card class="overflow-hidden">
       <CardContent class="grid p-0 md:grid-cols-2">
-        <form class="p-6 md:p-8">
+        <form
+          class="p-6 md:p-8"
+          @submit.prevent="handleSubmit"
+        >
           <div class="flex flex-col gap-6">
             <div class="flex flex-col items-center text-center">
               <h1 class="text-2xl font-bold">Welcome back</h1>
@@ -22,6 +50,7 @@ const router = useRouter();
             <div class="grid gap-2 text-left">
               <Label for="email">Email</Label>
               <Input
+                v-model="email"
                 id="email"
                 type="email"
                 placeholder="m@example.com"
@@ -39,6 +68,7 @@ const router = useRouter();
                 </a>
               </div>
               <Input
+                v-model="password"
                 id="password"
                 type="password"
                 required
@@ -46,8 +76,7 @@ const router = useRouter();
             </div>
             <Button
               type="submit"
-              class="w-full"
-              @click.prevent="router.push('/home')"
+              class="w-full text-white"
             >
               Login
             </Button>

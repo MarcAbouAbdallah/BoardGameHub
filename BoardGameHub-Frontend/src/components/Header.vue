@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { HomeIcon } from "@heroicons/vue/24/solid";
+import { PuzzlePieceIcon } from "@heroicons/vue/16/solid";
+import { CalendarIcon } from "@heroicons/vue/24/solid";
+import { LogOut } from "lucide-vue-next";
 
 const router = useRouter();
 </script>
@@ -22,34 +26,42 @@ const router = useRouter();
           <li>
             <a
               href="#"
-              class="text-white hover:text-gray-300"
+              class="text-white hover:text-gray-300 flex justify-center items-center"
               @click.prevent="router.push('/home')"
-              >Home</a
             >
+              <HomeIcon class="h-6 w-6 inline-block mr-2" />
+              <div>Home</div>
+            </a>
           </li>
           <li>
             <a
-              class="text-white hover:text-gray-300"
+              class="text-white hover:text-gray-300 flex justify-center items-center"
               href="#"
               @click.prevent="router.push('/games')"
-              >Games</a
             >
+              <PuzzlePieceIcon class="h-6 w-6 inline-block mr-2" />
+              <div>Games</div>
+            </a>
           </li>
           <li>
             <a
               href="#"
-              class="text-white hover:text-gray-300"
+              class="text-white hover:text-gray-300 flex justify-center items-center"
               @click.prevent="router.push('/events')"
-              >Events</a
             >
+              <CalendarIcon class="h-6 w-6 inline-block mr-2" />
+              <div>Events</div>
+            </a>
           </li>
           <li>
             <a
               href="#"
-              class="text-white hover:text-gray-300"
+              class="text-white hover:text-gray-300 flex justify-center items-center"
               @click.prevent="router.push('/')"
-              >Logout</a
             >
+              <LogOut class="h-6 w-6 inline-block mr-2" />
+              <div>Logout</div>
+            </a>
           </li>
         </ul>
       </div>
