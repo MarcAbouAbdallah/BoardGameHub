@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "vue-router";
+
 const router = useRouter();
 </script>
 
@@ -14,9 +15,9 @@ const router = useRouter();
         <form class="p-6 md:p-8">
           <div class="flex flex-col gap-6">
             <div class="flex flex-col items-center text-center">
-              <h1 class="text-2xl font-bold">Welcome back</h1>
+              <h1 class="text-2xl font-bold">Welcome</h1>
               <p class="text-balance text-muted-foreground">
-                Login to your BoardGameHub account
+                Create your BoardGameHub account
               </p>
             </div>
             <div class="grid gap-2 text-left">
@@ -31,12 +32,6 @@ const router = useRouter();
             <div class="grid gap-2">
               <div class="flex items-center">
                 <Label for="password">Password</Label>
-                <a
-                  href="#"
-                  class="ml-auto text-sm underline-offset-2 hover:underline"
-                >
-                  Forgot your password?
-                </a>
               </div>
               <Input
                 id="password"
@@ -51,20 +46,20 @@ const router = useRouter();
               Login
             </Button>
             <div class="text-center text-sm">
-              Don&apos;t have an account?
+              Already have an account?
               <a
                 href="#"
                 class="underline underline-offset-4"
-                @click.prevent="router.push('/signup')"
+                @click.prevent="router.push('/')"
               >
-                Sign up
+                Login now
               </a>
             </div>
           </div>
         </form>
         <div class="relative hidden bg-muted md:block">
           <img
-            src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzZ6dXh6dXA2dDZ5a3NtbmlndDc1and5NzZ4ZHY0YTlpODFzazY2MSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/YksKDfVpJOaz3Mrgb0/giphy.gif"
+            src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2ZwdG9wcnl5cnFtMzAya2JyMXVybWg2bWNzYmV1ejNhcTczMGh6cSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/m9bsCbfsPJgfSZ9EN1/giphy.gif"
             alt="Image"
             class="absolute inset-0 h-full w-full object-contain dark:brightness-[0.2] dark:grayscale"
           />
