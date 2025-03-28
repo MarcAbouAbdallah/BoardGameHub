@@ -47,6 +47,7 @@ const router = useRouter();
             <Button
               type="submit"
               class="w-full"
+              @click.prevent="router.push('/home')"
             >
               Login
             </Button>
