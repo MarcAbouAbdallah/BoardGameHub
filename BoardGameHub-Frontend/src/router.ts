@@ -11,6 +11,10 @@ const routes = [
     path: "/signup",
     component: SignupPage,
   },
+  // {
+  //   path: "/dashboard",
+
+  // }
 ];
 
 const router = createRouter({
