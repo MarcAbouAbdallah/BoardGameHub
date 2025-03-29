@@ -27,7 +27,7 @@ export const playerService = {
   async getPlayerById(playerId: number) {
     try {
       const response = await api.get(`/players/${playerId}`);
-      return response.data;
+      return response;
     } catch (error) {
       console.error("Error fetching player:", error);
       throw error;
@@ -38,7 +38,7 @@ export const playerService = {
   async updatePlayer(playerId: number, playerData: any) {
     try {
       const response = await api.put(`/players/${playerId}`, playerData);
-      return response.data;
+      return response;
     } catch (error) {
       console.error("Error updating player:", error);
       throw error;
