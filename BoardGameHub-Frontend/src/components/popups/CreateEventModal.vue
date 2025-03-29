@@ -12,36 +12,27 @@ import { Input } from "@/components/ui/input";
 import { ref } from "vue";
 import { defineProps } from "vue";
 
-defineProps<{
+const props = defineProps<{
   close: () => void;
 }>();
 
-const eventName = ref("");
-const gameName = ref("");
-const gameCopy = ref("");
-const eventLocation = ref("");
-const eventDescription = ref("");
-const noOfPlayers = ref(0);
-const eventDate = ref("");
-const eventStartTime = ref("");
-const eventEndTime = ref("");
+const formData = ref({
+  eventName: "",
+  gameName: "",
+  gameCopy: "",
+  eventLocation: "",
+  eventDescription: "",
+  noOfPlayers: 0,
+  eventDate: "",
+  eventStartTime: "",
+  eventEndTime: "",
+});
 const error = ref("");
 
 const handleSubmit = async () => {
   try {
-    const eventData = {
-      eventName: eventName.value,
-      gameName: gameName.value,
-      gameCopy: gameCopy.value,
-      eventLocation: eventLocation.value,
-      eventDescription: eventDescription.value,
-      noOfPlayers: noOfPlayers.value,
-      eventDate: eventDate.value,
-      eventStartTime: eventStartTime.value,
-      eventEndTime: eventEndTime.value,
-    };
-    console.log(eventData);
-    close();
+    console.log("Form Data:", formData.value);
+    props.close();
     // Call the APID to create the event here
   } catch (err) {
     error.value = "An error occurred. Please try again.";
@@ -52,7 +43,7 @@ const handleSubmit = async () => {
 <template>
   <Dialog
     :default-open="true"
-    @close="close"
+    @update:open="(isOpen) => !isOpen && close()"
   >
     <DialogContent :close="close">
       <DialogHeader>
@@ -73,7 +64,7 @@ const handleSubmit = async () => {
             >Event Name</Label
           >
           <Input
-            v-model="eventName"
+            v-model="formData.eventName"
             id="event-name"
             type="text"
             placeholder="Enter event name"
@@ -87,7 +78,7 @@ const handleSubmit = async () => {
             >Game</Label
           >
           <Input
-            v-model="gameName"
+            v-model="formData.gameName"
             id="game-name"
             type="text"
             placeholder="Enter game name"
@@ -101,7 +92,7 @@ const handleSubmit = async () => {
             >Game Copy</Label
           >
           <Input
-            v-model="gameCopy"
+            v-model="formData.gameCopy"
             id="game-copy"
             type="text"
             placeholder="Enter game copy name"
@@ -115,7 +106,7 @@ const handleSubmit = async () => {
             >Location</Label
           >
           <Input
-            v-model="eventLocation"
+            v-model="formData.eventLocation"
             id="event-location"
             type="text"
             placeholder="Enter event location"
@@ -129,7 +120,7 @@ const handleSubmit = async () => {
             >Description</Label
           >
           <Input
-            v-model="eventDescription"
+            v-model="formData.eventDescription"
             id="event-description"
             type="text"
             placeholder="Enter event description"
@@ -143,7 +134,7 @@ const handleSubmit = async () => {
             >Max Number of Players</Label
           >
           <Input
-            v-model="noOfPlayers"
+            v-model="formData.noOfPlayers"
             id="no-of-players"
             type="number"
             placeholder="Enter max number of players"
@@ -157,7 +148,7 @@ const handleSubmit = async () => {
             >Date</Label
           >
           <Input
-            v-model="eventDate"
+            v-model="formData.eventDate"
             id="event-date"
             type="date"
             placeholder="Select event date"
@@ -171,7 +162,7 @@ const handleSubmit = async () => {
             >Start Time</Label
           >
           <Input
-            v-model="eventStartTime"
+            v-model="formData.eventStartTime"
             id="event-start-time"
             type="time"
             placeholder="Select event time"
@@ -185,7 +176,7 @@ const handleSubmit = async () => {
             >End Time</Label
           >
           <Input
-            v-model="eventEndTime"
+            v-model="formData.eventEndTime"
             id="event-end-time"
             type="time"
             placeholder="Select event time"
