@@ -36,34 +36,20 @@ const handleSubmit = async () => {
   <div class="flex flex-col gap-6">
     <Card class="overflow-hidden">
       <CardContent class="grid p-0 md:grid-cols-2">
-        <form
-          class="p-6 md:p-8"
-          @submit.prevent="handleSubmit"
-        >
+        <form class="p-6 md:p-8" @submit.prevent="handleSubmit">
           <div class="flex flex-col gap-6">
             <div class="flex flex-col items-center text-center">
               <h1 class="text-2xl font-bold">Welcome back</h1>
-              <p class="text-balance text-muted-foreground">
-                Login to your BoardGameHub account
-              </p>
+              <p class="text-balance text-muted-foreground">Login to your BoardGameHub account</p>
             </div>
             <div class="grid gap-2 text-left">
               <Label for="email">Email</Label>
-              <Input
-                v-model="email"
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
+              <Input v-model="email" id="email" type="email" placeholder="m@example.com" required />
             </div>
             <div class="grid gap-2">
               <div class="flex items-center">
                 <Label for="password">Password</Label>
-                <a
-                  href="#"
-                  class="ml-auto text-sm underline-offset-2 hover:underline"
-                >
+                <a href="#" class="ml-auto text-sm underline-offset-2 hover:underline">
                   Forgot your password?
                 </a>
               </div>
@@ -75,12 +61,7 @@ const handleSubmit = async () => {
                 required
               />
             </div>
-            <Button
-              type="submit"
-              class="w-full text-white"
-            >
-              Login
-            </Button>
+            <Button type="submit" class="w-full text-white"> Login </Button>
             <div class="text-center text-sm">
               Don&apos;t have an account?
               <a
