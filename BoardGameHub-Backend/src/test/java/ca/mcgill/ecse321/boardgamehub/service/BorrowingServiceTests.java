@@ -407,7 +407,7 @@ public class BorrowingServiceTests {
         when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(requests);
         when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
         
-        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequester(VALID_REQUESTER_ID);
+        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, null);
         
         assertEquals(3, allRequests.size());
     }
@@ -418,7 +418,7 @@ public class BorrowingServiceTests {
         when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(List.of());
         
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.getRequestsByRequester(VALID_REQUESTER_ID);
+            borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, null);
         });
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
@@ -434,7 +434,7 @@ public class BorrowingServiceTests {
         when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(requests);
         when(mockPlayerRepo.findPlayerById(VALID_REQUESTEE_ID)).thenReturn(REQUESTEE);
         
-        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID);
+        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, null);
         
         assertEquals(3, allRequests.size());
     }
@@ -445,7 +445,7 @@ public class BorrowingServiceTests {
         when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(List.of());
         
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID);
+            borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, null);
         });
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());

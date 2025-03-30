@@ -62,12 +62,16 @@ public class BorrowRequestController {
      * Get all borrow requests sent by a player
      * 
      * @param requesterId The id of the requester
+     * @param status Optional status filter (pending, accepted, declined, returned)
      * @return A List of BorrowRequestResponseDto containing all borrow requests sent by the player
      */
     @GetMapping("/requester/{requesterId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<BorrowRequestResponseDto> getRequestsByRequester(@PathVariable int requesterId) {
-        return borrowingService.getRequestsByRequester(requesterId).stream()
+    public List<BorrowRequestResponseDto> getRequestsByRequester(
+            @PathVariable int requesterId,
+            @RequestParam(required = false) String status) {
+
+        return borrowingService.getRequestsByRequester(requesterId, status).stream()
                 .map(BorrowRequestResponseDto::new)
                 .collect(Collectors.toList());
     }
@@ -76,12 +80,15 @@ public class BorrowRequestController {
      * Get all borrow requests received by a player
      * 
      * @param requesteeId The id of the requestee
+     * @param status Optional status filter (pending, accepted, declined, returned, history)
      * @return A List of BorrowRequestResponseDto containing all borrow requests received by the player
      */
     @GetMapping("/requestee/{requesteeId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<BorrowRequestResponseDto> getRequestsByRequestee(@PathVariable int requesteeId) {
-        return borrowingService.getRequestsByRequestee(requesteeId).stream()
+    public List<BorrowRequestResponseDto> getRequestsByRequestee
+        (@PathVariable int requesteeId,
+         @RequestParam(required = false) String status) {
+        return borrowingService.getRequestsByRequestee(requesteeId, status).stream()
                 .map(BorrowRequestResponseDto::new)
                 .collect(Collectors.toList());
     }
@@ -104,7 +111,7 @@ public class BorrowRequestController {
     }
 
     /**
-     * Update the status of a borrow request
+     * Approve or decling a borrow request
      * 
      * @param requestId The id of the request
      * @param status A BorrowStatusUpdateDto containing the updated status (accepted or declined)

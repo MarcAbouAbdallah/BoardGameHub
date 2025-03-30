@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.boardgamehub.service;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -120,7 +121,7 @@ public class BorrowingService {
     }
 
     @Transactional
-    public List<BorrowRequest> getRequestsByRequester(int requesterId) {
+    public List<BorrowRequest> getRequestsByRequester(int requesterId, String status) {
         Player requester = playerRepo.findPlayerById(requesterId);
         if (requester == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format("There is no requester with ID %d.",requesterId));
@@ -131,11 +132,25 @@ public class BorrowingService {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "No borrow requests found for requester with ID " + requesterId);
         }
         
-        return requests;
+        if (status == null){
+            return requests;
+        }
+
+        String normalizedStatus = status.trim().toUpperCase();
+
+        try {
+            BorrowStatus filterStatus = BorrowStatus.valueOf(normalizedStatus);
+            return requests.stream()
+                    .filter(request -> request.getStatus() == filterStatus)
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, 
+                "Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED.");
+        }
     }
 
     @Transactional
-    public List<BorrowRequest> getRequestsByRequestee(int requesteeId) {
+    public List<BorrowRequest> getRequestsByRequestee(int requesteeId, String status) {
         Player requestee = playerRepo.findPlayerById(requesteeId);
         if (requestee == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format("There is no requestee with ID %d.",requesteeId));
@@ -146,7 +161,35 @@ public class BorrowingService {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "No borrow requests found for requestee with ID " + requesteeId);
         }
         
-        return requests;
+        if (status == null){
+            return requests;
+        }
+
+        String normalizedStatus = status.trim().toUpperCase();
+
+        if ("HISTORY".equals(normalizedStatus)) {
+            // This is for lending history (accpeted and returned requests)
+            return requests.stream()
+                    .filter(req -> req.getStatus() == BorrowStatus.ACCEPTED || req.getStatus() == BorrowStatus.RETURNED)
+                    .collect(Collectors.toList());
+        }
+
+        try {
+            BorrowStatus filterStatus = BorrowStatus.valueOf(normalizedStatus);
+            return requests.stream()
+                    .filter(req -> req.getStatus() == filterStatus)
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED, HISTORY.");
+        }
+    }
+
+    @Transactional
+    public BorrowRequest returnBorrowRequest(int requestId) {
+        BorrowRequest request = findBorrowRequestById(requestId);
+        request.setStatus(BorrowStatus.RETURNED);
+        return borrowRequestRepo.save(request);
     }
 
     // Helper to validate request dto
