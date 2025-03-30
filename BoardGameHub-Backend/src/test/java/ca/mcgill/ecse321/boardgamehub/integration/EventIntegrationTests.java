@@ -200,6 +200,54 @@ public class EventIntegrationTests {
     }
 
     @Test
+    @Order(4)
+    public void testGetEventsForCreator() {
+        ResponseEntity<EventResponseDto[]> response = client.getForEntity(String.format("/events/players/%d", VALID_ORGANIZER.getId()), EventResponseDto[].class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        EventResponseDto[] events = response.getBody();
+        assertNotNull(events);
+        assertEquals(1, events.length);
+
+        EventResponseDto event = events[0];
+        assertNotNull(event);
+        assertEquals(createdEventId, event.getId());
+        assertEquals(NAME, event.getName());
+        assertEquals(LOCATION, event.getLocation());
+        assertEquals(DESCRIPTION, event.getDescription());
+        assertEquals(DATE, event.getDate());
+        assertEquals(START_TIME, event.getStartTime());
+        assertEquals(END_TIME, event.getEndTime());
+        assertEquals(MAX_PARTICIPANTS, event.getMaxParticipants());
+        assertEquals(0, event.getParticipantsCount());
+    }
+
+    @Test
+    @Order(4)
+    public void testGetEventsForGame() {
+        ResponseEntity<EventResponseDto[]> response = client.getForEntity(String.format("/events/games/%s", VALID_GAME.getName()), EventResponseDto[].class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        EventResponseDto[] events = response.getBody();
+        assertNotNull(events);
+        assertEquals(1, events.length);
+
+        EventResponseDto event = events[0];
+        assertNotNull(event);
+        assertEquals(createdEventId, event.getId());
+        assertEquals(NAME, event.getName());
+        assertEquals(LOCATION, event.getLocation());
+        assertEquals(DESCRIPTION, event.getDescription());
+        assertEquals(DATE, event.getDate());
+        assertEquals(START_TIME, event.getStartTime());
+        assertEquals(END_TIME, event.getEndTime());
+        assertEquals(MAX_PARTICIPANTS, event.getMaxParticipants());
+        assertEquals(0, event.getParticipantsCount());
+    }
+
+    @Test
     @Order(5)
     public void testUpdateEvent() {
         String newLocation = "New Location";
