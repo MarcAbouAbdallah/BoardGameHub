@@ -9,6 +9,9 @@ export const sampleEvents = [
     endTime: "4:00 PM",
     remainingSeats: 20,
     capacity: 100,
+    description:
+      "Compete with the best Catan players in the region and showcase your strategic skills in this exciting championship.",
+    participants: ["player1", "player2"],
   },
   {
     id: 2,
@@ -20,6 +23,9 @@ export const sampleEvents = [
     endTime: "6:00 PM",
     remainingSeats: 15,
     capacity: 50,
+    description:
+      "Join fellow train enthusiasts in this thrilling Ticket to Ride tournament and claim your spot as the ultimate conductor.",
+    participants: ["trainmaster", "railfan"],
   },
   {
     id: 3,
@@ -31,6 +37,9 @@ export const sampleEvents = [
     endTime: "3:00 PM",
     remainingSeats: 10,
     capacity: 40,
+    description:
+      "Work together to save the world in this intense Pandemic survival challenge. Can your team stop the outbreak in time?",
+    participants: ["medic", "scientist"],
   },
   {
     id: 4,
@@ -42,6 +51,9 @@ export const sampleEvents = [
     endTime: "5:00 PM",
     remainingSeats: 30,
     capacity: 120,
+    description:
+      "Test your strategic thinking and compete against top players in this open chess tournament for all skill levels.",
+    participants: ["grandmaster", "rookie"],
   },
   {
     id: 5,
@@ -53,5 +65,8 @@ export const sampleEvents = [
     endTime: "11:00 PM",
     remainingSeats: 5,
     capacity: 30,
+    description:
+      "Embark on an epic adventure with fellow adventurers in this immersive Dungeons & Dragons night. Create your story!",
+    participants: [],
   },
 ];

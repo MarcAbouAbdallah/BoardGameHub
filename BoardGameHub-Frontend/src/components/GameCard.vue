@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { Edit } from "lucide-vue-next";
+import { PlusSquare } from "lucide-vue-next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "./ui/badge";
 
@@ -30,13 +30,19 @@ const props = defineProps({
     <CardContent class="p-2">
       <div class="flex gap-2 flex-wrap ml-4 mb-8">
         <Badge v-if="isBorrowed">Borrowed</Badge>
-        <Badge>Min Players: {{ props.game.minPlayers }}</Badge>
-        <Badge>Max Players: {{ props.game.maxPlayers }}</Badge>
+        <Badge>Players: {{ props.game.minPlayers }} - {{ props.game.maxPlayers }}</Badge>
       </div>
 
       <CardTitle class="text-lg text-center mb-1 font-bold">{{ props.game.name }}</CardTitle>
       <CardDescription class="text-sm text-gray-500">{{ props.game.description }}</CardDescription>
     </CardContent>
-    <Edit class="absolute top-3 right-3 w-6 h-6 hover:text-gray-400" />
+    <div class="absolute top-3 right-3 group">
+      <PlusSquare class="w-6 h-6 hover:text-gray-400" />
+      <span
+        class="absolute top-full mt-1 right-0 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+      >
+        Add to your collection
+      </span>
+    </div>
   </Card>
 </template>

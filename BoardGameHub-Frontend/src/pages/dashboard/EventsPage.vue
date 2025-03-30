@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import Header from "../../components/Header.vue";
-import { FilterIcon } from "lucide-vue-next";
+import {
+  FilterIcon,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  RefreshCcw,
+  ClipboardCheck,
+} from "lucide-vue-next";
 import { ref, onMounted } from "vue";
 import CreateEventModal from "@/components/popups/CreateEventModal.vue";
 import { Button } from "@/components/ui/button";
@@ -12,8 +19,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-
-import { ChevronDown, ChevronUp, Plus, RefreshCcw, Pencil, Trash } from "lucide-vue-next";
 
 import { Toaster } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/toast/use-toast";
@@ -32,6 +37,7 @@ import {
 import { expandRows } from "@tanstack/vue-table";
 
 const events = ref(sampleEvents);
+const { toast } = useToast();
 const loading = ref(false);
 const error = ref("");
 const expandedRows = ref<Record<number, boolean>>({});
@@ -40,6 +46,16 @@ const isCreateEventModalOpen = ref(false);
 
 const closeCreateEventModal = () => {
   isCreateEventModalOpen.value = false;
+};
+
+const registerEvent = (eventId: number) => {
+  //TO DO: Implement registration logic
+  toast({
+    title: "Registration Successful",
+    description: `You have successfully registered for the event.`,
+    variant: "default",
+    duration: 10000,
+  });
 };
 
 const toggleRowExpansion = (rowId: number) => {
@@ -61,15 +77,23 @@ const fetchEvents = async () => {
 
 <template>
   <Header />
+  <Toaster position="top-right" />
   <div class="p-6 space-y-6 mt-24 w-9/12 mx-auto">
     <div class="flex justify-between items-center">
       <h1 class="text-2xl font-bold">Game Events</h1>
       <EventFilters class="flex-1 mx-10" />
-      <Button variant="outline" class="flex items-center mx-3">
+      <Button variant="outline" class="flex items-center mx-3 border-black">
         <FilterIcon class="w-4 h-4" />
+        Filters
       </Button>
-      <Button class="mr-2" @click="isCreateEventModalOpen = true"> Create Event </Button>
-      <Button @click="fetchEvents">Refresh</Button>
+      <Button class="mr-2 pl-3" @click="isCreateEventModalOpen = true">
+        <Plus class="h-4 w-4" />
+        Create Event
+      </Button>
+      <Button @click="fetchEvents">
+        <RefreshCcw class="h-4 w-4" />
+        Refresh
+      </Button>
     </div>
     <Table>
       <TableHeader>
@@ -104,11 +128,20 @@ const fetchEvents = async () => {
             <TableCell class="text-start">{{ Event.capacity }}</TableCell>
           </TableRow>
           <TableRow v-if="expandedRows[Event.id]">
-            <TableCell colspan="7">
-              <div class="flex justify-between items-center mb-4 px-20">
-                <p><strong>Start Time:</strong> {{ Event.startTime }}</p>
-                <p><strong>End Time:</strong> {{ Event.endTime }}</p>
-                <Button variant="outline" size="sm"> <Pencil class="h-4 w-4" /> Edit </Button>
+            <TableCell colspan="7" class="px-20">
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex flex-col items-start gap-2">
+                  <p class="text-start max-w-[900px]">
+                    <strong>Description:</strong> {{ Event.description }}
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>Registrations: </strong> {{ Event.participants.join(", ") }}
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" @click="registerEvent(Event.id)">
+                  <ClipboardCheck class="h-4 w-4" />
+                  Register
+                </Button>
               </div>
             </TableCell>
           </TableRow>
