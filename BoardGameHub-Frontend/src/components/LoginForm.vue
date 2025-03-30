@@ -69,6 +69,7 @@ const handleSubmit = async () => {
               </div>
               <Input
                 v-model="password"
+                placeholder="Enter your password"
                 id="password"
                 type="password"
                 required

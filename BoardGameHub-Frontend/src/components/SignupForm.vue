@@ -53,6 +53,7 @@ const handleSubmit = async () => {
               <Label for="name">Username</Label>
               <Input
                 v-model="name"
+                placeholder="Enter your username"
                 id="name"
                 type="name"
                 required
@@ -76,6 +77,7 @@ const handleSubmit = async () => {
                 v-model="password"
                 id="password"
                 type="password"
+                placeholder="Enter your password"
                 required
               />
             </div>

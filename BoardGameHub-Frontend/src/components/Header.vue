@@ -12,7 +12,7 @@ const router = useRouter();
   <header>
     <nav>
       <div
-        class="flex w-screen pl-20 pr-20 justify-between p-4 bg-gray-800 text-white fixed top-0 left-0 z-50"
+        class="flex w-screen pl-20 pr-20 justify-between p-4 bg-[#F4F4F5] border-b-2 border-l-sky-100 text-black fixed top-0 left-0 z-50"
       >
         <div class="flex items-center space-x-4">
           <img
@@ -26,7 +26,7 @@ const router = useRouter();
           <li>
             <a
               href="#"
-              class="text-white hover:text-gray-300 flex justify-center items-center"
+              class="text-black hover:text-gray-500 flex justify-center items-center"
               @click.prevent="router.push('/home')"
             >
               <HomeIcon class="h-6 w-6 inline-block mr-2" />
@@ -35,7 +35,7 @@ const router = useRouter();
           </li>
           <li>
             <a
-              class="text-white hover:text-gray-300 flex justify-center items-center"
+              class="text-black hover:text-gray-500 flex justify-center items-center"
               href="#"
               @click.prevent="router.push('/games')"
             >
@@ -46,7 +46,7 @@ const router = useRouter();
           <li>
             <a
               href="#"
-              class="text-white hover:text-gray-300 flex justify-center items-center"
+              class="text-black hover:text-gray-500 flex justify-center items-center"
               @click.prevent="router.push('/events')"
             >
               <CalendarIcon class="h-6 w-6 inline-block mr-2" />
@@ -56,7 +56,7 @@ const router = useRouter();
           <li>
             <a
               href="#"
-              class="text-white hover:text-gray-300 flex justify-center items-center"
+              class="text-black hover:text-gray-500 flex justify-center items-center"
               @click.prevent="router.push('/')"
             >
               <LogOut class="h-6 w-6 inline-block mr-2" />
