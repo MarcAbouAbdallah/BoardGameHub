@@ -59,7 +59,7 @@ public class BorrowRequestController {
     }
 
     /**
-     * Get all borrow requests sent by a player
+     * Get all borrow requests sent by a player (with an optional filter)
      * 
      * @param requesterId The id of the requester
      * @param status Optional status filter (pending, accepted, declined, returned)
@@ -77,7 +77,7 @@ public class BorrowRequestController {
     }
 
     /**
-     * Get all borrow requests received by a player
+     * Get all borrow requests received by a player (with an optional filter)
      * 
      * @param requesteeId The id of the requestee
      * @param status Optional status filter (pending, accepted, declined, returned, history)
