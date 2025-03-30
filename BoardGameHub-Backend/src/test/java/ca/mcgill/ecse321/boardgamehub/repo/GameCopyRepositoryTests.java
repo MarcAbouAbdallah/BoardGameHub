@@ -35,7 +35,11 @@ public class GameCopyRepositoryTests {
 
     @BeforeEach
     public void setup() {
-        chess = new Game("Chess", 2, 2, "A strategic board game");
+        chess = new Game("Chess",
+                        2,
+                        2,
+                        "A strategic board game",
+                        "https://images.unsplash.com/photo-1619163413327-546fdb903195?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
         chess = gameRepository.save(chess);
 
         Sleepy = new Player("Sleepy", "IWasSleepy@gmail.com" , "password", true);

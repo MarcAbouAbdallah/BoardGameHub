@@ -46,7 +46,7 @@ public class BorrowRequestIntegrationTests {
 
     private static final Player REQUESTER = new Player("Alice", "alice@mail.com", "password123", false);
     private static final Player REQUESTEE = new Player("Bob", "bob@mail.com", "securePass", true);
-    private static final Game GAME = new Game("Catan", 4, 2, "Strategy game");
+    private static final Game GAME = new Game("Catan", 4, 2, "Strategy game", "https://images.unsplash.com/photo-1619163413327-546fdb903195?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
     private static final GameCopy GAME_COPY = new GameCopy(true, GAME, REQUESTEE);
 
     private static final String COMMENT = "Request to borrow this game.";

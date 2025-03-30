@@ -35,7 +35,8 @@ public class GameManagementService {
                 gameToCreate.getName(),
                 gameToCreate.getMaxPlayers(),
                 gameToCreate.getMinPlayers(),
-                gameToCreate.getDescription()
+                gameToCreate.getDescription(),
+                gameToCreate.getPhotoURL()
             );
             return gameRepo.save(g);
         }
@@ -81,6 +82,9 @@ public class GameManagementService {
         }
         if (gameToUpdate.getDescription() != null){
             g.setDescription(gameToUpdate.getDescription());
+        }
+        if (gameToUpdate.getPhotoURL() != null){
+            g.setPhotoURL(gameToUpdate.getPhotoURL());
         }
 
         return gameRepo.save(g);
