@@ -53,10 +53,10 @@ public class GameCopyController {
     }
 
     /**
-     * Retrieve only the available GameCopies in a player's collection.
+     * Get all game copies for a particular game with given id.
      *
-     * @param searchDto A DTO carrying the playerId.
-     * @return A list of GameCopyResponseDto objects that are currently available
+     * @param id The numerical unique Id of the game whose copies we want to find.
+     * @return A list of GameCopyResponseDto objects whose game we are looking for.
      */
     @GetMapping("/games/{id}")
     @ResponseStatus(HttpStatus.OK)

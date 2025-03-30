@@ -93,7 +93,7 @@ public class EventController {
      */
     @GetMapping("/games/{gameName}")
     @ResponseStatus(HttpStatus.OK)
-    public List<EventResponseDto> getEventsForCreator(@PathVariable String gameName) {
+    public List<EventResponseDto> getEventsForGame(@PathVariable String gameName) {
         return eventService.getEventsForGame(gameName).stream()
                 .map(event -> new EventResponseDto(event, eventService.getParticipantsCount(event.getId())))
                 .toList();

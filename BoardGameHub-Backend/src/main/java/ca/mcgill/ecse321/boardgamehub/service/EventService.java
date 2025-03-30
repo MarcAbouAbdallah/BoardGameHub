@@ -112,7 +112,8 @@ public class EventService {
         List<Event> eventList = new ArrayList<>();
 
         for (GameCopy copy: copies) {
-            eventList.addAll(eventRepo.findByGame(copy));
+            List<Event> tmpList = eventRepo.findByGame(copy) ;
+            if (tmpList != null) eventList.addAll(tmpList);
         }
 
         return eventList;
