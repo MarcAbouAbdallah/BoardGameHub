@@ -76,16 +76,14 @@ public class BorrowingService {
     }
 
     @Transactional
-    public BorrowRequest approveOrRejectBorrowRequest(int requestId, int userId, BorrowStatusUpdateDto statusDto) {
+    public BorrowRequest updateRequestStatus(int requestId, BorrowStatusUpdateDto statusDto) {
         BorrowRequest request = findBorrowRequestById(requestId);
-        if (request.getRequestee().getId() != userId) {
-            throw new BoardGameHubException(HttpStatus.FORBIDDEN, "You are not allowed to approve or reject this request.");
+        if (statusDto.getStatus() != BorrowStatus.ACCEPTED && statusDto.getStatus() != BorrowStatus.DECLINED && statusDto.getStatus() != BorrowStatus.RETURNED) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "The request must either be accepted, declined or returned.");
         }
-        if (request.getStatus() != BorrowStatus.PENDING) {
-            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be modified.");
-        }
-        if (statusDto.getStatus() != BorrowStatus.ACCEPTED && statusDto.getStatus() != BorrowStatus.DECLINED) {
-            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "The request must either be accepted or declined");
+
+        if (statusDto.getStatus() != BorrowStatus.RETURNED && request.getStatus() != BorrowStatus.PENDING) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be accepted or declined.");
         }
         request.setStatus(statusDto.getStatus());
         return borrowRequestRepo.save(request);
@@ -183,13 +181,6 @@ public class BorrowingService {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
                     "Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED, HISTORY.");
         }
-    }
-
-    @Transactional
-    public BorrowRequest returnBorrowRequest(int requestId) {
-        BorrowRequest request = findBorrowRequestById(requestId);
-        request.setStatus(BorrowStatus.RETURNED);
-        return borrowRequestRepo.save(request);
     }
 
     // Helper to validate request dto

@@ -312,29 +312,10 @@ public class BorrowRequestIntegrationTests {
 
     @Test
     @Order(10)
-    public void testUpdateBorrowRequestStatus_Unauthorized() {
-        BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.ACCEPTED);
-
-        // The user trying to approve/reject the request is not the requestee (userId != REQUESTEE.getId())
-        String url = "/borrow-requests/" + createdBorrowRequestId + "/status?userId=" + REQUESTER.getId();
-
-        ResponseEntity<String> response = client.exchange(
-                url, HttpMethod.PUT, new HttpEntity<>(statusDto), String.class);
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-
-        String error = response.getBody();
-        assertNotNull(error);
-        assertTrue(error.contains("You are not allowed to approve or reject this request"));
-    }
-
-    @Test
-    @Order(11)
     public void testUpdateBorrowRequestStatus_InvalidStatus() {
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.PENDING);
 
-        String url = "/borrow-requests/" + createdBorrowRequestId + "/status?userId=" + REQUESTEE.getId();
+        String url = "/borrow-requests/" + createdBorrowRequestId + "/status";
 
         ResponseEntity<String> response = client.exchange(
                 url, HttpMethod.PUT, new HttpEntity<>(statusDto), String.class);
@@ -344,15 +325,16 @@ public class BorrowRequestIntegrationTests {
 
         String error = response.getBody();
         assertNotNull(error);
-        assertTrue(error.contains("The request must either be accepted or declined"));
+        assertTrue(error.contains("The request must either be accepted, declined or returned."));
+
     }
 
     @Test
-    @Order(12)
-    public void testUpdateValidBorrowRequestStatus() {
+    @Order(11)
+    public void testAcceptBorrowRequest_Success() {
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.ACCEPTED);
 
-        String url = "/borrow-requests/" + createdBorrowRequestId + "/status?userId=" + REQUESTEE.getId();
+        String url = "/borrow-requests/" + createdBorrowRequestId + "/status";
 
         ResponseEntity<BorrowRequestResponseDto> response = client.exchange(
                 url, HttpMethod.PUT, new HttpEntity<>(statusDto), BorrowRequestResponseDto.class);
@@ -366,22 +348,41 @@ public class BorrowRequestIntegrationTests {
     }
 
     @Test
-    @Order(13)
-    public void testUpdateBorrowRequestStatus_InvalidRequestStatus() {
+    @Order(12)
+    public void testAcceptBorrowRequest_AlreadyAccepted() {
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.ACCEPTED);
 
-        String url = "/borrow-requests/" + createdBorrowRequestId + "/status?userId=" + REQUESTEE.getId();
+        String url = "/borrow-requests/" + createdBorrowRequestId + "/status";
+        
 
         ResponseEntity<String> response = client.exchange(
                 url, HttpMethod.PUT, new HttpEntity<>(statusDto), String.class);
         
-        // The request is already accepted (from test 10)
+        // The request is already accepted (from test 11)
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
         String error = response.getBody();
         assertNotNull(error);
-        assertTrue(error.contains("Only pending requests can be modified."));
+        assertTrue(error.contains("Only pending requests can be accepted or declined."));
+    }
+
+    @Test
+    @Order(13)
+    public void testReturnBorrowRequest() {
+        BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.RETURNED);
+
+        String url = "/borrow-requests/" + createdBorrowRequestId + "/status";
+
+        ResponseEntity<BorrowRequestResponseDto> response = client.exchange(
+                url, HttpMethod.PUT, new HttpEntity<>(statusDto), BorrowRequestResponseDto.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        BorrowRequestResponseDto updatedRequest = response.getBody();
+        assertNotNull(updatedRequest);
+        assertEquals(BorrowStatus.RETURNED, updatedRequest.getStatus());
     }
 
     @Test
