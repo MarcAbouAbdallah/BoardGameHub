@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.boardgamehub.service;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
+import java.util.ArrayList;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,11 @@ import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.RegistrationRepository;
 
 import ca.mcgill.ecse321.boardgamehub.model.Event;
+import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
@@ -34,7 +37,9 @@ public class EventService {
     @Autowired
     private PlayerRepository playerRepo;
     @Autowired
-    private GameCopyRepository gameRepo;
+    private GameCopyRepository gameCopyRepo;
+    @Autowired
+    private GameRepository gameRepo;
     @Autowired
     private RegistrationRepository registrationRepo;
 
@@ -50,7 +55,7 @@ public class EventService {
                                             eventToCreate.getOrganizer()));
         }
 
-        GameCopy game = gameRepo.findGameCopyById(eventToCreate.getGame());
+        GameCopy game = gameCopyRepo.findGameCopyById(eventToCreate.getGame());
         if (game == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
                                     "There is no game with ID %d.",
@@ -77,7 +82,42 @@ public class EventService {
 
     public List<Event> getallEvents() {
         return (List<Event>) eventRepo.findAll();
-    }   
+    }
+
+    public List<Event> getEventsForCreator(int creatorId) {
+        Player creator = playerRepo.findPlayerById(creatorId);
+        if (creator == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no person with ID %d.",
+                                            creatorId));
+        }
+        return eventRepo.findByOrganizer(creator);
+        
+    }
+
+    public List<Event> getEventsForGame(String gameName) {
+        Game game = gameRepo.findGameByName(gameName);
+        if (game == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no game with name %s.",
+                                    gameName));
+        }
+        List<GameCopy> copies = gameCopyRepo.findByGame(game);
+        if (copies == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There are no copies of the game with name %s.",
+                                    gameName));
+        }
+
+        List<Event> eventList = new ArrayList<>();
+
+        for (GameCopy copy: copies) {
+            eventList.addAll(eventRepo.findByGame(copy));
+        }
+
+        return eventList;
+
+    }
 
     public Event findEventById(int id) {
         Event event = eventRepo.findEventById(id);
@@ -132,7 +172,7 @@ public class EventService {
         if (eventDTO.getMaxParticipants() != null) event.setMaxParticipants(eventDTO.getMaxParticipants());
 
         if (eventDTO.getGame() != null) {
-            GameCopy newGame = gameRepo.findGameCopyById(eventDTO.getGame());
+            GameCopy newGame = gameCopyRepo.findGameCopyById(eventDTO.getGame());
             if (newGame == null) {
                 throw new BoardGameHubException(HttpStatus.NOT_FOUND, "No game found with ID " + eventDTO.getGame());
             }
