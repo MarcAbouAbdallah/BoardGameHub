@@ -122,6 +122,9 @@ public class PersonalCollectionServiceTests {
 
         when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
 
+        when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
+
+
         // Act & Assert: Should not throw, and the repo should delete the game copy
         assertDoesNotThrow(() -> personalCollectionService.removeGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID));
         verify(mockGameCopyRepo, times(1)).delete(gameCopy);
@@ -132,6 +135,8 @@ public class PersonalCollectionServiceTests {
         // Arrange: The copy's owner is VALID_PLAYER, but we pass OTHER_PLAYER_ID
         Player otherPlayer = new Player("Jane", "jane@mail.com", "pwd", false);
         otherPlayer.setId(OTHER_PLAYER_ID);
+
+        when(mockPlayerRepo.findById(OTHER_PLAYER_ID)).thenReturn(Optional.of(otherPlayer));
 
         // The copy belongs to VALID_PLAYER
         GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
