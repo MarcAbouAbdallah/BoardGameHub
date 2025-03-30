@@ -86,6 +86,12 @@ public class PersonalCollectionService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<GameCopy> getGameCopiesForGame(int gameId) {
+        Game game = findGameOrThrow(gameId);
+        return gameCopyRepository.findByGame(game);
+    }
+
     @Transactional
     public GameCopy lendGameCopy(int playerId, int gameCopyId) {
         Player player = findPlayerOrThrow(playerId);

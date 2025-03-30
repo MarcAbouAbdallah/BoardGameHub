@@ -53,6 +53,21 @@ public class GameCopyController {
     }
 
     /**
+     * Retrieve only the available GameCopies in a player's collection.
+     *
+     * @param searchDto A DTO carrying the playerId.
+     * @return A list of GameCopyResponseDto objects that are currently available
+     */
+    @GetMapping("/games/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<GameCopyResponseDto> getGameCopiesForGame(@PathVariable int id) {
+        List<GameCopy> copies = collectionService.getGameCopiesForGame(id);
+        return copies.stream()
+            .map(GameCopyResponseDto::fromGameCopy)
+            .toList();
+    }
+
+    /**
      * Retrieve a specific GameCopy by its ID.
      *
      * @param gameCopyId The ID of the GameCopy to retrieve.
