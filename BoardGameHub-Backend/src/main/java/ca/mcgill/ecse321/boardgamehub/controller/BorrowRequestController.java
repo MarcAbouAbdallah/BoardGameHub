@@ -59,29 +59,36 @@ public class BorrowRequestController {
     }
 
     /**
-     * Get all borrow requests sent by a player
+     * Get all borrow requests sent by a player (with an optional status filter)
      * 
      * @param requesterId The id of the requester
+     * @param status Optional status filter (pending, accepted, declined, returned)
      * @return A List of BorrowRequestResponseDto containing all borrow requests sent by the player
      */
     @GetMapping("/requester/{requesterId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<BorrowRequestResponseDto> getRequestsByRequester(@PathVariable int requesterId) {
-        return borrowingService.getRequestsByRequester(requesterId).stream()
+    public List<BorrowRequestResponseDto> getRequestsByRequester(
+            @PathVariable int requesterId,
+            @RequestParam(required = false) String status) {
+
+        return borrowingService.getRequestsByRequester(requesterId, status).stream()
                 .map(BorrowRequestResponseDto::new)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Get all borrow requests received by a player
+     * Get all borrow requests received by a player (with an optional status filter)
      * 
      * @param requesteeId The id of the requestee
+     * @param status Optional status filter (pending, accepted, declined, returned, history)
      * @return A List of BorrowRequestResponseDto containing all borrow requests received by the player
      */
     @GetMapping("/requestee/{requesteeId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<BorrowRequestResponseDto> getRequestsByRequestee(@PathVariable int requesteeId) {
-        return borrowingService.getRequestsByRequestee(requesteeId).stream()
+    public List<BorrowRequestResponseDto> getRequestsByRequestee
+        (@PathVariable int requesteeId,
+         @RequestParam(required = false) String status) {
+        return borrowingService.getRequestsByRequestee(requesteeId, status).stream()
                 .map(BorrowRequestResponseDto::new)
                 .collect(Collectors.toList());
     }
@@ -106,17 +113,15 @@ public class BorrowRequestController {
     /**
      * Update the status of a borrow request
      * 
-     * @param requestId The id of the request
-     * @param status A BorrowStatusUpdateDto containing the updated status (accepted or declined)
-     * @param userId The id of the user making the update (to check if they are the requestee i.e. the game owner)
-     * @return A BorrowRequestResponseDto containing the request with the given id
+     * @param requestId The id of the request to update
+     * @param dto A BorrowStatusUpdateDto containing the new status (accepted, declined, returned)
+     * @return A BorrowRequestResponseDto containing the updated request
      */
     @PutMapping("/{requestId}/status")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK)  
     public BorrowRequestResponseDto updateBorrowRequestStatus(@PathVariable int requestId,
-                                                              @RequestParam int userId,
-                                                              @RequestBody BorrowStatusUpdateDto status) {
-        BorrowRequest updatedRequest = borrowingService.approveOrRejectBorrowRequest(requestId, userId, status);
+                                                               @RequestBody BorrowStatusUpdateDto dto) {
+        BorrowRequest updatedRequest = borrowingService.updateRequestStatus(requestId, dto);
         return new BorrowRequestResponseDto(updatedRequest);
     }
 

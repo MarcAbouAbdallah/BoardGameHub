@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.boardgamehub.service;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -75,16 +76,14 @@ public class BorrowingService {
     }
 
     @Transactional
-    public BorrowRequest approveOrRejectBorrowRequest(int requestId, int userId, BorrowStatusUpdateDto statusDto) {
+    public BorrowRequest updateRequestStatus(int requestId, BorrowStatusUpdateDto statusDto) {
         BorrowRequest request = findBorrowRequestById(requestId);
-        if (request.getRequestee().getId() != userId) {
-            throw new BoardGameHubException(HttpStatus.FORBIDDEN, "You are not allowed to approve or reject this request.");
+        if (statusDto.getStatus() != BorrowStatus.ACCEPTED && statusDto.getStatus() != BorrowStatus.DECLINED && statusDto.getStatus() != BorrowStatus.RETURNED) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "The request must either be accepted, declined or returned.");
         }
-        if (request.getStatus() != BorrowStatus.PENDING) {
-            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be modified.");
-        }
-        if (statusDto.getStatus() != BorrowStatus.ACCEPTED && statusDto.getStatus() != BorrowStatus.DECLINED) {
-            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "The request must either be accepted or declined");
+
+        if (statusDto.getStatus() != BorrowStatus.RETURNED && request.getStatus() != BorrowStatus.PENDING) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be accepted or declined.");
         }
         request.setStatus(statusDto.getStatus());
         return borrowRequestRepo.save(request);
@@ -120,7 +119,7 @@ public class BorrowingService {
     }
 
     @Transactional
-    public List<BorrowRequest> getRequestsByRequester(int requesterId) {
+    public List<BorrowRequest> getRequestsByRequester(int requesterId, String status) {
         Player requester = playerRepo.findPlayerById(requesterId);
         if (requester == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format("There is no requester with ID %d.",requesterId));
@@ -131,11 +130,25 @@ public class BorrowingService {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "No borrow requests found for requester with ID " + requesterId);
         }
         
-        return requests;
+        if (status == null){
+            return requests;
+        }
+
+        String normalizedStatus = status.trim().toUpperCase();
+
+        try {
+            BorrowStatus filterStatus = BorrowStatus.valueOf(normalizedStatus);
+            return requests.stream()
+                    .filter(request -> request.getStatus() == filterStatus)
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, 
+                "Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED.");
+        }
     }
 
     @Transactional
-    public List<BorrowRequest> getRequestsByRequestee(int requesteeId) {
+    public List<BorrowRequest> getRequestsByRequestee(int requesteeId, String status) {
         Player requestee = playerRepo.findPlayerById(requesteeId);
         if (requestee == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format("There is no requestee with ID %d.",requesteeId));
@@ -146,7 +159,28 @@ public class BorrowingService {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "No borrow requests found for requestee with ID " + requesteeId);
         }
         
-        return requests;
+        if (status == null){
+            return requests;
+        }
+
+        String normalizedStatus = status.trim().toUpperCase();
+
+        if ("HISTORY".equals(normalizedStatus)) {
+            // This is for lending history (accpeted and returned requests)
+            return requests.stream()
+                    .filter(req -> req.getStatus() == BorrowStatus.ACCEPTED || req.getStatus() == BorrowStatus.RETURNED)
+                    .collect(Collectors.toList());
+        }
+
+        try {
+            BorrowStatus filterStatus = BorrowStatus.valueOf(normalizedStatus);
+            return requests.stream()
+                    .filter(req -> req.getStatus() == filterStatus)
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                    "Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED, HISTORY.");
+        }
     }
 
     // Helper to validate request dto

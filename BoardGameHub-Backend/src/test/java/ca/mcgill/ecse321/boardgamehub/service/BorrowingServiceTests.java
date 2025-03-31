@@ -211,14 +211,13 @@ public class BorrowingServiceTests {
         BorrowRequest request = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
 
         request.setId(VALID_BORROW_REQUEST_ID);
-        REQUESTEE.setId(VALID_REQUESTEE_ID);
         request.setStatus(BorrowStatus.PENDING);
 
         when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
         when(mockBorrowRequestRepo.save(request)).thenReturn(request);
         
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.ACCEPTED);
-        BorrowRequest approvedRequest = borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, statusDto);
+        BorrowRequest approvedRequest = borrowingService.updateRequestStatus(VALID_BORROW_REQUEST_ID, statusDto);
         
         assertNotNull(approvedRequest);
         assertEquals(BorrowStatus.ACCEPTED, approvedRequest.getStatus());
@@ -229,14 +228,13 @@ public class BorrowingServiceTests {
         BorrowRequest request = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
 
         request.setId(VALID_BORROW_REQUEST_ID);
-        REQUESTEE.setId(VALID_REQUESTEE_ID);
         request.setStatus(BorrowStatus.PENDING);
 
         when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
         when(mockBorrowRequestRepo.save(request)).thenReturn(request);
         
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.DECLINED);
-        BorrowRequest rejectedRequest = borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, statusDto);
+        BorrowRequest rejectedRequest = borrowingService.updateRequestStatus(VALID_BORROW_REQUEST_ID, statusDto);
         
         assertNotNull(rejectedRequest);
         assertEquals(BorrowStatus.DECLINED, rejectedRequest.getStatus());
@@ -247,37 +245,17 @@ public class BorrowingServiceTests {
         BorrowRequest request = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
 
         request.setId(VALID_BORROW_REQUEST_ID);
-        REQUESTEE.setId(VALID_REQUESTEE_ID);
         request.setStatus(BorrowStatus.ACCEPTED); // The request is already accepted
 
         when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
         
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.DECLINED);
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, statusDto);
+            borrowingService.updateRequestStatus(VALID_BORROW_REQUEST_ID, statusDto);
         });
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-        assertEquals("Only pending requests can be modified.", exception.getMessage());
-    }
-
-    @Test
-    public void testApproveRequestWithInvalidRequestee(){
-        BorrowRequest request = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-
-        request.setId(VALID_BORROW_REQUEST_ID);
-        REQUESTEE.setId(VALID_REQUESTEE_ID + 1); // Invalid requestee ID
-        request.setStatus(BorrowStatus.PENDING);
-
-        when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
-
-        BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.ACCEPTED);
-        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, statusDto);
-        });
-
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
-        assertEquals("You are not allowed to approve or reject this request.", exception.getMessage());
+        assertEquals("Only pending requests can be accepted or declined.", exception.getMessage());
     }
 
     @Test
@@ -285,18 +263,34 @@ public class BorrowingServiceTests {
         BorrowRequest request = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
 
         request.setId(VALID_BORROW_REQUEST_ID);
-        REQUESTEE.setId(VALID_REQUESTEE_ID);
         request.setStatus(BorrowStatus.PENDING);
 
         when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
         
         BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.PENDING);
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.approveOrRejectBorrowRequest(VALID_BORROW_REQUEST_ID, VALID_REQUESTEE_ID, statusDto);
+            borrowingService.updateRequestStatus(VALID_BORROW_REQUEST_ID, statusDto);
         });
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-        assertEquals("The request must either be accepted or declined", exception.getMessage());
+        assertEquals("The request must either be accepted, declined or returned.", exception.getMessage());
+    }
+
+    @Test
+    public void testReturnBorrowRequest(){
+        BorrowRequest request = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+
+        request.setId(VALID_BORROW_REQUEST_ID);
+        request.setStatus(BorrowStatus.ACCEPTED);
+
+        when(mockBorrowRequestRepo.save(request)).thenReturn(request);
+        when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
+        
+        BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.RETURNED);
+        BorrowRequest returnedRequest = borrowingService.updateRequestStatus(VALID_BORROW_REQUEST_ID, statusDto);
+        
+        assertNotNull(returnedRequest);
+        assertEquals(BorrowStatus.RETURNED, returnedRequest.getStatus());
     }
 
     @Test
@@ -407,7 +401,7 @@ public class BorrowingServiceTests {
         when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(requests);
         when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
         
-        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequester(VALID_REQUESTER_ID);
+        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, null);
         
         assertEquals(3, allRequests.size());
     }
@@ -418,11 +412,81 @@ public class BorrowingServiceTests {
         when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(List.of());
         
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.getRequestsByRequester(VALID_REQUESTER_ID);
+            borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, null);
         });
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("No borrow requests found for requester with ID "+ VALID_REQUESTER_ID, exception.getMessage());
+    }
+
+    @Test
+    public void testGetAcceptedRequestsByRequester(){
+        BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request1.setStatus(BorrowStatus.ACCEPTED);
+        BorrowRequest request2 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request2.setStatus(BorrowStatus.ACCEPTED);
+        BorrowRequest request3 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request3.setStatus(BorrowStatus.PENDING);
+        List<BorrowRequest> requests = new ArrayList<>();
+        requests.add(request1);
+        requests.add(request2);
+        requests.add(request3);
+        when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(requests);
+        when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
+        
+        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, "ACCEPTED");
+        
+        assertEquals(2, allRequests.size());
+    }
+
+    @Test
+    public void testGetAcceptedRequestsByRequester_EmptyList() {
+        when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
+        when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(List.of());
+        
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, "ACCEPTED");
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("No borrow requests found for requester with ID "+ VALID_REQUESTER_ID, exception.getMessage());
+    }
+
+    @Test
+    public void testGetReturnedRequestsByRequester(){
+        BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request1.setStatus(BorrowStatus.RETURNED);
+        BorrowRequest request2 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request2.setStatus(BorrowStatus.RETURNED);
+        BorrowRequest request3 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request3.setStatus(BorrowStatus.PENDING);
+        List<BorrowRequest> requests = new ArrayList<>();
+        requests.add(request1);
+        requests.add(request2);
+        requests.add(request3);
+        when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(requests);
+        when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
+        
+        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, "RETURNED");
+        
+        assertEquals(2, allRequests.size());
+    }
+
+    @Test
+    public void testGetRequestsByRequester_InvalidFilter(){
+        BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request1.setStatus(BorrowStatus.RETURNED);
+        List<BorrowRequest> requests = new ArrayList<>();
+        requests.add(request1);
+        when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(requests);
+        when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
+        
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, "INVALID");
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals("Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED.", exception.getMessage());
     }
 
     @Test
@@ -434,7 +498,7 @@ public class BorrowingServiceTests {
         when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(requests);
         when(mockPlayerRepo.findPlayerById(VALID_REQUESTEE_ID)).thenReturn(REQUESTEE);
         
-        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID);
+        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, null);
         
         assertEquals(3, allRequests.size());
     }
@@ -445,12 +509,94 @@ public class BorrowingServiceTests {
         when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(List.of());
         
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID);
+            borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, null);
         });
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("No borrow requests found for requestee with ID "+ VALID_REQUESTEE_ID, exception.getMessage());
     }
 
+    @Test
+    public void testGetAcceptedRequestsByRequestee(){
+        BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request1.setStatus(BorrowStatus.ACCEPTED);
+        BorrowRequest request2 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request2.setStatus(BorrowStatus.ACCEPTED);
+        BorrowRequest request3 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request3.setStatus(BorrowStatus.PENDING);
+        List<BorrowRequest> requests = new ArrayList<>();
+        requests.add(request1);
+        requests.add(request2);
+        requests.add(request3);
+        when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(requests);
+        when(mockPlayerRepo.findPlayerById(VALID_REQUESTEE_ID)).thenReturn(REQUESTEE);
+        
+        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, "ACCEPTED");
+        
+        assertEquals(2, allRequests.size());
+    }
+
+    @Test
+    public void testGetLendingHistoryofRequestee(){
+        BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request1.setStatus(BorrowStatus.RETURNED);
+        BorrowRequest request2 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request2.setStatus(BorrowStatus.RETURNED);
+        BorrowRequest request3 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request3.setStatus(BorrowStatus.PENDING);
+        List<BorrowRequest> requests = new ArrayList<>();
+        requests.add(request1);
+        requests.add(request2);
+        requests.add(request3);
+        when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(requests);
+        when(mockPlayerRepo.findPlayerById(VALID_REQUESTEE_ID)).thenReturn(REQUESTEE);
+        
+        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, "HISTORY");
+        
+        assertEquals(2, allRequests.size());
+    }
+
+    @Test
+    public void testGetRequestsByRequestee_InvalidFilter(){
+        BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+        request1.setStatus(BorrowStatus.RETURNED);
+        List<BorrowRequest> requests = new ArrayList<>();
+        requests.add(request1);
+        when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(requests);
+        when(mockPlayerRepo.findPlayerById(VALID_REQUESTEE_ID)).thenReturn(REQUESTEE);
+        
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, "INVALID");
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals("Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED, HISTORY.", exception.getMessage());
+    }
+
+    @Test
+    public void testGetRequestsByRequester_RequesterNotFound(){
+        when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(null);
+        
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, null);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("There is no requester with ID " + VALID_REQUESTER_ID + ".", exception.getMessage());
+        verify(mockBorrowRequestRepo, never()).findByRequester(any(Player.class));
+    }
+
+    @Test
+    public void testGetRequestsByRequestee_RequesteeNotFound(){
+        when(mockPlayerRepo.findPlayerById(VALID_REQUESTEE_ID)).thenReturn(null);
+        
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, null);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("There is no requestee with ID " + VALID_REQUESTEE_ID + ".", exception.getMessage());
+        verify(mockBorrowRequestRepo, never()).findByRequestee(any(Player.class));
+    }
 }
 
