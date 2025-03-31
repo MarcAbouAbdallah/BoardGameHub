@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-vue-next";
 import {
   Dialog,
   DialogContent,
@@ -42,7 +43,10 @@ const handleSubmit = async () => {
 <template>
   <Dialog v-model:open="isOpen">
     <DialogTrigger as-child>
-      <Button> Add a new game </Button>
+      <Button>
+        <Plus class="h-4 w-4" />
+        Add a new game
+      </Button>
     </DialogTrigger>
     <DialogContent :close="close">
       <DialogHeader>
