@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useToast } from "@/components/ui/toast/use-toast";
+import { Plus } from "lucide-vue-next";
 import {
   Dialog,
   DialogContent,
@@ -48,7 +49,10 @@ const handleSubmit = async () => {
 <template>
   <Dialog v-model:open="isOpen">
     <DialogTrigger as-child>
-      <Button variant="outline" class="border-black">Add a Review</Button>
+      <Button variant="outline" class="border-black pl-2">
+        <Plus class="h-4 w-4" />
+        Add a Review
+      </Button>
     </DialogTrigger>
     <DialogContent :close="close">
       <DialogHeader>

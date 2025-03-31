@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
+import { Button } from "./ui/button";
+import { ChevronDown, ChevronUp } from "lucide-vue-next";
 import CustomTableHeader from "../components/TableHeader.vue";
-import { ChevronDown, ChevronUp, ClipboardCheck, Pen, Trash } from "lucide-vue-next";
+import { Trash, Undo2 } from "lucide-vue-next";
+import { Badge } from "./ui/badge";
 import {
   Table,
   TableBody,
@@ -16,6 +19,10 @@ import { ref } from "vue";
 const loading = ref(false);
 const error = ref("");
 const expandedRows = ref<Record<number, boolean>>({});
+
+const toggleRowExpansion = (rowId: number) => {
+  expandedRows.value[rowId] = !expandedRows.value[rowId];
+};
 
 const props = defineProps({
   games: {
@@ -32,14 +39,84 @@ const props = defineProps({
       <Table class="w-full mt-4">
         <TableHeader>
           <TableRow>
+            <TableHead></TableHead>
             <TableHead class="font-bold text-lg text-black">Game</TableHead>
             <TableHead class="font-bold text-lg text-black">Type</TableHead>
+            <TableHead class="font-bold text-lg text-black">Owner</TableHead>
             <TableHead class="font-bold text-lg text-black">minPlayers</TableHead>
             <TableHead class="font-bold text-lg text-black">maxPlayers</TableHead>
             <TableHead class="font-bold text-lg text-black">Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody></TableBody>
+        <TableBody>
+          <template v-for="game in props.games" :key="game.id">
+            <TableRow>
+              <TableCell>
+                <Button
+                  variant="outline"
+                  class="p-2 border-none bg-transparent"
+                  @click="toggleRowExpansion(game.id)"
+                >
+                  <ChevronUp v-if="expandedRows[game.id]" class="h-4 w-4" />
+                  <ChevronDown v-else class="h-4 w-4" />
+                </Button>
+              </TableCell>
+              <TableCell class="text-start">{{ game.name }}</TableCell>
+              <TableCell class="text-start">
+                <Badge class="bg-blue-800" v-if="game.isBorrowed">Borrowed</Badge>
+                <Badge class="bg-green-800 min-w-[75px] text-center" v-else>Owned</Badge>
+              </TableCell>
+              <TableCell class="text-start">{{ game.owner }} </TableCell>
+              <TableCell class="text-start">{{ game.minPlayers }}</TableCell>
+              <TableCell class="text-start">{{ game.maxPlayers }}</TableCell>
+              <TableCell class="text-start">
+                <Button variant="destructive" v-if="!game.isBorrowed">
+                  <Trash class="h-4 w-4" />
+                  Remove
+                </Button>
+                <Button variant="outline" class="ml-2" v-else>
+                  <Undo2 class="h-4 w-4" />
+                  Return
+                </Button>
+              </TableCell>
+            </TableRow>
+            <TableRow v-if="expandedRows[game.id]">
+              <TableCell colspan="7" class="p-4 bg-gray-100">
+                <div class="flex flex-col items-start space-y-2">
+                  <p><strong>Game Description:</strong> {{ game.description }}</p>
+                </div>
+                <div v-if="!game.isBorrowed" class="mt-4">
+                  <h3 class="font-bold mb-2 text-start">Recieved Borrow Requests:</h3>
+                  <div class="bg-gray-200 border rounded-md max-h-[200px] overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableHead class="font-bold text-md text-black">User</TableHead>
+                        <TableHead class="font-bold text-md text-black">Start Date</TableHead>
+                        <TableHead class="font-bold text-md text-black">End Date</TableHead>
+                        <TableHead class="font-bold text-md text-black">Comment</TableHead>
+                        <TableHead class="font-bold text-md text-black">Actions</TableHead>
+                      </TableHeader>
+                      <TableBody>
+                        <template v-for="request in game.borrowRequests" :key="request.id">
+                          <TableRow>
+                            <TableCell class="text-start">{{ request.user }}</TableCell>
+                            <TableCell class="text-start">{{ request.startDate }}</TableCell>
+                            <TableCell class="text-start">{{ request.endDate }}</TableCell>
+                            <TableCell class="text-start">{{ request.comment }}</TableCell>
+                            <TableCell class="text-start">
+                              <Button class="bg-green-700 hover:bg-green-900">Accept</Button>
+                              <Button variant="destructive" class="ml-2">Reject</Button>
+                            </TableCell>
+                          </TableRow>
+                        </template>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </TableCell>
+            </TableRow>
+          </template>
+        </TableBody>
       </Table>
     </DataTableCard>
   </div>
