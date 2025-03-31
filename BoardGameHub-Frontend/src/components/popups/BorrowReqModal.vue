@@ -6,15 +6,21 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { defineProps } from "vue";
+import { Toaster } from "../ui/toast";
+import { useToast } from "../ui/toast/use-toast";
 
-const props = defineProps<{
-  close: () => void;
-}>();
+const isOpen = ref(false);
+const { toast } = useToast();
+
+const close = () => {
+  isOpen.value = false;
+  console.log("Dialog closed");
+};
 
 const formData = ref({
   comment: "",
@@ -26,7 +32,13 @@ const error = ref("");
 const handleSubmit = async () => {
   try {
     console.log("Form Data:", formData.value);
-    props.close();
+    isOpen.value = false;
+    toast({
+      title: "Request Submitted",
+      description: `Your request to borrow a game has been submitted.`,
+      variant: "default",
+      duration: 2000,
+    });
     // Call the APID to create the event here
   } catch (err) {
     error.value = "An error occurred. Please try again.";
@@ -35,7 +47,10 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <Dialog :default-open="true" @update:open="(isOpen) => !isOpen && close()">
+  <Dialog v-model:open="isOpen">
+    <DialogTrigger as-child>
+      <Button>Request to Borrow</Button>
+    </DialogTrigger>
     <DialogContent :close="close">
       <DialogHeader>
         <DialogTitle class="text-2xl font-bold">Request to Borrow</DialogTitle>

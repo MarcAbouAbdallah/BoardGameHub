@@ -2,24 +2,21 @@ export const games = [
   {
     id: 1,
     name: "Catan",
-    description:
-      "A strategy board game where players collect resources and build settlements.",
+    description: "A strategy board game where players collect resources and build settlements.",
     maxPlayers: 4,
     minPlayers: 3,
   },
   {
     id: 2,
     name: "Risk",
-    description:
-      "A game of global domination where players strategize to conquer territories.",
+    description: "A game of global domination where players strategize to conquer territories.",
     maxPlayers: 6,
     minPlayers: 2,
   },
   {
     id: 3,
     name: "Ticket to Ride",
-    description:
-      "A railway-themed board game where players build train routes across a map.",
+    description: "A railway-themed board game where players build train routes across a map.",
     maxPlayers: 5,
     minPlayers: 2,
   },
@@ -34,33 +31,62 @@ export const games = [
   {
     id: 5,
     name: "Codenames",
-    description:
-      "A word game where players try to find their team's agents using one-word clues.",
+    description: "A word game where players try to find their team's agents using one-word clues.",
     maxPlayers: 8,
     minPlayers: 2,
   },
   {
     id: 6,
     name: "Pandemic",
-    description:
-      "A cooperative game where players work together to stop global disease outbreaks.",
+    description: "A cooperative game where players work together to stop global disease outbreaks.",
     maxPlayers: 4,
     minPlayers: 2,
   },
   {
     id: 7,
     name: "Splendor",
-    description:
-      "A resource-management game where players collect gems to buy developments.",
+    description: "A resource-management game where players collect gems to buy developments.",
     maxPlayers: 4,
     minPlayers: 2,
   },
   {
     id: 8,
     name: "Dixit",
-    description:
-      "A storytelling game where players use abstract illustrations to convey clues.",
+    description: "A storytelling game where players use abstract illustrations to convey clues.",
     maxPlayers: 6,
     minPlayers: 3,
   },
+];
+
+export const gameCopies = [
+  { id: 1, name: "player1" },
+  { id: 2, name: "player2" },
+  { id: 3, name: "player3" },
+  { id: 4, name: "alice" },
+  { id: 5, name: "bob" },
+  { id: 6, name: "charlie" },
+  { id: 7, name: "john_doe" },
+  { id: 8, name: "jane_doe" },
+  { id: 9, name: "sam_smith" },
+  { id: 10, name: "gamer1" },
+  { id: 11, name: "gamer2" },
+  { id: 12, name: "gamer3" },
+  { id: 13, name: "teamA" },
+  { id: 14, name: "teamB" },
+  { id: 15, name: "teamC" },
+  { id: 16, name: "user123" },
+  { id: 17, name: "user456" },
+  { id: 18, name: "user789" },
+  { id: 19, name: "alpha" },
+  { id: 20, name: "beta" },
+  { id: 21, name: "gamma" },
+  { id: 22, name: "red" },
+  { id: 23, name: "blue" },
+  { id: 24, name: "green" },
+  { id: 25, name: "catlover" },
+  { id: 26, name: "doglover" },
+  { id: 27, name: "birdlover" },
+  { id: 28, name: "playerX" },
+  { id: 29, name: "playerY" },
+  { id: 30, name: "playerZ" },
 ];
