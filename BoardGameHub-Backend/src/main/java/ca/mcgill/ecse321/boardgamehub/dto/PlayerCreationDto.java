@@ -13,7 +13,7 @@ public class PlayerCreationDto {
     @Size(min = 8, message = "Password length must be at least 8 characters long")
     @NotBlank(message = "Password is required")
     private String password;
-    private Boolean isGameOwner; 
+    private boolean isGameOwner; 
 
     protected PlayerCreationDto() {}
 
@@ -36,7 +36,7 @@ public class PlayerCreationDto {
         return password;
     }
 
-    public Boolean getIsGameOwner() {
+    public boolean getIsGameOwner() {
         return isGameOwner;
     }
 }
