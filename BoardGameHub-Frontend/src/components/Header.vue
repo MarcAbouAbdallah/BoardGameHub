@@ -12,7 +12,7 @@ const navItems = [
   { label: "Home", icon: HomeIcon, route: "/home" },
   { label: "Games", icon: PuzzlePieceIcon, route: "/games" },
   { label: "Events", icon: CalendarIcon, route: "/events" },
-  { label: "Logout", icon: LogOut, route: "/logout" },
+  { label: "Logout", icon: LogOut, route: "/" },
 ];
 </script>
 

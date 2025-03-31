@@ -37,7 +37,7 @@ const addGameToCollection = (gameId: number) => {
       <CardContent class="p-2">
         <div class="flex gap-2 flex-wrap ml-4 mb-8">
           <Badge v-if="isBorrowed">Borrowed</Badge>
-          <Badge>Players: {{ props.game.minPlayers }} - {{ props.game.maxPlayers }}</Badge>
+          <Badge> {{ props.game.minPlayers }} - {{ props.game.maxPlayers }} Players</Badge>
         </div>
 
         <CardTitle class="text-lg text-center mb-1 font-bold">{{ props.game.name }}</CardTitle>

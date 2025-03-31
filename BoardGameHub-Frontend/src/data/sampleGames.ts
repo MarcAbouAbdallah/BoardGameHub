@@ -65,28 +65,48 @@ export const gameCopies = [
   { id: 4, name: "alice" },
   { id: 5, name: "bob" },
   { id: 6, name: "charlie" },
-  { id: 7, name: "john_doe" },
-  { id: 8, name: "jane_doe" },
-  { id: 9, name: "sam_smith" },
-  { id: 10, name: "gamer1" },
-  { id: 11, name: "gamer2" },
-  { id: 12, name: "gamer3" },
-  { id: 13, name: "teamA" },
-  { id: 14, name: "teamB" },
-  { id: 15, name: "teamC" },
-  { id: 16, name: "user123" },
-  { id: 17, name: "user456" },
-  { id: 18, name: "user789" },
-  { id: 19, name: "alpha" },
-  { id: 20, name: "beta" },
-  { id: 21, name: "gamma" },
-  { id: 22, name: "red" },
-  { id: 23, name: "blue" },
-  { id: 24, name: "green" },
-  { id: 25, name: "catlover" },
-  { id: 26, name: "doglover" },
-  { id: 27, name: "birdlover" },
-  { id: 28, name: "playerX" },
-  { id: 29, name: "playerY" },
-  { id: 30, name: "playerZ" },
+];
+
+export const gameReviews = [
+  {
+    reviewId: 1,
+    reviewer: "John Doe",
+    reviewText: "Catan is an amazing game with great strategic depth. Highly recommend!",
+  },
+  {
+    reviewId: 2,
+    reviewer: "Jane Smith",
+    reviewText: "Risk is a classic, but it can take a long time to finish. Still fun though!",
+  },
+  {
+    reviewId: 3,
+    reviewer: "Emily Johnson",
+    reviewText: "Ticket to Ride is easy to learn and super fun for the whole family.",
+  },
+  {
+    reviewId: 4,
+    reviewer: "Michael Brown",
+    reviewText: "Carcassonne is a fantastic game for those who enjoy tile-placement mechanics.",
+  },
+  {
+    reviewId: 5,
+    reviewer: "Sarah Davis",
+    reviewText: "Codenames is a great party game, especially with a larger group.",
+  },
+  {
+    reviewId: 6,
+    reviewer: "Chris Wilson",
+    reviewText: "Pandemic is intense and requires great teamwork. A must-play cooperative game.",
+  },
+  {
+    reviewId: 7,
+    reviewer: "Laura Martinez",
+    reviewText: "Splendor is a simple yet addictive game. Perfect for quick sessions.",
+  },
+  {
+    reviewId: 8,
+    reviewer: "David Lee",
+    reviewText:
+      "Dixit is a beautiful game with creative storytelling. Great for imaginative players.",
+  },
 ];

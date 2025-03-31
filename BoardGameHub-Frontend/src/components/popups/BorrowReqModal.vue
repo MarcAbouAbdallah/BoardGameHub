@@ -11,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Toaster } from "../ui/toast";
 import { useToast } from "../ui/toast/use-toast";
 
 const isOpen = ref(false);
