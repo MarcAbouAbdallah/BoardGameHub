@@ -12,7 +12,9 @@ import { ref, onMounted } from "vue";
 import CreateEventModal from "@/components/popups/CreateEventModal.vue";
 import { Button } from "@/components/ui/button";
 import { sampleEvents } from "@/data/sampleEvents";
+import DataTableCard from "@/components/DataTableCard.vue";
 
+// For the filter
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -35,6 +37,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { expandRows } from "@tanstack/vue-table";
+import { set } from "@vueuse/core";
 
 const events = ref(sampleEvents);
 const { toast } = useToast();
@@ -54,7 +57,7 @@ const registerEvent = (eventId: number) => {
     title: "Registration Successful",
     description: `You have successfully registered for the event.`,
     variant: "default",
-    duration: 10000,
+    duration: 2000,
   });
 };
 
@@ -95,64 +98,66 @@ const fetchEvents = async () => {
         Refresh
       </Button>
     </div>
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead></TableHead>
-          <TableHead class="font-bold text-lg text-black">Event Name</TableHead>
-          <TableHead class="font-bold text-lg text-black">Game</TableHead>
-          <TableHead class="font-bold text-lg text-black">Location</TableHead>
-          <TableHead class="font-bold text-lg text-black">Date</TableHead>
-          <TableHead class="font-bold text-lg text-black">Remaining Seats</TableHead>
-          <TableHead class="font-bold text-lg text-black">Capacity</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        <template v-for="Event in sampleEvents" :key="Event.name">
+    <DataTableCard :is-loading="loading" :error="error">
+      <Table>
+        <TableHeader>
           <TableRow>
-            <TableCell>
-              <Button
-                variant="outline"
-                class="p-2 border-none bg-transparent"
-                @click="toggleRowExpansion(Event.id)"
-              >
-                <ChevronUp v-if="expandedRows[Event.id]" class="h-4 w-4" />
-                <ChevronDown v-else class="h-4 w-4" />
-              </Button>
-            </TableCell>
-            <TableCell class="text-start">{{ Event.name }}</TableCell>
-            <TableCell class="text-start">{{ Event.game }}</TableCell>
-            <TableCell class="text-start">{{ Event.location }}</TableCell>
-            <TableCell class="text-start">{{ Event.date }}</TableCell>
-            <TableCell class="text-start">{{ Event.remainingSeats }}</TableCell>
-            <TableCell class="text-start">{{ Event.capacity }}</TableCell>
+            <TableHead></TableHead>
+            <TableHead class="font-bold text-lg text-black">Event Name</TableHead>
+            <TableHead class="font-bold text-lg text-black">Game</TableHead>
+            <TableHead class="font-bold text-lg text-black">Location</TableHead>
+            <TableHead class="font-bold text-lg text-black">Date</TableHead>
+            <TableHead class="font-bold text-lg text-black">Remaining Seats</TableHead>
+            <TableHead class="font-bold text-lg text-black">Capacity</TableHead>
           </TableRow>
-          <TableRow v-if="expandedRows[Event.id]">
-            <TableCell colspan="7" class="px-20">
-              <div class="flex justify-between items-center mb-4">
-                <div class="flex flex-col items-start gap-2">
-                  <p class="text-start max-w-[900px]">
-                    <strong>Description:</strong> {{ Event.description }}
-                  </p>
-                  <p class="text-start max-w-[900px]">
-                    <strong>Registrations: </strong> {{ Event.participants.join(", ") }}
-                  </p>
-                </div>
-                <Button variant="outline" size="sm" @click="registerEvent(Event.id)">
-                  <ClipboardCheck class="h-4 w-4" />
-                  Register
+        </TableHeader>
+        <TableBody>
+          <template v-for="Event in sampleEvents" :key="Event.name">
+            <TableRow>
+              <TableCell>
+                <Button
+                  variant="outline"
+                  class="p-2 border-none bg-transparent"
+                  @click="toggleRowExpansion(Event.id)"
+                >
+                  <ChevronUp v-if="expandedRows[Event.id]" class="h-4 w-4" />
+                  <ChevronDown v-else class="h-4 w-4" />
                 </Button>
-              </div>
+              </TableCell>
+              <TableCell class="text-start">{{ Event.name }}</TableCell>
+              <TableCell class="text-start">{{ Event.game }}</TableCell>
+              <TableCell class="text-start">{{ Event.location }}</TableCell>
+              <TableCell class="text-start">{{ Event.date }}</TableCell>
+              <TableCell class="text-start">{{ Event.remainingSeats }}</TableCell>
+              <TableCell class="text-start">{{ Event.capacity }}</TableCell>
+            </TableRow>
+            <TableRow v-if="expandedRows[Event.id]">
+              <TableCell colspan="7" class="px-20">
+                <div class="flex justify-between items-center mb-4">
+                  <div class="flex flex-col items-start gap-2">
+                    <p class="text-start max-w-[900px]">
+                      <strong>Description:</strong> {{ Event.description }}
+                    </p>
+                    <p class="text-start max-w-[900px]">
+                      <strong>Registrations: </strong> {{ Event.participants.join(", ") }}
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm" @click="registerEvent(Event.id)">
+                    <ClipboardCheck class="h-4 w-4" />
+                    Register
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          </template>
+          <TableRow v-if="events.length === 0">
+            <TableCell colspan="7" class="text-center py-8 text-muted-foreground">
+              No events found. Create your first event by clicking the "Create Event" button.
             </TableCell>
           </TableRow>
-        </template>
-        <TableRow v-if="events.length === 0">
-          <TableCell colspan="7" class="text-center py-8 text-muted-foreground">
-            No events found. Create your first event by clicking the "Create Event" button.
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
+        </TableBody>
+      </Table>
+    </DataTableCard>
     <CreateEventModal v-if="isCreateEventModalOpen" :close="closeCreateEventModal" />
   </div>
 </template>

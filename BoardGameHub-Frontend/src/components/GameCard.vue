@@ -14,6 +14,11 @@ const props = defineProps({
     required: false,
   },
 });
+
+const addGameToCollection = (gameId: number) => {
+  // Logic to add the game to the user's collection
+  console.log(`Game with ID ${gameId} added to collection`);
+};
 </script>
 
 <template>
@@ -37,7 +42,7 @@ const props = defineProps({
       <CardDescription class="text-sm text-gray-500">{{ props.game.description }}</CardDescription>
     </CardContent>
     <div class="absolute top-3 right-3 group">
-      <PlusSquare class="w-6 h-6 hover:text-gray-400" />
+      <PlusSquare class="w-6 h-6 hover:text-gray-400" @click="addGameToCollection(props.game.id)" />
       <span
         class="absolute top-full mt-1 right-0 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
       >
