@@ -20,6 +20,7 @@ import CreateGameModal from "@/components/popups/CreateGameModal.vue";
     >
       <GameCard v-for="game in games" :key="game.id" :game="game" />
     </div>
+
     <div class="flex justify-center mt-10">
       <Pagination />
     </div>
