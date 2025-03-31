@@ -13,15 +13,21 @@ public class Game {
     private int maxPlayers;
     private int minPlayers;
     private String description;
+    private String photoURL;
 
     protected Game(){
     }
 
-    public Game(String name, int maxPlayers, int minPlayers, String description) {
+    public Game(String name, int maxPlayers, int minPlayers, String description, String photoURL) {
         this.name = name;
         this.maxPlayers = maxPlayers;
         this.minPlayers =  minPlayers;
         this.description = description;
+        this.photoURL = photoURL;
+    }
+
+    public String getPhotoURL() {
+        return photoURL;
     }
 
     public int getId() {
@@ -38,6 +44,10 @@ public class Game {
 
     public int getMinPlayers(){
         return minPlayers;
+    }
+
+    public void setPhotoURL(String photoURL) {
+        this.photoURL = photoURL;
     }
 
     public String getDescription(){

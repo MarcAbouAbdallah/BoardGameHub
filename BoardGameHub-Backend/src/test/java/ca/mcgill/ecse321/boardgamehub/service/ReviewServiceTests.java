@@ -51,7 +51,7 @@ public class ReviewServiceTests {
     private static final String VALID_GAME_NAME = "Monopoly";
 
     private static final Player VALID_PLAYER = new Player("John", "john@mail.com", "jhKLEHGH75*(#$&", true);
-    private static final Game VALID_GAME = new Game("Monopoly", 4, 2, "A board game about capitalism basically.");
+    private static final Game VALID_GAME = new Game("Monopoly", 4, 2, "A board game about capitalism basically.", "https://images.unsplash.com/photo-1640461470346-c8b56497850a?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
 
     @Test
     public void testCreateValidReview() {

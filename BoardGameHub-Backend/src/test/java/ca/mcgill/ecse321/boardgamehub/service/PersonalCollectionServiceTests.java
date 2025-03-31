@@ -46,7 +46,7 @@ public class PersonalCollectionServiceTests {
     private static final int OTHER_PLAYER_ID = 2;
 
     private static final Player VALID_PLAYER = new Player("John", "john@mail.com", "jhKLEHGH75*(#$&", true);
-    private static final Game VALID_GAME = new Game("Monopoly", 4, 2, "A board game about capitalism basically.");
+    private static final Game VALID_GAME = new Game("Monopoly", 4, 2, "A board game about capitalism basically.", "https://images.unsplash.com/photo-1640461470346-c8b56497850a?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
 
     @BeforeEach
     public void setUp() {
@@ -122,6 +122,9 @@ public class PersonalCollectionServiceTests {
 
         when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
 
+        when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
+
+
         // Act & Assert: Should not throw, and the repo should delete the game copy
         assertDoesNotThrow(() -> personalCollectionService.removeGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID));
         verify(mockGameCopyRepo, times(1)).delete(gameCopy);
@@ -132,6 +135,8 @@ public class PersonalCollectionServiceTests {
         // Arrange: The copy's owner is VALID_PLAYER, but we pass OTHER_PLAYER_ID
         Player otherPlayer = new Player("Jane", "jane@mail.com", "pwd", false);
         otherPlayer.setId(OTHER_PLAYER_ID);
+
+        when(mockPlayerRepo.findById(OTHER_PLAYER_ID)).thenReturn(Optional.of(otherPlayer));
 
         // The copy belongs to VALID_PLAYER
         GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);

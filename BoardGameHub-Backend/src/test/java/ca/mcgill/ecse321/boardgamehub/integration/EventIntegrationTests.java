@@ -55,7 +55,7 @@ public class EventIntegrationTests {
     private EventRepository eventRepo;
 
     private static final Player VALID_ORGANIZER = new Player("John", "john@mail.com", "123", true);
-    private static final Game VALID_GAME = new Game("Monopoly", 4, 2, "Fun game.");
+    private static final Game VALID_GAME = new Game("Monopoly", 4, 2, "Fun game.", "https://images.unsplash.com/photo-1640461470346-c8b56497850a?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
     private static final GameCopy VALID_GAMECOPY = new GameCopy(true, VALID_GAME, VALID_ORGANIZER);
 
     private static final String NAME = "Monopoly Event";
@@ -179,6 +179,54 @@ public class EventIntegrationTests {
     public void testGetAllEvents() {
         ResponseEntity<EventResponseDto[]> response = client.getForEntity("/events", EventResponseDto[].class);
 
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        EventResponseDto[] events = response.getBody();
+        assertNotNull(events);
+        assertEquals(1, events.length);
+
+        EventResponseDto event = events[0];
+        assertNotNull(event);
+        assertEquals(createdEventId, event.getId());
+        assertEquals(NAME, event.getName());
+        assertEquals(LOCATION, event.getLocation());
+        assertEquals(DESCRIPTION, event.getDescription());
+        assertEquals(DATE, event.getDate());
+        assertEquals(START_TIME, event.getStartTime());
+        assertEquals(END_TIME, event.getEndTime());
+        assertEquals(MAX_PARTICIPANTS, event.getMaxParticipants());
+        assertEquals(0, event.getParticipantsCount());
+    }
+
+    @Test
+    @Order(4)
+    public void testGetEventsForCreator() {
+        ResponseEntity<EventResponseDto[]> response = client.getForEntity(String.format("/events/players/%d", VALID_ORGANIZER.getId()), EventResponseDto[].class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        EventResponseDto[] events = response.getBody();
+        assertNotNull(events);
+        assertEquals(1, events.length);
+
+        EventResponseDto event = events[0];
+        assertNotNull(event);
+        assertEquals(createdEventId, event.getId());
+        assertEquals(NAME, event.getName());
+        assertEquals(LOCATION, event.getLocation());
+        assertEquals(DESCRIPTION, event.getDescription());
+        assertEquals(DATE, event.getDate());
+        assertEquals(START_TIME, event.getStartTime());
+        assertEquals(END_TIME, event.getEndTime());
+        assertEquals(MAX_PARTICIPANTS, event.getMaxParticipants());
+        assertEquals(0, event.getParticipantsCount());
+    }
+
+    @Test
+    @Order(4)
+    public void testGetEventsForGame() {
+        ResponseEntity<EventResponseDto[]> response = client.getForEntity(String.format("/events/games/%s", VALID_GAME.getName()), EventResponseDto[].class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 

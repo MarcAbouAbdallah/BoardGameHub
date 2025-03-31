@@ -44,7 +44,7 @@ public class GameManagementServiceTests {
 
     @BeforeEach
     void setup() {
-        validGame = new Game("Chess", 2, 2, "A strategy game");
+        validGame = new Game("Chess", 2, 2, "A strategy game", "https://images.unsplash.com/photo-1619163413327-546fdb903195?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
         validGame.setId(VALID_GAME_ID);
         
         validPlayer = new Player("Alice", "alice@email.com", "securePass", false);
@@ -54,7 +54,7 @@ public class GameManagementServiceTests {
 
     @Test
     void testCreateGame_Success() {
-        GameCreationDto dto = new GameCreationDto("Catan", "A strategy game", 4, 3);
+        GameCreationDto dto = new GameCreationDto("Catan", "A strategy game", 4, 3, "https://images.unsplash.com/photo-1606733847546-db8546099013?q=80&w=1572&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
         when(gameRepo.save(any(Game.class))).thenAnswer(invocation -> {
             Game game = invocation.getArgument(0);
             game.setId(VALID_GAME_ID);
@@ -72,7 +72,7 @@ public class GameManagementServiceTests {
 
     @Test
     void testCreateGame_Failure() {
-        GameCreationDto dto = new GameCreationDto("Chess", "A strategy game", 3, 5);
+        GameCreationDto dto = new GameCreationDto("Chess", "A strategy game", 3, 5, "https://images.unsplash.com/photo-1619163413327-546fdb903195?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
             gameManagementService.createGame(dto);
         });
@@ -108,7 +108,7 @@ public class GameManagementServiceTests {
 
     @Test
     void testUpdateGame_Success() {
-        GameUpdateDto dto = new GameUpdateDto("Updated Chess", "New Description", 4, 2);
+        GameUpdateDto dto = new GameUpdateDto("Updated Chess", "New Description", 4, 2, "https://images.unsplash.com/photo-1683645480614-55a5957b6343?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
         when(gameRepo.findGameById(VALID_GAME_ID)).thenReturn(validGame);
         when(gameRepo.save(any(Game.class))).thenReturn(validGame);
 
@@ -123,7 +123,7 @@ public class GameManagementServiceTests {
 
     @Test
     void testUpdateGame_NotFound() {
-        GameUpdateDto dto = new GameUpdateDto("Updated Chess", "New Description", 4, 2);
+        GameUpdateDto dto = new GameUpdateDto("Updated Chess", "New Description", 4, 2, "https://images.unsplash.com/photo-1619163413327-546fdb903195?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
 
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
             gameManagementService.updateGame(dto, INVALID_GAME_ID));

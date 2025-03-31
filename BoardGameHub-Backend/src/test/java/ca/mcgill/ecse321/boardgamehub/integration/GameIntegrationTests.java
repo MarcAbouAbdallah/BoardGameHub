@@ -48,6 +48,7 @@ public class GameIntegrationTests {
 
     private static final String NAME = "Catan";
     private static final String DESCRIPTION = "Strategy Game";
+    private static final String PHOTO_URL = "https://images.unsplash.com/photo-1606733847546-db8546099013?q=80&w=1572&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
     private static final int MAX_PLAYERS = 4;
     private static final int MIN_PLAYERS = 2;
 
@@ -67,7 +68,7 @@ public class GameIntegrationTests {
     @Test
     @Order(0)
     public void testCreateGame_Fail() {
-        GameCreationDto gameDto = new GameCreationDto(NAME, DESCRIPTION, MAX_PLAYERS, MAX_PLAYERS+1);
+        GameCreationDto gameDto = new GameCreationDto(NAME, DESCRIPTION, MAX_PLAYERS, MAX_PLAYERS+1, PHOTO_URL);
         ResponseEntity<ErrorDto> response = client.postForEntity("/games", gameDto, ErrorDto.class);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
@@ -81,7 +82,7 @@ public class GameIntegrationTests {
     @Test
     @Order(1)
     public void testCreateGame() {
-        GameCreationDto gameDto = new GameCreationDto(NAME, DESCRIPTION, MAX_PLAYERS, MIN_PLAYERS);
+        GameCreationDto gameDto = new GameCreationDto(NAME, DESCRIPTION, MAX_PLAYERS, MIN_PLAYERS, PHOTO_URL);
         ResponseEntity<GameResponseDto> response = client.postForEntity("/games", gameDto, GameResponseDto.class);
         
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -132,7 +133,7 @@ public class GameIntegrationTests {
     @Test
     @Order(5)
     public void testUpdateGame() {
-        GameUpdateDto updateDto = new GameUpdateDto(null, null, null, null);
+        GameUpdateDto updateDto = new GameUpdateDto(null, null, null, null, null);
         updateDto.setDescription("Updated strategy game");
         HttpEntity<GameUpdateDto> requestEntity = new HttpEntity<>(updateDto);
         ResponseEntity<GameResponseDto> response = client.exchange("/games/" + gameId, HttpMethod.PUT, requestEntity, GameResponseDto.class);
@@ -147,7 +148,7 @@ public class GameIntegrationTests {
     @Test
     @Order(6)
     public void testUpdateGame_Fail() {
-        GameUpdateDto updateDto = new GameUpdateDto(null, null, null, null);
+        GameUpdateDto updateDto = new GameUpdateDto(null, null, null, null, null);
         updateDto.setDescription("Updated strategy game");
         HttpEntity<GameUpdateDto> requestEntity = new HttpEntity<>(updateDto);
         int invalidId = gameId+1;

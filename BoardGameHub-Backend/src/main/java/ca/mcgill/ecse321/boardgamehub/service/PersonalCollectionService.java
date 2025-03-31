@@ -37,12 +37,18 @@ public class PersonalCollectionService {
         Player player = findPlayerOrThrow(playerId);
         Game game = findGameOrThrow(gameId);
 
-        // Check if the player already owns the game
+        // If owner currently has no games, set game owner to true
         List<GameCopy> copies = gameCopyRepository.findByOwner(player);
-        for (GameCopy copy : copies) {
-            if (copy.getGame().getId() == game.getId()) {
-                throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
-                    "Player already owns this game.");
+        if (copies.isEmpty() && player.getIsGameOwner() == false) {
+            player.setIsGameOwner(true);
+            playerRepository.save(player);
+        } else {
+            //Check if owner already has game
+            for (GameCopy copy : copies) {
+                if (copy.getGame().getId() == game.getId()) {
+                    throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                        "Player already owns this game.");
+                }
             }
         }
         // Create and persist a new GameCopy with default availability true
@@ -54,6 +60,7 @@ public class PersonalCollectionService {
     public void removeGameCopy(int userId, int gameCopyId) {
         // Retrieve the game copy to remove
         GameCopy toRemove = findGameCopyOrThrow(gameCopyId);
+        Player player = findPlayerOrThrow(userId);
 
         // Permission check: Only the owner can delete
         if (toRemove.getOwner() == null || toRemove.getOwner().getId() != userId) {
@@ -62,6 +69,12 @@ public class PersonalCollectionService {
         }
 
         gameCopyRepository.delete(toRemove);
+
+        List<GameCopy> copies = gameCopyRepository.findByOwner(player);
+        if (copies.isEmpty() && player.getIsGameOwner() == true) {
+            player.setIsGameOwner(false);
+            playerRepository.save(player);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -71,6 +84,12 @@ public class PersonalCollectionService {
         return collection.stream()
                 .filter(GameCopy::getIsAvailable)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<GameCopy> getGameCopiesForGame(int gameId) {
+        Game game = findGameOrThrow(gameId);
+        return gameCopyRepository.findByGame(game);
     }
 
     @Transactional

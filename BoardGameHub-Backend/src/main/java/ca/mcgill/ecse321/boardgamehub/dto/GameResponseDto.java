@@ -7,6 +7,7 @@ public class GameResponseDto {
     private String description;
     private int maxPlayers;
     private int minPlayers;
+    private String photoURL;
 
     protected GameResponseDto() {}
 
@@ -16,6 +17,11 @@ public class GameResponseDto {
         this.description = game.getDescription();
         this.maxPlayers = game.getMaxPlayers();
         this.minPlayers = game.getMinPlayers();
+        this.photoURL = game.getPhotoURL();
+    }
+
+    public String getPhotoURL() {
+        return photoURL;
     }
 
     public int getId(){

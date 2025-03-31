@@ -33,6 +33,7 @@ import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
+import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
@@ -46,9 +47,11 @@ public class EventServiceTests {
     @Mock
     private PlayerRepository mockPlayerRepo;
     @Mock
-    private GameCopyRepository mockGameRepo;
+    private GameCopyRepository mockGameCopyRepo;
     @Mock
     private RegistrationRepository mockRegistrationRepo;
+    @Mock
+    private GameRepository mockGameRepo;
     @InjectMocks
     private EventService eventService;
 
@@ -68,14 +71,14 @@ public class EventServiceTests {
     
     private static final Player VALID_ORGANIZER = new Player("John", "john@gmail.com", "John@123", true);
     private static final Player VALID_PLAYER = new Player("Jane", "jane@gmail.com", "Jane@123", false);
-    private static final Game GAME = new Game("Monopoly", 4, 2, "A game");
+    private static final Game GAME = new Game("Monopoly", 4, 2, "A game", "https://images.unsplash.com/photo-1640461470346-c8b56497850a?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
     private static final GameCopy VALID_GAME = new GameCopy(true, GAME, VALID_ORGANIZER);
 
     @Test
     public void testCreateValidEvent() {
         EventRequestDto eventToCreate = new EventRequestDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
         when(mockPlayerRepo.findPlayerById(VALID_ORGANIZER_ID)).thenReturn(VALID_ORGANIZER);
-        when(mockGameRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(VALID_GAME);
+        when(mockGameCopyRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(VALID_GAME);
         when(mockEventRepo.save(any(Event.class))).thenAnswer((InvocationOnMock invocation) -> {
             Event event = invocation.getArgument(0);
             event.setId(VALID_EVENT_ID);
@@ -119,7 +122,7 @@ public class EventServiceTests {
     public void testCreateEventWithInvalidGame() {
         EventRequestDto eventToCreate = new EventRequestDto(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, VALID_DATE, VALID_START_TIME, VALID_END_TIME, MAX_PARTICIPANTS, VALID_ORGANIZER_ID, VALID_GAME_ID);
         when(mockPlayerRepo.findPlayerById(VALID_ORGANIZER_ID)).thenReturn(VALID_ORGANIZER);
-        when(mockGameRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(null);
+        when(mockGameCopyRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(null);
 
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
             eventService.createEvent(eventToCreate);
@@ -148,6 +151,43 @@ public class EventServiceTests {
         assertEquals(VALID_ORGANIZER, foundEvent.getOrganizer());
         assertEquals(VALID_GAME, foundEvent.getGame());
         assertEquals(MAX_PARTICIPANTS, foundEvent.getMaxParticipants());
+    }
+
+    @Test
+    public void testFindEventByInvalidCreator(){
+        int invalidId = VALID_ORGANIZER_ID + 1;
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            eventService.getEventsForCreator(invalidId);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals(String.format(
+            "There is no person with ID %d.",
+                    invalidId), exception.getMessage());
+    }
+
+    @Test
+    public void testFindEventByInvalidGame_1(){
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            eventService.getEventsForGame("Thatgamethatdoesntexist");
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("There is no game with name Thatgamethatdoesntexist.", exception.getMessage());
+    }
+
+    @Test
+    public void testFindEventByGameNoCopies(){
+        when(mockGameRepo.findGameByName("Monopoly")).thenReturn(GAME);
+        when(mockGameCopyRepo.findByGame(VALID_GAME.getGame())).thenReturn(null);
+        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+            eventService.getEventsForGame(VALID_GAME.getGame().getName());
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals(String.format(
+            "There are no copies of the game with name %s.",
+            VALID_GAME.getGame().getName()), exception.getMessage());
     }
 
     @Test
@@ -381,7 +421,7 @@ public class EventServiceTests {
         EventUpdateDto updateDTO = new EventUpdateDto(null, null, null, null, null, null, null, VALID_GAME_ID);
         
         when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(VALID_EVENT);
-        when(mockGameRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(null);
+        when(mockGameCopyRepo.findGameCopyById(VALID_GAME_ID)).thenReturn(null);
         when(mockPlayerRepo.findPlayerById(VALID_ORGANIZER_ID)).thenReturn(VALID_ORGANIZER);
 
         BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {

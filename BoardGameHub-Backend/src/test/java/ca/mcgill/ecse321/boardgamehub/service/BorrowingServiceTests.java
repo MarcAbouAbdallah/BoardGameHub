@@ -57,7 +57,7 @@ public class BorrowingServiceTests {
     
     private static final Player REQUESTER = new Player("Alice", "alice@example.com", "password123", false);
     private static final Player REQUESTEE = new Player("Bob", "bob@example.com", "securePass", true);
-    private static final Game GAME = new Game("Monopoly", 4, 2, "A game");
+    private static final Game GAME = new Game("Monopoly", 4, 2, "A game", "https://images.unsplash.com/photo-1640461470346-c8b56497850a?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
     private static final GameCopy VALID_GAME = new GameCopy(true, GAME, REQUESTEE);
     
     @Test

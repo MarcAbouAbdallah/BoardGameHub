@@ -53,6 +53,21 @@ public class GameCopyController {
     }
 
     /**
+     * Get all game copies for a particular game with given id.
+     *
+     * @param id The numerical unique Id of the game whose copies we want to find.
+     * @return A list of GameCopyResponseDto objects whose game we are looking for.
+     */
+    @GetMapping("/games/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<GameCopyResponseDto> getGameCopiesForGame(@PathVariable int id) {
+        List<GameCopy> copies = collectionService.getGameCopiesForGame(id);
+        return copies.stream()
+            .map(GameCopyResponseDto::fromGameCopy)
+            .toList();
+    }
+
+    /**
      * Retrieve a specific GameCopy by its ID.
      *
      * @param gameCopyId The ID of the GameCopy to retrieve.

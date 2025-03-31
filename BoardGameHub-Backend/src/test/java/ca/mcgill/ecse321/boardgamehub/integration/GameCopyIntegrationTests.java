@@ -54,7 +54,7 @@ public class GameCopyIntegrationTests {
         playerRepo.save(testPlayer);
 
         // Create test game
-        testGame = new Game("Test Game", 4, 2, "A fun test game");
+        testGame = new Game("Test Game", 4, 2, "A fun test game", "https://images.unsplash.com/photo-1640461470346-c8b56497850a?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
         gameRepo.save(testGame);
 
         // Headers if needed (e.g., for auth simulation)
@@ -161,6 +161,32 @@ public class GameCopyIntegrationTests {
         assertNotNull(available);
         assertEquals(1, available.length);
         assertTrue(available[0].getIsAvailable());
+    }
+
+    @Test
+    @Order(2)
+    public void testGetGameCopiesForGame() {
+        // Arrange: create one copy
+        Map<String, Object> createPayload = new HashMap<>();
+        createPayload.put("playerId", testPlayer.getId());
+        createPayload.put("gameId", testGame.getId());
+        client.postForEntity(
+            createURL("/gamecopies"),
+            new HttpEntity<>(createPayload, headers),
+            GameCopyResponseDto.class
+        );
+
+        ResponseEntity<GameCopyResponseDto[]> response = client.getForEntity(String.format("/gamecopies/games/%d", testGame.getId()), GameCopyResponseDto[].class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        GameCopyResponseDto[] copies = response.getBody();
+        assertNotNull(copies);
+        assertEquals(1, copies.length);
+        GameCopyResponseDto copy = copies[0];
+        assertEquals(testGame.getId(), copy.getGameId());
+        assertEquals(testPlayer.getId(), copy.getOwnerId());
+        assertTrue(copy.getIsAvailable());
     }
 
     @Test

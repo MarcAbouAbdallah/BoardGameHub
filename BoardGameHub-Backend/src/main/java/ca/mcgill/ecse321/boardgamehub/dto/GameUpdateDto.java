@@ -5,15 +5,20 @@ public class GameUpdateDto {
     private String description;
     private Integer maxPlayers;
     private Integer minPlayers;
+    private String photoURL;
 
     protected GameUpdateDto() {}
 
-    public GameUpdateDto(String name, String description, Integer maxPlayers, Integer minPlayers){
+    public GameUpdateDto(String name, String description, Integer maxPlayers, Integer minPlayers, String photoURL){
         this.name = name;
         this.description = description;
         this.maxPlayers = maxPlayers;
         this.minPlayers = minPlayers;
+        this.photoURL = photoURL;
     }
+
+    public String getPhotoURL() { return photoURL; }
+    public void setPhotoURL(String photoURL) { this.photoURL = photoURL; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

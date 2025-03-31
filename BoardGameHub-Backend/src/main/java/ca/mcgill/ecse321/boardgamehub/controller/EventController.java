@@ -72,6 +72,32 @@ public class EventController {
                 .map(event -> new EventResponseDto(event, eventService.getParticipantsCount(event.getId())))
                 .toList();
     }
+
+    /**
+     * Get all events for a particular creator
+     * 
+     * @return A List of eventResponseDto containing all this creator's events with their participants count
+     */
+    @GetMapping("/players/{creatorId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<EventResponseDto> getEventsForCreator(@PathVariable int creatorId) {
+        return eventService.getEventsForCreator(creatorId).stream()
+                .map(event -> new EventResponseDto(event, eventService.getParticipantsCount(event.getId())))
+                .toList();
+    }
+
+    /**
+     * Get all events with a particular game
+     * 
+     * @return A List of eventResponseDto containing all events where this game is player
+     */
+    @GetMapping("/games/{gameName}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<EventResponseDto> getEventsForGame(@PathVariable String gameName) {
+        return eventService.getEventsForGame(gameName).stream()
+                .map(event -> new EventResponseDto(event, eventService.getParticipantsCount(event.getId())))
+                .toList();
+    }
     
     /**
      * Updating an event
