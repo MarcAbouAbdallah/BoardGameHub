@@ -49,9 +49,6 @@ const handleSubmit = async () => {
             <div class="grid gap-2">
               <div class="flex items-center">
                 <Label for="password">Password</Label>
-                <a href="#" class="ml-auto text-sm underline-offset-2 hover:underline">
-                  Forgot your password?
-                </a>
               </div>
               <Input
                 v-model="password"
@@ -87,7 +84,7 @@ const handleSubmit = async () => {
     <div v-if="error" class="text-center text-red-600 font-semibold mt-4">
       {{ error }}
     </div>
-    
+
     <div
       class="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary"
     >
