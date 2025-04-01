@@ -15,8 +15,13 @@ export const useAuthStore = defineStore('auth', () => {
             userEmail: null,
             userId: null,
             isAuthenticated: false,
-        }
-    )
+        });
+
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            user.value = JSON.parse(storedUser);
+  }
+    
 
     function login(name: string, email: string, id: number, pwd: string) {
         if (!pwd) return;
@@ -24,6 +29,8 @@ export const useAuthStore = defineStore('auth', () => {
         user.value.userEmail = email;
         user.value.userId = id;
         user.value.isAuthenticated = true;
+
+        localStorage.setItem("user", JSON.stringify(user.value));
     }
 
     function logout() {
@@ -31,6 +38,8 @@ export const useAuthStore = defineStore('auth', () => {
         user.value.userEmail = null;
         user.value.userId = null;
         user.value.isAuthenticated = false;
+
+        localStorage.removeItem("user");
     }
 
     return { user, login, logout }
