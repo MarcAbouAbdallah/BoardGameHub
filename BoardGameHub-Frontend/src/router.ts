@@ -17,14 +17,23 @@ const routes = [
   {
     path: "/home",
     component: HomePage,
+    // meta: {
+    //   requiresAuth: true,
+    // },
   },
   {
     path: "/games",
     component: GamesPage,
+    // meta: {
+    //   requiresAuth: true,
+    // },
   },
   {
     path: "/events",
     component: EventsPage,
+    // meta: {
+    //   requiresAuth: true,
+    // },
   },
 ];
 
@@ -32,5 +41,16 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+//To implement authentication
+// router.beforeEach((to, from, next) => {
+//   const isAuthenticated = !!localStorage.getItem(""); // Replace with your actual authentication check
+
+//   if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
+//     next("/"); // Redirect to login if not authenticated
+//   } else {
+//     next(); // Proceed to the route
+//   }
+// });
 
 export default router;

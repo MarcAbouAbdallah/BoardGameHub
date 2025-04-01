@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ChevronDown, ChevronUp, ClipboardCheck, Pen, Trash } from "lucide-vue-next";
+import { ChevronDown, ChevronUp, ClipboardCheck, Trash, Undo } from "lucide-vue-next";
 import CustomTableHeader from "@/components/TableHeader.vue";
 import { ref } from "vue";
+import { Badge } from "./ui/badge";
 import { useToast } from "@/components/ui/toast/use-toast";
+import updateEventModal from "./popups/update/updateEventModal.vue";
 // import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 // import {
 //   DropdownMenu,
@@ -38,6 +40,7 @@ interface Event {
   remainingSeats: number;
   capacity: number;
   description: string;
+  type: string;
   participants: string[];
 }
 
@@ -85,7 +88,8 @@ const toggleRowExpansion = (rowId: number) => {
             <TableHead></TableHead>
             <TableHead class="font-bold text-lg text-black">Event Name</TableHead>
             <TableHead class="font-bold text-lg text-black">Game</TableHead>
-            <TableHead class="font-bold text-lg text-black">Location</TableHead>
+            <TableHead class="font-bold text-lg text-black" v-if="isHomePage">Type</TableHead>
+            <TableHead class="font-bold text-lg text-black" v-else>Location</TableHead>
             <TableHead class="font-bold text-lg text-black">Date</TableHead>
             <TableHead class="font-bold text-lg text-black">Remaining Seats</TableHead>
             <TableHead class="font-bold text-lg text-black">Capacity</TableHead>
@@ -106,7 +110,17 @@ const toggleRowExpansion = (rowId: number) => {
               </TableCell>
               <TableCell class="text-start">{{ Event.name }}</TableCell>
               <TableCell class="text-start">{{ Event.game }}</TableCell>
-              <TableCell class="text-start">{{ Event.location }}</TableCell>
+              <TableCell class="text-start" v-if="isHomePage">
+                <Badge
+                  :class="[
+                    'min-w-[77px]',
+                    Event.type === 'Created' ? 'bg-green-800' : 'bg-blue-800',
+                  ]"
+                >
+                  {{ Event.type }}
+                </Badge>
+              </TableCell>
+              <TableCell class="text-start" v-else>{{ Event.location }}</TableCell>
               <TableCell class="text-start">{{ Event.date }}</TableCell>
               <TableCell class="text-start">{{ Event.remainingSeats }}</TableCell>
               <TableCell class="text-start">{{ Event.capacity }}</TableCell>
@@ -124,17 +138,20 @@ const toggleRowExpansion = (rowId: number) => {
                       >{{ Event.participants.join(", ") }}
                     </p>
                     <p v-if="isHomePage" class="text-start max-w-[900px]">
-                      <strong>Type: </strong> Created
+                      <strong>Location: </strong> {{ Event.location }}
                     </p>
                   </div>
-                  <div v-if="isHomePage" class="flex gap-6">
-                    <Button variant="outline" size="sm" class="border-black">
-                      <Pen class="h-4 w-4" />
-                      Edit Event
-                    </Button>
-                    <Button variant="destructive" size="sm" class="border-black">
-                      <Trash class="h-4 w-4" />
-                      Delete Event
+                  <div v-if="isHomePage">
+                    <div v-if="Event.type == 'Created'" class="flex gap-6">
+                      <updateEventModal />
+                      <Button variant="destructive" size="sm" class="border-black">
+                        <Trash class="h-4 w-4" />
+                        Delete Event
+                      </Button>
+                    </div>
+                    <Button v-else variant="destructive" size="sm" class="border-black">
+                      <Undo class="h-4 w-4" />
+                      Unregister
                     </Button>
                   </div>
                   <Button v-else variant="outline" size="sm" @click="registerEvent(Event.id)">
