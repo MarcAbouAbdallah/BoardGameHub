@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { playerService } from "../services/playerService";
+import { playerService } from "../services/PlayerService";
 
+//test
 const router = useRouter();
 const email = ref("");
 const password = ref("");
