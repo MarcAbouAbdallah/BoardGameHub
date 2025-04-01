@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "vue-router";
-import { playerService } from "@/services/playerService";
+import { playerService } from "@/services/PlayerService";
 import { ref } from "vue";
 
 const router = useRouter();
