@@ -31,4 +31,20 @@ export const sampleBorrowRequests = [
     endDate: "2025-04-15",
     status: "Pending",
   },
+  {
+    id: 5,
+    game: "Chess",
+    owner: "Charlie Green",
+    startDate: "2025-03-01",
+    endDate: "2025-03-07",
+    status: "Returned",
+  },
+  {
+    id: 6,
+    game: "Monopoly",
+    owner: "Diana White",
+    startDate: "2025-02-15",
+    endDate: "2025-02-22",
+    status: "Returned",
+  },
 ];

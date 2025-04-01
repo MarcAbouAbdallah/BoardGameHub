@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Pen, UserCircle2Icon } from "lucide-vue-next";
+import { UserCircle2Icon } from "lucide-vue-next";
 import {
   Sheet,
   SheetContent,
@@ -15,7 +15,7 @@ import { gameReviews } from "@/data/sampleGames";
 import { defineProps } from "vue";
 import BorrowReqModal from "./popups/BorrowReqModal.vue";
 import CreateReviewModal from "./popups/CreateReviewModal.vue";
-import { Button } from "@/components/ui/button";
+import UpdateGameModal from "./popups/update/updateGameModal.vue";
 
 const props = defineProps({
   game: {
@@ -73,10 +73,7 @@ const props = defineProps({
         </div>
       </div>
 
-      <Button variant="outline" class="absolute top-2 left-2 border-1 border-black">
-        <Pen class="h-4 w-4" />
-        Edit Game
-      </Button>
+      <UpdateGameModal />
     </SheetContent>
   </Sheet>
 </template>
