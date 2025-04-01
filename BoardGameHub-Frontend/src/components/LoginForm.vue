@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { useAuthStore } from "../stores/authStore";
+
+import { useAuthStore } from "../stores/authStore"
 import { playerService } from "../services/PlayerService";
 
+//test
 const router = useRouter();
 const authStore = useAuthStore();
 const email = ref("");
@@ -55,9 +57,6 @@ const handleSubmit = async () => {
             <div class="grid gap-2">
               <div class="flex items-center">
                 <Label for="password">Password</Label>
-                <a href="#" class="ml-auto text-sm underline-offset-2 hover:underline">
-                  Forgot your password?
-                </a>
               </div>
               <Input
                 v-model="password"
@@ -90,6 +89,11 @@ const handleSubmit = async () => {
         </div>
       </CardContent>
     </Card>
+
+    <div v-if="error" class="text-center text-red-600 font-semibold mt-4">
+      {{ error }}
+    </div>
+
     <div
       class="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary"
     >

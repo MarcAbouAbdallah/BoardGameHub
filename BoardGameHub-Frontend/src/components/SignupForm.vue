@@ -12,6 +12,7 @@ const name = ref("");
 const email = ref("");
 const password = ref("");
 const error = ref("");
+const successMessage = ref("");
 
 const handleSubmit = async () => {
   try {
@@ -23,12 +24,23 @@ const handleSubmit = async () => {
     console.log(playerData);
     const response = await playerService.createPlayer(playerData);
     console.log(response);
-    if (response.status === 200) {
-      router.push("/home");
+
+    if (response.status === 200 || response.status === 201) {
+      successMessage.value = "Account created successfully! Redirecting to login...";
+
+      setTimeout(() => {
+        successMessage.value = "";
+        name.value = "";
+        email.value = "";
+        password.value = "";
+        router.push("/"); 
+      }, 2000);
+
     } else {
       error.value = "Invalid email or password.";
     }
-  } catch (err) {
+    } 
+    catch (err) {
     error.value = "An error occurred. Please try again.";
   }
 };
@@ -85,7 +97,7 @@ const handleSubmit = async () => {
               type="submit"
               class="w-full"
             >
-              Login
+              Create an account
             </Button>
             <div class="text-center text-sm">
               Already have an account?
@@ -108,6 +120,15 @@ const handleSubmit = async () => {
         </div>
       </CardContent>
     </Card>
+
+    <div v-if="successMessage" class="text-center text-green-600 font-semibold mt-4">
+      {{ successMessage }}
+    </div>
+
+    <div v-if="error" class="text-center text-red-600 font-semibold mt-4">
+      {{ error }}
+    </div>
+
     <div
       class="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary"
     >
