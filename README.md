@@ -24,6 +24,19 @@ Mubeen is a third year software engineering student. His interest in AI applicat
 **Raphaël Verger**\
 Raphaël is a third year computer engineering student. He is mainly focused on machine learning, data analysis and software development. Outside of the classroom, he enjoys traveling and taking pictures!
 ***
+### Deliverable 3
+The scope of this deliverable includes the whole implementation of the frontend of our application. We started by creating a plan using a Miro board, followed up by creating the design using vue and the necessary typescript scripts, and finished by connecting our UI to the controller layer of our backend. More information information about design decisions can be found in the [project report](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report-3) and [meeting minutes](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki) in the [wiki](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki) of the project.\
+\
+**Overview table:**
+|Team member|Role|Tasks|Time spent|
+| --- | --- | --- | --- |
+|Marc Abou Abdallah||||
+| Deon Aftahi ||||
+|Jerome Courtemanche||||
+|Bora Denizasan||||
+|Mubeen Mohammed||||
+|Raphaël Verger||||
+***
 ### Deliverable 2
 The scope of this deliverable includes completing service & controller layers with a RESTful API, documenting and testing them thoroughly. We implemented all the required service and controller classes as well as the required DTO's and Exception classes. These were then tested thoroughly through unit and integration tests using JUnit5. Please visit the deliverable 2 section of the [wiki](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki) for all project documentation and design decisions. Information on project setup and installation can be found on the [Build System](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Build-System) page of the wiki. Information regarding team member roles, individual tasks and time allocation breakdown can be found in the table below.\
 \
