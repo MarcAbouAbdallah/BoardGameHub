@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { playerService } from "../services/playerService";
+import { useAuthStore } from "../stores/authStore";
+import { playerService } from "../services/PlayerService";
 
 const router = useRouter();
+const authStore = useAuthStore();
 const email = ref("");
 const password = ref("");
 const error = ref("");
@@ -21,7 +23,11 @@ const handleSubmit = async () => {
     console.log(playerData);
     const response = await playerService.loginPlayer(playerData);
     console.log(response);
+
     if (response.status === 200) {
+      authStore.login(response.data.name, response.data.email, response.data.id, playerData.password);
+      console.log("User logged in:", authStore.user);
+      
       router.push("/home");
     } else {
       error.value = "Invalid email or password.";
@@ -62,6 +68,7 @@ const handleSubmit = async () => {
               />
             </div>
             <Button type="submit" class="w-full text-white"> Login </Button>
+
             <div class="text-center text-sm">
               Don&apos;t have an account?
               <a
