@@ -8,6 +8,7 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Info } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -48,7 +49,10 @@ const handleSubmit = async () => {
 <template>
   <Dialog v-model:open="isOpen">
     <DialogTrigger as-child>
-      <Button>Request to Borrow</Button>
+      <Button class="pl-2">
+        <Info class="h-4 w-4" />
+        Request to Borrow
+      </Button>
     </DialogTrigger>
     <DialogContent :close="close">
       <DialogHeader>

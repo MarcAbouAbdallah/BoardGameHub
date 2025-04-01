@@ -5,16 +5,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
+import { Plus } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ref } from "vue";
-import { defineProps } from "vue";
 
-const props = defineProps<{
-  close: () => void;
-}>();
+const isOpen = ref(false);
+
+const close = () => {
+  isOpen.value = false;
+  console.log("Dialog closed");
+};
 
 const formData = ref({
   eventName: "",
@@ -32,7 +36,7 @@ const error = ref("");
 const handleSubmit = async () => {
   try {
     console.log("Form Data:", formData.value);
-    props.close();
+    close();
     // Call the APID to create the event here
   } catch (err) {
     error.value = "An error occurred. Please try again.";
@@ -41,13 +45,19 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <Dialog :default-open="true" @update:open="(isOpen) => !isOpen && close()">
+  <Dialog v-model:open="isOpen">
+    <DialogTrigger as-child>
+      <Button class="mr-2 pl-3">
+        <Plus class="h-4 w-4" />
+        Create Event
+      </Button>
+    </DialogTrigger>
     <DialogContent :close="close">
       <DialogHeader>
         <DialogTitle class="text-2xl font-bold">Create Event</DialogTitle>
         <DialogDescription>
-          Create a new event by filling out the form below. Make sure to provide all the necessary
-          details.
+          Create a new event by filling out the form below. Make sure to provide all the
+          necessarydetails.
         </DialogDescription>
       </DialogHeader>
       <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">

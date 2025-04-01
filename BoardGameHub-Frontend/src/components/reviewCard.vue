@@ -16,7 +16,7 @@ const props = defineProps({
     <CardHeader>
       <CardTitle class="flex items-center justify-between">
         <span class="text-lg font-semibold">{{ props.review.reviewer }}</span>
-        <rating :rating-value="props.review.reviewId" />
+        <rating :rating-value="props.review.reviewId.toString()" />
       </CardTitle>
       <CardContent class="p-0">
         <CardDescription class="text-sm text-gray-500">
