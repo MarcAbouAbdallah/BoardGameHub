@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { defineProps, ref } from "vue";
+import { Button } from "./ui/button";
 import CustomTableHeader from "../components/TableHeader.vue";
 import {
   Table,
@@ -35,6 +36,7 @@ const props = defineProps({
             <TableHead class="font-bold text-lg text-black">Start Date</TableHead>
             <TableHead class="font-bold text-lg text-black">End Date</TableHead>
             <TableHead class="font-bold text-lg text-black">Status</TableHead>
+            <TableHead class="font-bold text-lg text-black">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -49,7 +51,15 @@ const props = defineProps({
                 <Badge class="bg-green-800" v-else-if="request.status === 'Accepted'"
                   >Accepted</Badge
                 >
+                <Badge class="bg-blue-800" v-else-if="request.status === 'Returned'"
+                  >Returned</Badge
+                >
                 <Badge v-else variant="destructive">Rejected</Badge>
+              </TableCell>
+              <TableCell class="text-start">
+                <Button v-if="request.status == 'Pending'" variant="outline">
+                  Cancel Request
+                </Button>
               </TableCell>
             </TableRow>
           </template>

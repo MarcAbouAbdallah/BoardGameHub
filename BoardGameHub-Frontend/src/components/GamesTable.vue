@@ -15,13 +15,34 @@ import {
 } from "@/components/ui/table";
 import DataTableCard from "./DataTableCard.vue";
 import { ref } from "vue";
+import { useToast } from "./ui/toast";
+import Alert from "./alert/Alert.vue";
 
 const loading = ref(false);
 const error = ref("");
 const expandedRows = ref<Record<number, boolean>>({});
+const { toast } = useToast();
 
 const toggleRowExpansion = (rowId: number) => {
   expandedRows.value[rowId] = !expandedRows.value[rowId];
+};
+
+const acceptRequest = (requestId: number, gameId: number) => {
+  //TODO: Implement the accept request logic
+  toast({
+    title: "Request Accepted",
+    description: `Request ${requestId} for game ${gameId} has been accepted.`,
+    variant: "default",
+  });
+};
+
+const rejectRequest = (requestId: number, gameId: number) => {
+  //TODO: Implement the accept request logic
+  toast({
+    title: "Request Rejected",
+    description: `Request ${requestId} for game ${gameId} has been rejected.`,
+    variant: "destructive",
+  });
 };
 
 const props = defineProps({
@@ -104,8 +125,20 @@ const props = defineProps({
                             <TableCell class="text-start">{{ request.endDate }}</TableCell>
                             <TableCell class="text-start">{{ request.comment }}</TableCell>
                             <TableCell class="text-start">
-                              <Button class="bg-green-700 hover:bg-green-900">Accept</Button>
-                              <Button variant="destructive" class="ml-2">Reject</Button>
+                              <Alert
+                                :action-func="acceptRequest"
+                                :action-text="'Accept'"
+                                :description="'Are you sure you want to accept this request?'"
+                                :trigger="'Accept'"
+                                class="bg-green-700 hover:bg-green-900 text-white"
+                              />
+                              <Alert
+                                :action-func="rejectRequest"
+                                :action-text="'Reject'"
+                                :description="'Are you sure you want to reject this request?'"
+                                :trigger="'Reject'"
+                                class="bg-red-700 hover:bg-red-900 text-white ml-2"
+                              />
                             </TableCell>
                           </TableRow>
                         </template>

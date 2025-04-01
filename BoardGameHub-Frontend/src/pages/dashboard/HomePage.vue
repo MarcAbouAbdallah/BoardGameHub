@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import Header from "../../components/Header.vue";
-import { ref } from "vue";
 import EventsTable from "@/components/EventsTable.vue";
 import GamesTable from "@/components/GamesTable.vue";
 import BorrowRequestTable from "@/components/BorrowRequestTable.vue";
@@ -9,14 +8,7 @@ import { sampleEvents } from "@/data/sampleEvents";
 import { sampleGameCollection } from "@/data/sampleGames";
 import { gameReviews } from "@/data/sampleGames";
 import { sampleBorrowRequests } from "../../data/sampleBorrowRequest";
-
-import BorrowReqModal from "@/components/popups/BorrowReqModal.vue";
-
-const isBorrowReqModalOpen = ref(false);
-
-const closeBorrowReqModal = () => {
-  isBorrowReqModalOpen.value = false;
-};
+import Toaster from "@/components/ui/toast/Toaster.vue";
 </script>
 
 <template>
@@ -27,6 +19,5 @@ const closeBorrowReqModal = () => {
     <BorrowRequestTable :-borrow-requests="sampleBorrowRequests" />
     <GameReviewTable :game-reviews="gameReviews" />
   </div>
-
-  <BorrowReqModal v-if="isBorrowReqModalOpen" :close="closeBorrowReqModal" />
+  <Toaster position="top-right" />
 </template>

@@ -3,7 +3,7 @@ import { defineProps } from "vue";
 import CustomTableHeader from "../components/TableHeader.vue";
 import rating from "./ui/rating/rating.vue";
 import { Button } from "./ui/button";
-import { Pen, Trash } from "lucide-vue-next";
+import { Trash } from "lucide-vue-next";
 import {
   Table,
   TableBody,
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import DataTableCard from "./DataTableCard.vue";
 import { ref } from "vue";
+import UpdateReviewModal from "./popups/update/UpdateReviewModal.vue";
 
 const loading = ref(false);
 const error = ref("");
@@ -52,10 +53,7 @@ const props = defineProps({
                   <Trash class="h-4 w-4" />
                   Remove
                 </Button>
-                <Button variant="outline" class="ml-2">
-                  <Pen class="h-4 w-4" />
-                  Edit
-                </Button>
+                <UpdateReviewModal />
               </TableCell>
             </TableRow>
           </template>
