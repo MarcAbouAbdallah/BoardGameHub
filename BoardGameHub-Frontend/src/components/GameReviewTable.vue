@@ -15,16 +15,35 @@ import {
 import DataTableCard from "./DataTableCard.vue";
 import { ref } from "vue";
 import UpdateReviewModal from "./popups/update/UpdateReviewModal.vue";
+import { reviewService } from "@/services/reviewService";
+import { useAuthStore } from "../stores/authStore";
+import { onMounted } from "vue";
 
 const loading = ref(false);
 const error = ref("");
+const reviews = ref([]);
 
+const authStore = useAuthStore();
+
+onMounted(async () => {
+  try {
+    const playerId = authStore.user.userId;
+    reviews.value = await reviewService.getReviewsByPlayerId(playerId);
+  } catch (err: any) {
+    error.value = err.message || "Error fetching reviews";
+  } finally {
+    loading.value = false;
+  }
+});
+
+/*
 const props = defineProps({
   gameReviews: {
     type: Object,
     required: true,
   },
 });
+*/
 </script>
 
 <template>
@@ -41,13 +60,13 @@ const props = defineProps({
           </TableRow>
         </TableHeader>
         <TableBody>
-          <template v-for="review in props.gameReviews" :key="review.id">
+          <template v-for="review in reviews" :key="review.id">
             <TableRow>
-              <TableCell class="text-start">{{ review.game }}</TableCell>
+              <TableCell class="text-start">{{ review.gameName }}</TableCell>
               <TableCell class="text-start">
-                <rating :ratingValue="review.reviewId.toString()" />
+                <rating :ratingValue="review.rating.toString()" />
               </TableCell>
-              <TableCell class="text-start max-w-[700px]">{{ review.reviewText }}</TableCell>
+              <TableCell class="text-start max-w-[700px]">{{ review.comment }}</TableCell>
               <TableCell class="text-start">
                 <Button variant="destructive">
                   <Trash class="h-4 w-4" />

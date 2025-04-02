@@ -17,7 +17,8 @@ import Toaster from "@/components/ui/toast/Toaster.vue";
     <GamesTable :games="sampleGameCollection" />
     <EventsTable :events="sampleEvents" :is-home-page="true" :title="'My Game Events'" />
     <BorrowRequestTable :-borrow-requests="sampleBorrowRequests" />
-    <GameReviewTable :game-reviews="gameReviews" />
+    <!--<GameReviewTable :game-reviews="gameReviews" />-->
+    <GameReviewTable />
   </div>
   <Toaster position="top-right" />
 </template>
