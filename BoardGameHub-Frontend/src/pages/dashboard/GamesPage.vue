@@ -33,6 +33,12 @@ const handleGameCreated = (newGame: Game) => {
   games.value.push(newGame); // update list live
 };
 
+const handleGameUpdated = (updatedGame: Game) => {
+  const index = games.value.findIndex((g) => g.id === updatedGame.id);
+  if (index !== -1) {
+    games.value[index] = updatedGame;
+  }
+};
 
 </script>
 
@@ -53,7 +59,15 @@ const handleGameCreated = (newGame: Game) => {
     <div
       class="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
     >
-      <GameCard v-for="game in games" :key="game.id" :game="game" />
+    <GameSheet
+      v-for="game in games"
+      :key="game.id"
+      :game="game"
+      @game-updated="handleGameUpdated"
+    >
+      <GameCard :game="game" />
+    </GameSheet>
+
     </div>
     <div class="flex justify-center mt-10">
       <Pagination />

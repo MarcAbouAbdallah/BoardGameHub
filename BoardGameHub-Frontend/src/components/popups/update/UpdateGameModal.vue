@@ -13,6 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import DialogClose from "@/components/ui/dialog/DialogClose.vue";
+import type { Game } from "@/types/Game";
+import { defineProps, watch} from "vue";
+import gameService from "@/services/gameService";
+
+
+const props = defineProps<{ game: Game }>();
 
 const formData = ref({
   gameName: "",
@@ -24,20 +30,45 @@ const formData = ref({
 
 const isOpen = ref(false);
 
+watch(isOpen, (newVal) => {
+  if (newVal) {
+    formData.value = {
+      gameName: props.game.name,
+      minPlayers: props.game.minPlayers,
+      maxPlayers: props.game.maxPlayers,
+      gameDescription: props.game.description,
+      gameImage: "", // optional – not used by backend right now
+    };
+  }
+});
+
+
 const close = () => {
   isOpen.value = false;
   console.log("Dialog closed");
 };
 
+const emit = defineEmits<{
+  (e: "game-updated", updatedGame: Game): void;
+}>();
+
 const handleSubmit = async () => {
   try {
-    console.log("Form Data:", formData.value);
-    // Call the API to create the game here
+    const updatedFields = {
+      name: formData.value.gameName,
+      description: formData.value.gameDescription,
+      minPlayers: formData.value.minPlayers,
+      maxPlayers: formData.value.maxPlayers,
+    };
+
+    const updatedGame = await gameService.updateGame(props.game.id, updatedFields);
+    emit("game-updated", updatedGame);
     isOpen.value = false;
   } catch (err) {
-    console.error("An error occurred. Please try again.", err);
+    console.error("Failed to update game:", err);
   }
 };
+
 </script>
 
 <template>
