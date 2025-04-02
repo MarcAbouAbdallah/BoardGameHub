@@ -39,7 +39,7 @@ const handleSubmit = async () => {
     if (err instanceof AxiosError) {
       if (err.response) {
         if (err.response.status === 409){
-          toast({ title: "Error", description: "User already exists. Please use a different email.", variant: "destructive", duration: 5000 });
+          toast({ title: "Error", description: "Email already in use. Please use a different email.", variant: "destructive", duration: 5000 });
         }
         else {
         toast({ title: "Error", description: "Something went wrong. Try again.", variant: "destructive", duration: 5000 });
