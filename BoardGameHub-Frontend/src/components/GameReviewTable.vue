@@ -13,11 +13,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import DataTableCard from "./DataTableCard.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import UpdateReviewModal from "./popups/update/UpdateReviewModal.vue";
 import { reviewService } from "@/services/reviewService";
 import { useAuthStore } from "../stores/authStore";
-import { onMounted } from "vue";
 import { useToast } from "@/components/ui/toast/use-toast";
 
 const loading = ref(false);
