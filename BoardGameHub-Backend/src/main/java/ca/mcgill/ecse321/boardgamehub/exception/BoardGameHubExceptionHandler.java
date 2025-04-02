@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import ca.mcgill.ecse321.boardgamehub.dto.ErrorDto;
 
 @ControllerAdvice
-public class BoardGameHubExceptionHandler { 
+public class BoardGameHubExceptionHandler {
     @ExceptionHandler(BoardGameHubException.class)
     public ResponseEntity<ErrorDto> handleEventRegistrationException(BoardGameHubException e) {
         return new ResponseEntity<ErrorDto>(new ErrorDto(e.getMessage()), e.getStatus());
     }
-    
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         ArrayList<String> errorMessages = new ArrayList<String>();
@@ -27,9 +27,10 @@ public class BoardGameHubExceptionHandler {
         ErrorDto responseBody = new ErrorDto(errorMessages);
         return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDto> handleGenericException(Exception ex) {
-        ErrorDto responseBody = new ErrorDto("An unexpected error occurred: " + ex.getMessage());
+        ErrorDto responseBody = new ErrorDto(ex.getMessage().toString().split(":")[1].trim());
         return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

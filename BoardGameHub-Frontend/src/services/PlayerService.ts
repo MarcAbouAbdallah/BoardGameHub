@@ -6,9 +6,8 @@ export const playerService = {
     try {
       const response = await api.post("/players", playerData);
       return response;
-    } catch (error) {
-      console.error("Error creating player:", error);
-      throw error;
+    } catch (error: any) {
+      throw error.response.data.errors[0].split(": ")[2];
     }
   },
 
@@ -17,9 +16,9 @@ export const playerService = {
     try {
       const response = await api.post("/players/login", playerData);
       return response;
-    } catch (error) {
-      console.error("Error logging in player:", error);
-      throw error;
+    } catch (error: any) {
+      console.log(error);
+      throw error.response.data.errors[0];
     }
   },
 
@@ -28,9 +27,8 @@ export const playerService = {
     try {
       const response = await api.get(`/players/${playerId}`);
       return response;
-    } catch (error) {
-      console.error("Error fetching player:", error);
-      throw error;
+    } catch (error: any) {
+      throw error.response.data.errors[0].split(": ")[2];
     }
   },
 
@@ -39,9 +37,8 @@ export const playerService = {
     try {
       const response = await api.put(`/players/${playerId}`, playerData);
       return response;
-    } catch (error) {
-      console.error("Error updating player:", error);
-      throw error;
+    } catch (error: any) {
+      throw error.response.data.errors[0].split(": ")[2];
     }
   },
 };

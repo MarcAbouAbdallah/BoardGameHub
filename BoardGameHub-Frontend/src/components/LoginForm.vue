@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { useAuthStore } from "../stores/authStore"
+import { useAuthStore } from "../stores/authStore";
 import { playerService } from "../services/PlayerService";
 
 //test
@@ -23,19 +23,17 @@ const handleSubmit = async () => {
       password: password.value,
     };
     console.log(playerData);
+
     const response = await playerService.loginPlayer(playerData);
     console.log(response);
 
-    if (response.status === 200) {
-      authStore.login(response.data.name, response.data.email, response.data.id, playerData.password);
-      console.log("User logged in:", authStore.user);
-      
-      router.push("/home");
-    } else {
-      error.value = "Invalid email or password.";
-    }
-  } catch (err) {
-    error.value = "An error occurred. Please try again.";
+    authStore.login(response.data.name, response.data.email, response.data.id, playerData.password);
+    console.log("User logged in:", authStore.user);
+
+    router.push("/home");
+  } catch (err: any) {
+    console.error(err);
+    error.value = err;
   }
 };
 </script>
