@@ -5,16 +5,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-
-import { useAuthStore } from "../stores/authStore"
+import { useAuthStore } from "../stores/authStore";
 import { playerService } from "../services/PlayerService";
+import { useToast } from "@/components/ui/toast";
+import { AxiosError } from "axios";
 
-//test
 const router = useRouter();
 const authStore = useAuthStore();
 const email = ref("");
 const password = ref("");
-const error = ref("");
+const { toast } = useToast();
 
 const handleSubmit = async () => {
   try {
@@ -30,12 +30,29 @@ const handleSubmit = async () => {
       authStore.login(response.data.name, response.data.email, response.data.id, playerData.password);
       console.log("User logged in:", authStore.user);
       
+      toast({ title: "Success", description: "Login successful!", variant: "default", duration: 3000 });
       router.push("/home");
-    } else {
-      error.value = "Invalid email or password.";
+    } 
+    else {
+      toast({ title: "Error", description: "Invalid email or password.", variant: "destructive", duration: 5000 });
     }
-  } catch (err) {
-    error.value = "An error occurred. Please try again.";
+
+  } 
+  catch (err: unknown) {
+    console.error("Error creating player:", err);
+    if (err instanceof AxiosError) {
+      if (err.response) {
+        if (err.response.status === 404){
+          toast({ title: "Error", description: "User does not exists. Please try again.", variant: "destructive", duration: 5000 });
+        }
+        else if (err.response.status === 500){
+          toast({ title: "Error", description: "Invalid password.", variant: "destructive", duration: 5000 });
+        }
+        else {
+        toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive", duration: 5000 });
+        }
+      }
+    }
   }
 };
 </script>
@@ -89,11 +106,6 @@ const handleSubmit = async () => {
         </div>
       </CardContent>
     </Card>
-
-    <div v-if="error" class="text-center text-red-600 font-semibold mt-4">
-      {{ error }}
-    </div>
-
     <div
       class="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary"
     >

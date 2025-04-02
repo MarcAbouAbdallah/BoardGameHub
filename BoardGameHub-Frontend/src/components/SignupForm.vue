@@ -6,13 +6,14 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "vue-router";
 import { playerService } from "@/services/PlayerService";
 import { ref } from "vue";
+import { useToast } from "@/components/ui/toast";
+import { AxiosError } from "axios";
 
 const router = useRouter();
 const name = ref("");
 const email = ref("");
 const password = ref("");
-const error = ref("");
-const successMessage = ref("");
+const { toast } = useToast();
 
 const handleSubmit = async () => {
   try {
@@ -26,22 +27,25 @@ const handleSubmit = async () => {
     console.log(response);
 
     if (response.status === 200 || response.status === 201) {
-      successMessage.value = "Account created successfully! Redirecting to login...";
+      toast({ title: "Success", description: "Account created successfully!", variant: "default", duration: 3000 });
 
-      setTimeout(() => {
-        successMessage.value = "";
-        name.value = "";
-        email.value = "";
-        password.value = "";
-        router.push("/"); 
-      }, 2000);
-
-    } else {
-      error.value = "Invalid email or password.";
-    }
     } 
-    catch (err) {
-    error.value = "An error occurred. Please try again.";
+    else {
+      toast({ title: "Error", description: "Invalid email or password.", variant: "destructive", duration: 5000 });
+    }
+  } 
+  catch (err: unknown) {
+    console.error("Error creating player:", err);
+    if (err instanceof AxiosError) {
+      if (err.response) {
+        if (err.response.status === 409){
+          toast({ title: "Error", description: "User already exists. Please use a different email.", variant: "destructive", duration: 5000 });
+        }
+        else {
+        toast({ title: "Error", description: "Something went wrong. Try again.", variant: "destructive", duration: 5000 });
+        }
+      }
+    }
   }
 };
 </script>
@@ -120,15 +124,6 @@ const handleSubmit = async () => {
         </div>
       </CardContent>
     </Card>
-
-    <div v-if="successMessage" class="text-center text-green-600 font-semibold mt-4">
-      {{ successMessage }}
-    </div>
-
-    <div v-if="error" class="text-center text-red-600 font-semibold mt-4">
-      {{ error }}
-    </div>
-
     <div
       class="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary"
     >
