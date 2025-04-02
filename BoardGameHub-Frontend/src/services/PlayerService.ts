@@ -7,7 +7,7 @@ export const playerService = {
       const response = await api.post("/players", playerData);
       return response;
     } catch (error: any) {
-      throw error.response.data.errors[0].split(": ")[2];
+      throw error.response.data.errors[0];
     }
   },
 
@@ -28,7 +28,7 @@ export const playerService = {
       const response = await api.get(`/players/${playerId}`);
       return response;
     } catch (error: any) {
-      throw error.response.data.errors[0].split(": ")[2];
+      throw error.response.data.errors[0];
     }
   },
 
@@ -38,7 +38,7 @@ export const playerService = {
       const response = await api.put(`/players/${playerId}`, playerData);
       return response;
     } catch (error: any) {
-      throw error.response.data.errors[0].split(": ")[2];
+      throw error.response.data.errors[0];
     }
   },
 };
