@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination/Pagination.vue";
 import { Toaster } from "@/components/ui/toast";
 import CreateGameModal from "@/components/popups/CreateGameModal.vue";
+import axios from "axios";
+
 </script>
 
 <template>
