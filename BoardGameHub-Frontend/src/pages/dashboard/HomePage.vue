@@ -16,8 +16,10 @@ import Toaster from "@/components/ui/toast/Toaster.vue";
   <div class="flex flex-col items-start my-24 mx-10">
     <GamesTable :games="sampleGameCollection" />
     <EventsTable :events="sampleEvents" :is-home-page="true" :title="'My Game Events'" />
-    <BorrowRequestTable :-borrow-requests="sampleBorrowRequests" />
-    <GameReviewTable :game-reviews="gameReviews" />
+    <!--<BorrowRequestTable :-borrow-requests="sampleBorrowRequests" />-->
+    <BorrowRequestTable />
+    <!--<GameReviewTable :game-reviews="gameReviews" />-->
+    <GameReviewTable />
   </div>
   <Toaster position="top-right" />
 </template>

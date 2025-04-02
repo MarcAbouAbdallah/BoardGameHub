@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref } from "vue";
+import { ref, onMounted, defineProps } from "vue";
 import { Button } from "./ui/button";
 import CustomTableHeader from "../components/TableHeader.vue";
 import {
@@ -13,15 +13,56 @@ import {
 import DataTableCard from "./DataTableCard.vue";
 import Badge from "./ui/badge/Badge.vue";
 
+import { borrowRequestService } from "@/services/borrowService";
+import { useAuthStore } from "../stores/authStore";
+import { useToast } from "@/components/ui/toast/use-toast";
+
 const loading = ref(false);
 const error = ref("");
+const borrowRequests = ref([]);
+const { toast } = useToast();
+const authStore = useAuthStore();
 
-const props = defineProps({
-  BorrowRequests: {
-    type: Object,
-    required: true,
-  },
+onMounted(async () => {
+  try {
+    const playerId = authStore.user?.userId;
+    if (!playerId) throw new Error("Player ID not found");
+    borrowRequests.value = await borrowRequestService.getRequestsByRequesterId(playerId);
+  } catch (err: any) {
+    error.value = err.message || "Failed to load borrow requests";
+  } finally {
+    loading.value = false;
+  }
 });
+
+const handleCancel = async (requestId: string) => {
+  try {
+    const userId = authStore.user?.userId;
+    if (!userId) throw new Error("User ID not found");
+
+    await borrowRequestService.cancelBorrowRequest(requestId, userId);
+
+    // Remove request from table
+    borrowRequests.value = borrowRequests.value.filter((r: any) => r.id !== requestId);
+
+    toast({
+      title: "Request Cancelled",
+      description: "Your borrow request has been successfully cancelled.",
+      variant: "default",
+    });
+
+  } catch (err: any) {
+    const errorMsg =
+      err.response?.data?.message || err.message || "Failed to cancel borrow request.";
+
+    toast({
+      title: "Cancellation Failed",
+      description: errorMsg,
+      variant: "destructive",
+    });
+  }
+};
+
 </script>
 
 <template>
@@ -40,26 +81,24 @@ const props = defineProps({
           </TableRow>
         </TableHeader>
         <TableBody>
-          <template v-for="request in props.BorrowRequests" :key="request.id">
+          <template v-for="request in borrowRequests" :key="request.id">
             <TableRow>
-              <TableCell class="text-start">{{ request.game }}</TableCell>
-              <TableCell class="text-start">{{ request.owner }}</TableCell>
+              <TableCell class="text-start">{{ request.gameTitle }}</TableCell>
+              <TableCell class="text-start">{{ request.requesteeName }}</TableCell>
               <TableCell class="text-start">{{ request.startDate }}</TableCell>
               <TableCell class="text-start">{{ request.endDate }}</TableCell>
               <TableCell class="text-start">
-                <Badge v-if="request.status === 'Pending'" class="bg-gray-500">Pending</Badge>
-                <Badge class="bg-green-800" v-else-if="request.status === 'Accepted'"
-                  >Accepted</Badge
-                >
-                <Badge class="bg-blue-800" v-else-if="request.status === 'Returned'"
-                  >Returned</Badge
-                >
+                <Badge v-if="request.status === 'PENDING'" class="bg-gray-500">Pending</Badge>
+                <Badge v-else-if="request.status === 'ACCEPTED'" class="bg-green-800">Accepted</Badge>
+                <Badge v-else-if="request.status === 'RETURNED'" class="bg-blue-800">Returned</Badge>
                 <Badge v-else variant="destructive">Rejected</Badge>
               </TableCell>
               <TableCell class="text-start">
-                <Button v-if="request.status == 'Pending'" variant="outline">
+
+                <Button v-if="request.status === 'PENDING'" variant="outline" @click="handleCancel(request.id)">
                   Cancel Request
                 </Button>
+                
               </TableCell>
             </TableRow>
           </template>

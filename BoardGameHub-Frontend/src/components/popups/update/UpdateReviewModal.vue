@@ -14,36 +14,40 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
+
+const props = defineProps({
+  review: {
+    type: Object,
+    required: true,
+  },
+});
+
+const emit = defineEmits(["update"]);
+
 const isOpen = ref(false);
 const { toast } = useToast();
 
 const close = () => {
   isOpen.value = false;
-  console.log("Dialog closed");
 };
 
 const formData = ref({
-  rating: 0,
-  comment: "",
+  rating: props.review.rating ?? 0,
+  comment: props.review.comment ?? "",
 });
 
 const error = ref("");
 
-const handleSubmit = async () => {
-  try {
-    console.log("Form Data:", formData.value);
-    close();
-    toast({
-      title: "Review Updated",
-      description: `Your review has been updated.`,
-      variant: "default",
-      duration: 2000,
-    });
-    // Call the APID to create the event here
-  } catch (err) {
-    error.value = "An error occurred. Please try again.";
-  }
+const handleSubmit = () => {
+  emit("update", {
+    id: props.review.id,
+    rating: formData.value.rating,
+    comment: formData.value.comment,
+  });
+  close(); // Toast on success and failure is in the parent comp
 };
+
+
 </script>
 
 <template>
