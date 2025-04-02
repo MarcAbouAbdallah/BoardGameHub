@@ -34,11 +34,11 @@ const handleGameCreated = (newGame: Game) => {
 };
 
 const handleGameUpdated = (updatedGame: Game) => {
-  const index = games.value.findIndex((g) => g.id === updatedGame.id);
-  if (index !== -1) {
-    games.value[index] = updatedGame;
-  }
+  games.value = games.value.map((g) =>
+    g.id === updatedGame.id ? updatedGame : g
+  );
 };
+
 
 </script>
 

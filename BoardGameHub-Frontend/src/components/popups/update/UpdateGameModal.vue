@@ -76,12 +76,12 @@ const handleSubmit = async () => {
     <DialogTrigger as-child>
       <Button variant="outline" class="absolute top-2 left-2 border-1 border-black">
         <Pen class="h-4 w-4" />
-        Update Game
+        Edit Game
       </Button>
     </DialogTrigger>
     <DialogContent :close="close">
       <DialogHeader>
-        <DialogTitle>Update the game</DialogTitle>
+        <DialogTitle>Edit the game</DialogTitle>
         <DialogDescription>
           Modify the game details below. Leave any field blank if you want to keep the current
           value.
@@ -124,7 +124,7 @@ const handleSubmit = async () => {
           />
         </div>
         <div class="flex gap-2 items-center flex-end">
-          <Button type="submit" class="mt-4 w-fit">Add Game</Button>
+          <Button type="submit" class="mt-4 w-fit">Confirm</Button>
           <DialogClose class="w-fit p-0 mt-4">
             <Button variant="outline">Cancel</Button>
           </DialogClose>
