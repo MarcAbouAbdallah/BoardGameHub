@@ -14,7 +14,7 @@ const props = defineProps({
 
 const router = useRouter();
 
-const isGameHeader = props.title.toString().includes("Games");
+const isGameHeader = props.title.toString().includes("My Games");
 const isEventHeader = props.title.toString().includes("Events");
 </script>
 

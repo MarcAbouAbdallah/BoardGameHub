@@ -6,15 +6,15 @@ import BorrowRequestTable from "@/components/BorrowRequestTable.vue";
 import GameReviewTable from "@/components/GameReviewTable.vue";
 import { sampleEvents } from "@/data/sampleEvents";
 import { sampleGameCollection } from "@/data/sampleGames";
-import { gameReviews } from "@/data/sampleGames";
-import { sampleBorrowRequests } from "../../data/sampleBorrowRequest";
 import Toaster from "@/components/ui/toast/Toaster.vue";
+import RecievedBorrowReqTable from "@/components/ReceivedBorrowReqTable.vue";
 </script>
 
 <template>
   <Header />
   <div class="flex flex-col items-start my-24 mx-10">
     <GamesTable :games="sampleGameCollection" />
+    <RecievedBorrowReqTable />
     <EventsTable :events="sampleEvents" :is-home-page="true" :title="'My Game Events'" />
     <!--<BorrowRequestTable :-borrow-requests="sampleBorrowRequests" />-->
     <BorrowRequestTable />
