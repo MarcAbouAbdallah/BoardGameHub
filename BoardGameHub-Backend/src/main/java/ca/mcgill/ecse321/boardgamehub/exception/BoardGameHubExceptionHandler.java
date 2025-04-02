@@ -27,4 +27,9 @@ public class BoardGameHubExceptionHandler {
         ErrorDto responseBody = new ErrorDto(errorMessages);
         return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDto> handleGenericException(Exception ex) {
+        ErrorDto responseBody = new ErrorDto("An unexpected error occurred: " + ex.getMessage());
+        return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
