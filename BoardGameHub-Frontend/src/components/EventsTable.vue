@@ -4,7 +4,7 @@ import CustomTableHeader from "@/components/TableHeader.vue";
 import { ref } from "vue";
 import { Badge } from "./ui/badge";
 import { useToast } from "@/components/ui/toast/use-toast";
-import updateEventModal from "./popups/update/updateEventModal.vue";
+import updateEventModal from "./popups/update/UpdateEventModal.vue";
 // import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 // import {
 //   DropdownMenu,
@@ -92,7 +92,7 @@ const toggleRowExpansion = (rowId: number) => {
             <TableHead class="font-bold text-lg text-black" v-else>Location</TableHead>
             <TableHead class="font-bold text-lg text-black">Date</TableHead>
             <TableHead class="font-bold text-lg text-black">Remaining Seats</TableHead>
-            <TableHead class="font-bold text-lg text-black">Capacity</TableHead>
+            <TableHead class="font-bold text-lg text-black">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -123,7 +123,25 @@ const toggleRowExpansion = (rowId: number) => {
               <TableCell class="text-start" v-else>{{ Event.location }}</TableCell>
               <TableCell class="text-start">{{ Event.date }}</TableCell>
               <TableCell class="text-start">{{ Event.remainingSeats }}</TableCell>
-              <TableCell class="text-start">{{ Event.capacity }}</TableCell>
+              <TableCell class="text-start"
+                ><div v-if="isHomePage">
+                  <div v-if="Event.type == 'Created'" class="flex gap-6">
+                    <Button variant="destructive" size="sm" class="border-black">
+                      <Trash class="h-4 w-4" />
+                      Delete Event
+                    </Button>
+                    <updateEventModal />
+                  </div>
+                  <Button v-else variant="destructive" size="sm" class="border-black min-w-[118px]">
+                    <Undo class="h-4 w-4" />
+                    Unregister
+                  </Button>
+                </div>
+                <Button v-else variant="outline" size="sm" @click="registerEvent(Event.id)">
+                  <ClipboardCheck class="h-4 w-4" />
+                  Register
+                </Button></TableCell
+              >
             </TableRow>
             <TableRow v-if="expandedRows[Event.id]">
               <TableCell colspan="7" class="px-20">
@@ -140,24 +158,10 @@ const toggleRowExpansion = (rowId: number) => {
                     <p v-if="isHomePage" class="text-start max-w-[900px]">
                       <strong>Location: </strong> {{ Event.location }}
                     </p>
+                    <p class="text-start max-w-[900px]">
+                      <strong>Capacity </strong> {{ Event.capacity }}
+                    </p>
                   </div>
-                  <div v-if="isHomePage">
-                    <div v-if="Event.type == 'Created'" class="flex gap-6">
-                      <updateEventModal />
-                      <Button variant="destructive" size="sm" class="border-black">
-                        <Trash class="h-4 w-4" />
-                        Delete Event
-                      </Button>
-                    </div>
-                    <Button v-else variant="destructive" size="sm" class="border-black">
-                      <Undo class="h-4 w-4" />
-                      Unregister
-                    </Button>
-                  </div>
-                  <Button v-else variant="outline" size="sm" @click="registerEvent(Event.id)">
-                    <ClipboardCheck class="h-4 w-4" />
-                    Register
-                  </Button>
                 </div>
               </TableCell>
             </TableRow>
