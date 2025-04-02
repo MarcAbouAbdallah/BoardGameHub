@@ -18,11 +18,13 @@ import UpdateReviewModal from "./popups/update/UpdateReviewModal.vue";
 import { reviewService } from "@/services/reviewService";
 import { useAuthStore } from "../stores/authStore";
 import { onMounted } from "vue";
+import { useToast } from "@/components/ui/toast/use-toast";
 
 const loading = ref(false);
 const error = ref("");
 const reviews = ref([]);
 
+const { toast } = useToast();
 const authStore = useAuthStore();
 
 onMounted(async () => {
@@ -36,14 +38,63 @@ onMounted(async () => {
   }
 });
 
-/*
-const props = defineProps({
-  gameReviews: {
-    type: Object,
-    required: true,
-  },
-});
-*/
+const handleDelete = async (reviewId: string) => {
+  try {
+    await reviewService.deleteReview(reviewId, authStore.user.userId);
+    reviews.value = reviews.value.filter((r: any) => r.id !== reviewId);
+
+    toast({
+      title: "Review Deleted",
+      description: "The review has been removed.",
+      variant: "destructive",
+    });
+  } catch (err: any) {
+    const errorMsg =
+      err.response?.data?.message || err.message || "Failed to delete review.";
+    toast({
+      title: "Delete Failed",
+      description: errorMsg,
+      variant: "destructive",
+    });
+  }
+};
+
+const handleUpdate = async (updatedReview: any) => {
+  try {
+    const res = await reviewService.updateReview(
+      updatedReview.id,
+      authStore.user.userId,
+      {
+        rating: updatedReview.rating,
+        comment: updatedReview.comment,
+      }
+    );
+
+    reviews.value = reviews.value.map((r: any) =>
+      r.id === updatedReview.id ? res : r
+    );
+
+    toast({
+      title: "Review updated!",
+      description: "Your review was successfully updated.",
+      variant: "default",
+    });
+
+  } catch (err: any) {
+    const errorMsg =
+      err.response?.data?.comment ||
+      err.response?.data?.message ||
+      err.message ||
+      "An error occurred.";
+
+    toast({
+      title: "Update Failed",
+      description: errorMsg,
+      variant: "destructive",
+    });
+  }
+};
+
 </script>
 
 <template>
@@ -68,11 +119,11 @@ const props = defineProps({
               </TableCell>
               <TableCell class="text-start max-w-[700px]">{{ review.comment }}</TableCell>
               <TableCell class="text-start">
-                <Button variant="destructive">
+                <Button variant="destructive" class="mr-2" @click="handleDelete(review.id)">
                   <Trash class="h-4 w-4" />
                   Remove
                 </Button>
-                <UpdateReviewModal />
+                <UpdateReviewModal :review="review" @update="handleUpdate" />
               </TableCell>
             </TableRow>
           </template>
