@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Controller class for handling a games.
  */
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/games")
 @Validated
