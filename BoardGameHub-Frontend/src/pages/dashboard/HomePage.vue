@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Header from "../../components/Header.vue";
-import EventsTable from "@/components/EventsTable.vue";
+import MyEventsTable from "@/components/MyEventsTable.vue";
 import GamesTable from "@/components/GamesTable.vue";
 import BorrowRequestTable from "@/components/BorrowRequestTable.vue";
 import GameReviewTable from "@/components/GameReviewTable.vue";
@@ -15,7 +15,7 @@ import RecievedBorrowReqTable from "@/components/ReceivedBorrowReqTable.vue";
   <div class="flex flex-col items-start my-24 mx-10">
     <GamesTable :games="sampleGameCollection" />
     <RecievedBorrowReqTable />
-    <EventsTable :events="sampleEvents" :is-home-page="true" :title="'My Game Events'" />
+    <MyEventsTable :events="sampleEvents" :is-home-page="true" :title="'My Game Events'" />
     <!--<BorrowRequestTable :-borrow-requests="sampleBorrowRequests" />-->
     <BorrowRequestTable />
     <!--<GameReviewTable :game-reviews="gameReviews" />-->
