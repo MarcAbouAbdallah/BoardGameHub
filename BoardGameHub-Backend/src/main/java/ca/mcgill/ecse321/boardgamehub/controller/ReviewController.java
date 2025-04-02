@@ -57,6 +57,22 @@ public class ReviewController {
     }
 
     /**
+     * Find all reviews by a particular player
+     * 
+     * @param reviewerId The id of the player whose reviews we are looking for
+     * @return A list of review response DTO's containing the reviews created by that player
+     */
+    @GetMapping("reviews/player/{reviewerId}")
+    public List<ReviewResponseDto> findByReviewer(@PathVariable int reviewerId) {
+        List<Review> reviewList = reviewService.findByReviewer(reviewerId);
+        List<ReviewResponseDto> dtoList = new ArrayList<>();
+        for (Review review: reviewList) {
+            dtoList.add(new ReviewResponseDto(review));
+        }
+        return dtoList;
+    }
+
+    /**
      * Find all reviews for a particular game by a particular person
      * 
      * @param gameName The name of the game whose reviews we are looking for

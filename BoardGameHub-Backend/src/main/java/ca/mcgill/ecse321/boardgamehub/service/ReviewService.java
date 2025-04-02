@@ -136,4 +136,14 @@ public class ReviewService {
         }
         return reviewRepo.findByGame(game);
     }
+
+    public List<Review> findByReviewer(int reviewerId) {
+        Player reviewer = playerRepo.findPlayerById(reviewerId);
+        if (reviewer == null) {
+            throw new BoardGameHubException(HttpStatus.NOT_FOUND, String.format(
+                                    "There is no person with ID %d.",
+                                    reviewerId));
+        }
+        return reviewRepo.findByReviewer(reviewer);
+    }
 }
