@@ -7,7 +7,7 @@ import GameReviewTable from "@/components/GameReviewTable.vue";
 import { sampleEvents } from "@/data/sampleEvents";
 import { sampleGameCollection } from "@/data/sampleGames";
 import Toaster from "@/components/ui/toast/Toaster.vue";
-import RecievedBorrowReqTable from "@/components/RecievedBorrowReqTable.vue";
+import RecievedBorrowReqTable from "@/components/ReceivedBorrowReqTable.vue";
 </script>
 
 <template>
