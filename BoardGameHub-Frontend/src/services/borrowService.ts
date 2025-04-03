@@ -42,8 +42,8 @@ export const borrowRequestService = {
     }
   },
 
-  async createBorrowRequest( // Let's see if like this ......
-    data: { gameCopyId: number; requesterId: number; requesteeId: number; startDate: string; endDate: string; comment: string },
+  async createBorrowRequest(
+    data: {gameCopyId: string; requesteeId: string; startDate: string; endDate: string; comment: string; requesterId: number },
   ) {
     try {
       const response = await api.post(`/borrow-requests`, data);

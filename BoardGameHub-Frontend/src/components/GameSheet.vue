@@ -13,6 +13,7 @@ import reviewCard from "./reviewCard.vue";
 import { onMounted, ref } from "vue";
 import { gameCopyService } from "@/services/GameCopyService";
 import { reviewService } from "@/services/reviewService";
+import { borrowRequestService } from "@/services/borrowService";
 
 import { useAuthStore } from "../stores/authStore";
 import { useToast } from "@/components/ui/toast/use-toast";
@@ -107,6 +108,34 @@ const handleCreateReview = async (newReview: { rating: number; comment: string }
   }
 };
 
+const handleCreateBorrow = async (request: {
+  gameCopyId: string;
+  requesteeId: string;
+  startDate: string;
+  endDate: string;
+  comment: string;
+}) => {
+  try {
+    const requesterId = authStore.user.userId!;
+    await borrowRequestService.createBorrowRequest({
+      requesterId,
+      ...request,
+    });
+
+    toast({
+      title: "Request Sent",
+      description: "Your borrow request has been submitted.",
+      variant: "default",
+    });
+  } catch (err: any) {
+    toast({
+      title: "Failed to Create Request",
+      description: err,
+      variant: "destructive",
+    });
+  }
+};
+
 
 </script>
 
@@ -144,7 +173,11 @@ const handleCreateReview = async (newReview: { rating: number; comment: string }
                 <UserCircle2Icon class="h-8 w-8 text-gray-500" />
                 <span class="text-lg font-semibold">{{ copy.ownerName }}</span>
               </div>
-              <BorrowReqModal />
+              <BorrowReqModal 
+                :gameCopyId="copy.gameCopyId"
+                :requesteeId="copy.ownerId"
+                @create="handleCreateBorrow"
+              />
             </div>
           </div>
           <div v-else class="text-gray-500 italic mt-2">No one owns this game yet.</div>
