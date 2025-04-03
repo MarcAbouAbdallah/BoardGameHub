@@ -1,9 +1,7 @@
 import api from "./api";
 import { useToast } from "@/components/ui/toast";
-import { useAuthStore } from "@/stores/authStore";
 
 const { toast } = useToast();
-const authStore = useAuthStore();
 
 export const playerService = {
   // Post a new player
@@ -17,13 +15,8 @@ export const playerService = {
         variant: "default",
       });
       console.log("Player created successfully:", response.data);
-      authStore.login(
-        response.data.name,
-        response.data.email,
-        response.data.id,
-        playerData.password,
-      );
-      return response;
+
+      return response.data;
     } catch (error: any) {
       if (error.response.status === 409) {
         toast({
@@ -54,7 +47,7 @@ export const playerService = {
         description: "Player logged in successfully.",
         variant: "default",
       });
-      return response;
+      return response.data;
     } catch (error: any) {
       if (error.response.status === 401) {
         toast({
@@ -83,7 +76,7 @@ export const playerService = {
         description: "Player fetched successfully.",
         variant: "default",
       });
-      return response;
+      return response.data;
     } catch (error: any) {
       if (error.response.status === 404) {
         toast({
@@ -112,7 +105,7 @@ export const playerService = {
         description: "Player updated successfully.",
         variant: "default",
       });
-      return response;
+      return response.data;
     } catch (error: any) {
       if (error.response.status === 404) {
         toast({

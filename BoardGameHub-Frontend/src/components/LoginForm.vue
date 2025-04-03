@@ -6,8 +6,10 @@ import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { playerService } from "../services/PlayerService";
+import { useAuthStore } from "@/stores/authStore";
 
 const router = useRouter();
+const authStore = useAuthStore();
 const email = ref("");
 const password = ref("");
 
@@ -17,7 +19,8 @@ const handleSubmit = async () => {
       email: email.value,
       password: password.value,
     };
-    await playerService.loginPlayer(playerData);
+    const response = await playerService.loginPlayer(playerData);
+    authStore.login(response.name, response.email, response.id, playerData.password);
     router.push("/home");
   } catch (err: any) {
     console.error("Error in logging in Player", err);
