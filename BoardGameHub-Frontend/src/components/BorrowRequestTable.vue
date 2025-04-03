@@ -74,7 +74,7 @@ const handleCancel = async (requestId: string) => {
 
 <template>
   <div class="p-6 space-y-6 w-9/12 mx-auto">
-    <CustomTableHeader :title="'My Borrow Requests'" />
+    <CustomTableHeader :title="'My Sent Requests'" />
     <DataTableCard :is-loading="loading" :error="error">
       <Table class="w-full mt-4">
         <TableHeader>
