@@ -9,34 +9,30 @@ import { useToast } from "@/components/ui/toast";
 import type { Game } from "@/types/Game";
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/authStore";
-import { getPlayerCollection } from "@/services/personalCollectionService";
+import { watch } from "vue";
 
 const { toast } = useToast();
 const authStore = useAuthStore();
-const isAdded = ref(false);
 const fallback = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzJ4bjU2NWE5YTh1Y3Q1cTVmcHdmOHhrOWo0a3hvN2dwcnNncXhzZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/YORVoIzhBZZaHY7Jp2/giphy.gif";
-
-onMounted(async () => {
-  if (!authStore.user || !authStore.user.userId) return;
-
-  try {
-    const collection = await getPlayerCollection(authStore.user.userId);
-    const alreadyOwned = collection.some(
-      (copy: any) => copy.game.id === props.game.id
-    );
-
-    if (alreadyOwned) {
-      isAdded.value = true;
-    }
-  } catch (err) {
-    console.error("Failed to fetch player collection:", err);
-  }
-});
-
 const props = defineProps<{
   game: Game;
   isBorrowed?: boolean;
+  isAdded?: boolean;
 }>();
+
+const isAdded = ref(props.isAdded ?? false);
+
+// Log on first mount
+onMounted(() => {
+  console.log(`Mounted GameCard for "${props.game.name}" - isAdded:`, isAdded.value);
+});
+
+watch(
+  () => props.isAdded,
+  (newVal) => {
+    isAdded.value = newVal;
+  }
+);
 
 
 const handleAddToCollectionClick = async (gameId: number) => {
@@ -81,13 +77,17 @@ const handleAddToCollectionClick = async (gameId: number) => {
 
       <!-- PLUS / CHECK ICON -->
       <div class="absolute top-2 right-2 z-10 group">
-        <CheckSquare v-if="isAdded" class="w-6 h-6 text-black" />
-        <PlusSquare v-else class="w-6 h-6 hover:text-gray-400"
-          @click.stop="handleAddToCollectionClick(props.game.id)" />
-        <span
-          class="absolute top-full mt-1 right-0 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          Add to your collection
-        </span>
+        <template v-if="isAdded">
+          <CheckSquare class="w-6 h-6 text-black cursor-default" />
+        </template>
+        <template v-else>
+          <PlusSquare class="w-6 h-6 hover:text-gray-400 cursor-pointer"
+            @click.stop="handleAddToCollectionClick(props.game.id)" />
+          <span
+            class="absolute top-full mt-1 right-0 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            Add to your collection
+          </span>
+        </template>
       </div>
 
       <!-- IMAGE -->

@@ -7,6 +7,8 @@ import type { Game } from "@/types/Game";
 import { ref, onMounted } from "vue";
 import gameService from "@/services/gameService";
 import { computed, watch } from "vue";
+import { useAuthStore } from "@/stores/authStore";
+import { getPlayerCollection } from "@/services/personalCollectionService";
 
 
 import { Input } from "@/components/ui/input";
@@ -21,8 +23,9 @@ const error = ref("");
 const searchTerm = ref("");
 const currentPage = ref(1);
 const itemsPerPage = 8;
-const imageFile = ref<File | null>(null);             // stores the selected image file
-const imagePreviewUrl = ref<string | null>(null);     // stores the preview URL
+const playerCollectionGameIds = ref<number[]>([]);
+const authStore = useAuthStore();
+
 
 
 
@@ -31,6 +34,16 @@ onMounted(async () => {
   try {
     const result = await gameService.getAllGames();
     games.value = result;
+
+    if (authStore.user?.userId) {
+      const collection = await getPlayerCollection(authStore.user.userId);
+
+      console.log("Fetched player collection:", collection);
+      
+      playerCollectionGameIds.value = collection.map((copy: any) => copy.gameId);
+
+
+    }
   } catch (err) {
     error.value = "Failed to load games.";
     console.error(err);
@@ -85,9 +98,8 @@ watch(searchTerm, () => {
     </div>
 
     <div class="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      <GameSheet v-for="game in paginatedGames" :key="game.id" :game="game" @game-updated="handleGameUpdated">
-        <GameCard :game="game" />
-      </GameSheet>
+      <GameCard v-for="game in paginatedGames" :key="game.id" :game="game"
+        :is-added="playerCollectionGameIds.includes(game.id)" @game-updated="handleGameUpdated" />
 
 
     </div>

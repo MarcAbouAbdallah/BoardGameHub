@@ -9,6 +9,7 @@ export const addGameToCollection = async (playerId: number, gameId: number) => {
 };
 
 export async function getPlayerCollection(playerId: number) {
-    const response = await api.post("/gamecopies/my-collection", { playerId });
-    return response.data;
-  }
+  const response = await api.get(`/gamecopies/players/${playerId}`);
+  return response.data;
+}
+
