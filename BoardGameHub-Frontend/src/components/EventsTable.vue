@@ -14,10 +14,6 @@
           <Plus class="h-4 w-4" />
           Create Event
         </Button>
-        <Button @click="refreshNoBlink">
-          <RefreshCcw class="h-4 w-4" />
-          Refresh
-        </Button>
       </div>
     </div>
 
@@ -84,7 +80,21 @@
               <TableCell colspan="8" class="px-20">
                 <div class="flex flex-col items-start gap-2">
                   <p class="text-start max-w-[900px]">
-                    <strong>Description:</strong> {{ event.description }}
+                    <strong>Description: </strong>
+                    <span>{{ event.description }}</span>
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>Start Time: </strong>
+                    <span>{{ event.startTime }}</span>
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>End Time: </strong>
+                    <span>{{ event.endTime }}</span>
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>Organizer: </strong>
+                    <span v-if="isOrganizer(event)">You</span>
+                    <span v-else>{{ event.organizerName }}</span>
                   </p>
                   <p class="text-start max-w-[900px]">
                     <strong>Registrations:</strong>
@@ -290,7 +300,6 @@ const registerEvent = async (eventId: number) => {
       duration: 2000,
     });
     await softReloadEvents();
-    // Update all event registrations to ensure buttons are reactive
     await fetchAllEventRegistrations();
   } catch (err: any) {
     toast({
@@ -321,7 +330,6 @@ const unregisterEvent = async (eventId: number) => {
       duration: 2000,
     });
     await softReloadEvents();
-    // Update all event registrations to ensure buttons are reactive
     await fetchAllEventRegistrations();
   } catch (err: any) {
     toast({
@@ -416,10 +424,9 @@ const refreshNoBlink = async () => {
   await softReloadEvents();
 };
 
-onMounted(() => {
-  fetchEventsInitially();
-  // Also fetch all event registrations on mount
-  fetchAllEventRegistrations();
+onMounted(async () => {
+  await fetchEventsInitially();
+  await fetchAllEventRegistrations();
   pollingInterval = window.setInterval(softReloadEvents, 30000);
 });
 

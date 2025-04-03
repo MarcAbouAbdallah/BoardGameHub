@@ -272,21 +272,16 @@ onMounted(async () => {
         </div>
         <!-- Game Copy Dropdown -->
         <div class="flex gap-2 items-center">
-          <Label for="gamecopy-select" class="w-full">Select Game Copy</Label>
+          <Label for="gamecopy-select" class="w-full">Select Game Owner</Label>
           <select
             id="gamecopy-select"
             v-model="selectedGameCopyId"
             class="w-full border p-2 rounded"
             required
           >
-            <option disabled value="">-- Choose a Game Copy --</option>
-            <option
-              v-for="copy in gameCopies"
-              :key="copy.gameCopyId"
-              :value="String(copy.gameCopyId)"
-            >
-              Copy #{{ copy.gameCopyId }} (Owner: {{ copy.ownerName }})
-              ({{ copy.isAvailable ? "Available" : "Unavailable" }})
+            <option disabled value="">-- Choose a Game First --</option>
+            <option v-for="copy in gameCopies" :key="copy.gameCopyId" :value="copy.gameCopyId">
+              {{ copy.ownerName }}
             </option>
           </select>
         </div>
