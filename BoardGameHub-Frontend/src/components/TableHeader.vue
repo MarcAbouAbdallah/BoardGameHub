@@ -3,7 +3,6 @@ import { defineProps } from "vue";
 import { Button } from "./ui/button";
 import { FilterIcon, RefreshCcw, Plus } from "lucide-vue-next";
 import { useRouter } from "vue-router";
-import CreateEventModal from "./popups/CreateEventModal.vue";
 
 const props = defineProps({
   title: {
@@ -14,8 +13,7 @@ const props = defineProps({
 
 const router = useRouter();
 
-const isGameHeader = props.title.toString().includes("Games");
-const isEventHeader = props.title.toString().includes("Events");
+const isGameHeader = props.title.toString().includes("My Games");
 </script>
 
 <template>
@@ -26,7 +24,6 @@ const isEventHeader = props.title.toString().includes("Events");
       <Plus class="w-4 h-4" />
       Add Games to your Collection
     </Button>
-    <CreateEventModal v-if="isEventHeader" />
     <Button variant="outline" class="flex items-center mx-3 border-black">
       <FilterIcon class="w-4 h-4" />Filters
     </Button>

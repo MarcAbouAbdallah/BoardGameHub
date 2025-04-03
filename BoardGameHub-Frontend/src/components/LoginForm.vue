@@ -23,6 +23,7 @@ const handleSubmit = async () => {
       password: password.value,
     };
     console.log(playerData);
+
     const response = await playerService.loginPlayer(playerData);
     console.log(response);
 

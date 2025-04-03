@@ -15,7 +15,7 @@ import { gameReviews } from "@/data/sampleGames";
 import { defineProps } from "vue";
 import BorrowReqModal from "./popups/BorrowReqModal.vue";
 import CreateReviewModal from "./popups/CreateReviewModal.vue";
-import UpdateGameModal from "./popups/update/updateGameModal.vue";
+import UpdateGameModal from "./popups/update/UpdateGameModal.vue";
 
 const props = defineProps({
   game: {
