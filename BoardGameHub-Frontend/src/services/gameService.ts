@@ -1,6 +1,6 @@
 import api from "./api";
 
-export const gameService = {
+const gameService = {
   // GET /games
   async getAllGames() {
     try {
@@ -56,3 +56,5 @@ export const gameService = {
     }
   },
 };
+
+export default gameService;
