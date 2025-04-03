@@ -87,9 +87,8 @@ const toggleRowExpansion = (rowId: number) => {
           <TableRow>
             <TableHead></TableHead>
             <TableHead class="font-bold text-lg text-black">Event Name</TableHead>
+            <TableHead class="font-bold text-lg text-black">Type</TableHead>
             <TableHead class="font-bold text-lg text-black">Game</TableHead>
-            <TableHead class="font-bold text-lg text-black" v-if="isHomePage">Type</TableHead>
-            <TableHead class="font-bold text-lg text-black" v-else>Location</TableHead>
             <TableHead class="font-bold text-lg text-black">Date</TableHead>
             <TableHead class="font-bold text-lg text-black">Remaining Seats</TableHead>
             <TableHead class="font-bold text-lg text-black">Actions</TableHead>
@@ -109,8 +108,7 @@ const toggleRowExpansion = (rowId: number) => {
                 </Button>
               </TableCell>
               <TableCell class="text-start">{{ Event.name }}</TableCell>
-              <TableCell class="text-start">{{ Event.game }}</TableCell>
-              <TableCell class="text-start" v-if="isHomePage">
+              <TableCell class="text-start">
                 <Badge
                   :class="[
                     'min-w-[77px]',
@@ -120,11 +118,11 @@ const toggleRowExpansion = (rowId: number) => {
                   {{ Event.type }}
                 </Badge>
               </TableCell>
-              <TableCell class="text-start" v-else>{{ Event.location }}</TableCell>
+              <TableCell class="text-start">{{ Event.game }}</TableCell>
               <TableCell class="text-start">{{ Event.date }}</TableCell>
               <TableCell class="text-start">{{ Event.remainingSeats }}</TableCell>
               <TableCell class="text-start"
-                ><div v-if="isHomePage">
+                ><div>
                   <div v-if="Event.type == 'Created'" class="flex gap-6">
                     <Button variant="destructive" size="sm" class="border-black">
                       <Trash class="h-4 w-4" />
@@ -136,10 +134,7 @@ const toggleRowExpansion = (rowId: number) => {
                     Unregister
                   </Button>
                 </div>
-                <Button v-else variant="outline" size="sm" @click="registerEvent(Event.id)">
-                  <ClipboardCheck class="h-4 w-4" />
-                  Register
-                </Button></TableCell
+              </TableCell
               >
             </TableRow>
             <TableRow v-if="expandedRows[Event.id]">
@@ -154,12 +149,13 @@ const toggleRowExpansion = (rowId: number) => {
                       <span v-if="Event.participants.length == 0">No Registrations Yet</span
                       >{{ Event.participants.join(", ") }}
                     </p>
-                    <p v-if="isHomePage" class="text-start max-w-[900px]">
+                    <p class="text-start max-w-[900px]">
                       <strong>Location: </strong> {{ Event.location }}
                     </p>
                     <p class="text-start max-w-[900px]">
-                      <strong>Capacity </strong> {{ Event.capacity }}
+                      <strong>Capacity: </strong> {{ Event.capacity }}
                     </p>
+                    
                   </div>
                 </div>
               </TableCell>

@@ -55,7 +55,7 @@ const handleSubmit = () => {
     <DialogTrigger as-child>
       <Button variant="outline" class="ml-2">
         <Pen class="h-4 w-4" />
-        Update Review
+        Update
       </Button>
     </DialogTrigger>
     <DialogContent :close="close">

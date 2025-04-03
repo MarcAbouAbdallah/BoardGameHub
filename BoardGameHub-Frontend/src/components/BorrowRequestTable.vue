@@ -110,7 +110,7 @@ const handleCancel = async (requestId: string) => {
                   variant="outline"
                   @click="handleCancel(request.id)"
                 >
-                  Cancel Request
+                  Cancel
                 </Button>
               </TableCell>
             </TableRow>
