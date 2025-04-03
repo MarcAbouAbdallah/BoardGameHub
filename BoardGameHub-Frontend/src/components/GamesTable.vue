@@ -15,34 +15,14 @@ import {
 } from "@/components/ui/table";
 import DataTableCard from "./DataTableCard.vue";
 import { ref } from "vue";
-import { useToast } from "./ui/toast";
 import Alert from "./alert/Alert.vue";
 
 const loading = ref(false);
 const error = ref("");
 const expandedRows = ref<Record<number, boolean>>({});
-const { toast } = useToast();
 
 const toggleRowExpansion = (rowId: number) => {
   expandedRows.value[rowId] = !expandedRows.value[rowId];
-};
-
-const acceptRequest = (requestId: number, gameId: number) => {
-  //TODO: Implement the accept request logic
-  toast({
-    title: "Request Accepted",
-    description: `Request ${requestId} for game ${gameId} has been accepted.`,
-    variant: "default",
-  });
-};
-
-const rejectRequest = (requestId: number, gameId: number) => {
-  //TODO: Implement the accept request logic
-  toast({
-    title: "Request Rejected",
-    description: `Request ${requestId} for game ${gameId} has been rejected.`,
-    variant: "destructive",
-  });
 };
 
 const props = defineProps({
@@ -51,6 +31,28 @@ const props = defineProps({
     required: true,
   },
 });
+
+const handleRemoveGame = async (gameId: number) => {
+  try {
+    loading.value = true;
+    //TODO: Call the API to remove the game
+  } catch (err) {
+    error.value = "Error removing game";
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleReturnGame = async (gameId: number) => {
+  try {
+    loading.value = true;
+    //TODO: Call the API to return the game
+  } catch (err) {
+    error.value = "Error returning game";
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <template>
@@ -64,6 +66,7 @@ const props = defineProps({
             <TableHead class="font-bold text-lg text-black">Game</TableHead>
             <TableHead class="font-bold text-lg text-black">Type</TableHead>
             <TableHead class="font-bold text-lg text-black">Owner</TableHead>
+            <TableHead class="font-bold text-lg text-black">Status</TableHead>
             <TableHead class="font-bold text-lg text-black">minPlayers</TableHead>
             <TableHead class="font-bold text-lg text-black">maxPlayers</TableHead>
             <TableHead class="font-bold text-lg text-black">Actions</TableHead>
@@ -88,63 +91,50 @@ const props = defineProps({
                 <Badge class="bg-green-800 min-w-[75px] text-center" v-else>Owned</Badge>
               </TableCell>
               <TableCell class="text-start">{{ game.owner }} </TableCell>
+              <TableCell class="text-start">
+                <Badge
+                  class="bg-green-800 min-w-[75px] text-center"
+                  v-if="game.isAvailable && !game.isBorrowed"
+                >
+                  Available</Badge
+                >
+                <Badge
+                  class="bg-red-800 min-w-[75px] text-center"
+                  v-else-if="!game.isAvailable && !game.isBorrowed"
+                  >Unavailable</Badge
+                >
+              </TableCell>
               <TableCell class="text-start">{{ game.minPlayers }}</TableCell>
               <TableCell class="text-start">{{ game.maxPlayers }}</TableCell>
               <TableCell class="text-start">
-                <Button variant="destructive" v-if="!game.isBorrowed">
-                  <Trash class="h-4 w-4" />
-                  Remove
-                </Button>
-                <Button variant="outline" class="ml-2" v-else>
-                  <Undo2 class="h-4 w-4" />
-                  Return
-                </Button>
+                <Alert
+                  :description="'Are you sure you want to remove this game?'"
+                  actionText="Remove"
+                  :actionFunc="() => handleRemoveGame(game.id)"
+                  v-if="!game.isBorrowed"
+                >
+                  <Button variant="destructive">
+                    <Trash class="h-4 w-4" />
+                    Remove
+                  </Button>
+                </Alert>
+                <Alert
+                  :description="'Are you sure you want to return this game?'"
+                  actionText="Return"
+                  :actionFunc="() => handleReturnGame(game.id)"
+                  v-else
+                >
+                  <Button variant="outline" class="min-w-[109px]">
+                    <Undo2 class="h-4 w-4" />
+                    Return
+                  </Button>
+                </Alert>
               </TableCell>
             </TableRow>
             <TableRow v-if="expandedRows[game.id]">
               <TableCell colspan="7" class="p-4 bg-gray-100">
                 <div class="flex flex-col items-start space-y-2">
                   <p><strong>Game Description:</strong> {{ game.description }}</p>
-                </div>
-                <div v-if="!game.isBorrowed" class="mt-4">
-                  <h3 class="font-bold mb-2 text-start">Recieved Borrow Requests:</h3>
-                  <div class="bg-gray-200 border rounded-md max-h-[200px] overflow-y-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableHead class="font-bold text-md text-black">User</TableHead>
-                        <TableHead class="font-bold text-md text-black">Start Date</TableHead>
-                        <TableHead class="font-bold text-md text-black">End Date</TableHead>
-                        <TableHead class="font-bold text-md text-black">Comment</TableHead>
-                        <TableHead class="font-bold text-md text-black">Actions</TableHead>
-                      </TableHeader>
-                      <TableBody>
-                        <template v-for="request in game.borrowRequests" :key="request.id">
-                          <TableRow>
-                            <TableCell class="text-start">{{ request.user }}</TableCell>
-                            <TableCell class="text-start">{{ request.startDate }}</TableCell>
-                            <TableCell class="text-start">{{ request.endDate }}</TableCell>
-                            <TableCell class="text-start">{{ request.comment }}</TableCell>
-                            <TableCell class="text-start">
-                              <Alert
-                                :action-func="acceptRequest"
-                                :action-text="'Accept'"
-                                :description="'Are you sure you want to accept this request?'"
-                                :trigger="'Accept'"
-                                class="bg-green-700 hover:bg-green-900 text-white"
-                              />
-                              <Alert
-                                :action-func="rejectRequest"
-                                :action-text="'Reject'"
-                                :description="'Are you sure you want to reject this request?'"
-                                :trigger="'Reject'"
-                                class="bg-red-700 hover:bg-red-900 text-white ml-2"
-                              />
-                            </TableCell>
-                          </TableRow>
-                        </template>
-                      </TableBody>
-                    </Table>
-                  </div>
                 </div>
               </TableCell>
             </TableRow>

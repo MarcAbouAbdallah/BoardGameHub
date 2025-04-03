@@ -1,34 +1,58 @@
 import api from "./api";
 
-const getAllGames = async () => {
-  const response = await api.get("/games");
-  return response.data;
-};
+export const gameService = {
+  // GET /games
+  async getAllGames() {
+    try {
+      const response = await api.get("/games");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching games:", error);
+      throw error;
+    }
+  },
 
-const getGameById = async (id: number) => {
-  const response = await api.get(`/games/${id}`);
-  return response.data;
-};
+  // GET /games/{id}
+  async getGameById(gameId: number) {
+    try {
+      const response = await api.get(`/games/${gameId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching game:", error);
+      throw error;
+    }
+  },
 
-const createGame = async (gameData: any) => {
-  const response = await api.post("/games", gameData);
-  return response.data;
-};
+  // POST /games
+  async createGame(gameData: any) {
+    try {
+      const response = await api.post("/games", gameData);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating game:", error);
+      throw error;
+    }
+  },
 
-const updateGame = async (id: number, gameData: any) => {
-  const response = await api.put(`/games/${id}`, gameData);
-  return response.data;
-};
+  // PUT /games/{id}
+  async updateGame(gameId: number, gameData: any) {
+    try {
+      const response = await api.put(`/games/${gameId}`, gameData);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating game:", error);
+      throw error;
+    }
+  },
 
-const deleteGame = async (id: number) => {
-  await api.delete(`/games/${id}`);
+  // DELETE /games/{id}
+  async deleteGame(gameId: number) {
+    try {
+      const response = await api.delete(`/games/${gameId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting game:", error);
+      throw error;
+    }
+  },
 };
-
-export default {
-  getAllGames,
-  getGameById,
-  createGame,
-  updateGame,
-  deleteGame,
-};
-

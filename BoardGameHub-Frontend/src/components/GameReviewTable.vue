@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
 import CustomTableHeader from "../components/TableHeader.vue";
 import rating from "./ui/rating/rating.vue";
 import { Button } from "./ui/button";
@@ -21,7 +20,14 @@ import { useToast } from "@/components/ui/toast/use-toast";
 
 const loading = ref(false);
 const error = ref("");
-const reviews = ref([]);
+interface Review {
+  id: number;
+  gameName: string;
+  rating: number;
+  comment: string;
+}
+
+const reviews = ref<Review[]>([]);
 
 const { toast } = useToast();
 const authStore = useAuthStore();
@@ -29,17 +35,19 @@ const authStore = useAuthStore();
 onMounted(async () => {
   try {
     const playerId = authStore.user.userId;
+    if (!playerId) throw new Error("Player ID not found");
     reviews.value = await reviewService.getReviewsByPlayerId(playerId);
+    console.log(reviews.value);
   } catch (err: any) {
-    error.value = err.message || "Error fetching reviews";
+    error.value = err || "Error fetching reviews";
   } finally {
     loading.value = false;
   }
 });
 
-const handleDelete = async (reviewId: string) => {
+const handleDelete = async (reviewId: number) => {
   try {
-    await reviewService.deleteReview(reviewId, authStore.user.userId);
+    await reviewService.deleteReview(reviewId, authStore.user.userId!);
     reviews.value = reviews.value.filter((r: any) => r.id !== reviewId);
 
     toast({
@@ -48,8 +56,7 @@ const handleDelete = async (reviewId: string) => {
       variant: "destructive",
     });
   } catch (err: any) {
-    const errorMsg =
-      err.response?.data?.message || err.message || "Failed to delete review.";
+    const errorMsg = err.response?.data?.message || err.message || "Failed to delete review.";
     toast({
       title: "Delete Failed",
       description: errorMsg,
@@ -60,40 +67,27 @@ const handleDelete = async (reviewId: string) => {
 
 const handleUpdate = async (updatedReview: any) => {
   try {
-    const res = await reviewService.updateReview(
-      updatedReview.id,
-      authStore.user.userId,
-      {
-        rating: updatedReview.rating,
-        comment: updatedReview.comment,
-      }
-    );
+    const res = await reviewService.updateReview(updatedReview.id, authStore.user.userId!, {
+      rating: updatedReview.rating,
+      comment: updatedReview.comment,
+    });
 
-    reviews.value = reviews.value.map((r: any) =>
-      r.id === updatedReview.id ? res : r
-    );
+    reviews.value = reviews.value.map((r: any) => (r.id === updatedReview.id ? res : r));
 
     toast({
       title: "Review updated!",
       description: "Your review was successfully updated.",
       variant: "default",
     });
-
   } catch (err: any) {
-    const errorMsg =
-      err.response?.data?.comment ||
-      err.response?.data?.message ||
-      err.message ||
-      "An error occurred.";
+  toast({
+    title: "Update Failed",
+    description: err,
+    variant: "destructive",
+  });
+}
 
-    toast({
-      title: "Update Failed",
-      description: errorMsg,
-      variant: "destructive",
-    });
-  }
 };
-
 </script>
 
 <template>
@@ -109,7 +103,7 @@ const handleUpdate = async (updatedReview: any) => {
             <TableHead class="font-bold text-lg text-black">Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody v-if="reviews.length > 0">
           <template v-for="review in reviews" :key="review.id">
             <TableRow>
               <TableCell class="text-start">{{ review.gameName }}</TableCell>
@@ -126,6 +120,13 @@ const handleUpdate = async (updatedReview: any) => {
               </TableCell>
             </TableRow>
           </template>
+        </TableBody>
+        <TableBody v-else>
+          <TableRow>
+            <TableCell class="text-center text-xl font-semi-bold" colspan="4">
+              No reviews found.
+            </TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </DataTableCard>

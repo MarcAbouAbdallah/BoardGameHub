@@ -11,32 +11,18 @@ const router = useRouter();
 const name = ref("");
 const email = ref("");
 const password = ref("");
-const error = ref("");
-const successMessage = ref("");
 
 const handleSubmit = async () => {
   try {
-    const playerData = {
+    const player = {
       name: name.value,
       email: email.value,
       password: password.value,
     };
-    console.log(playerData);
-    const response = await playerService.createPlayer(playerData);
-    console.log(response);
-
-    successMessage.value = "Account created successfully! Redirecting to login...";
-
-    setTimeout(() => {
-      successMessage.value = "";
-      name.value = "";
-      email.value = "";
-      password.value = "";
-      router.push("/");
-    }, 2000);
-  } catch (err) {
-    console.error(err);
-    error.value = err as string;
+    await playerService.createPlayer(player);
+    router.push("/");
+  } catch (err: any) {
+    console.log("Error Signing up the player", err);
   }
 };
 </script>
@@ -95,15 +81,6 @@ const handleSubmit = async () => {
         </div>
       </CardContent>
     </Card>
-
-    <div v-if="successMessage" class="text-center text-green-600 font-semibold mt-4">
-      {{ successMessage }}
-    </div>
-
-    <div v-if="error" class="text-center text-red-600 font-semibold mt-4">
-      {{ error }}
-    </div>
-
     <div
       class="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary"
     >

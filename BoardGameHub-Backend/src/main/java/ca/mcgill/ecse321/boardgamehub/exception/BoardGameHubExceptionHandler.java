@@ -1,6 +1,8 @@
 package ca.mcgill.ecse321.boardgamehub.exception;
 
+import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,8 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import jakarta.validation.ConstraintViolationException;
 
 import ca.mcgill.ecse321.boardgamehub.dto.ErrorDto;
 
@@ -28,9 +32,17 @@ public class BoardGameHubExceptionHandler {
         return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorDto> handleConstraintViolationException(ConstraintViolationException ex) {
+        List<String> errorMessages = ex.getConstraintViolations().stream()
+                .map(violation -> violation.getMessage())
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(new ErrorDto(errorMessages), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDto> handleGenericException(Exception ex) {
-        ErrorDto responseBody = new ErrorDto(ex.getMessage().toString().split(":")[1].trim());
+        ErrorDto responseBody = new ErrorDto(ex.getMessage());
         return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

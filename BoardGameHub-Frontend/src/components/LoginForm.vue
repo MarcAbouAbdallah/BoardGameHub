@@ -5,16 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-
-import { useAuthStore } from "../stores/authStore";
 import { playerService } from "../services/PlayerService";
+import { useAuthStore } from "@/stores/authStore";
 
-//test
 const router = useRouter();
 const authStore = useAuthStore();
 const email = ref("");
 const password = ref("");
-const error = ref("");
 
 const handleSubmit = async () => {
   try {
@@ -22,18 +19,11 @@ const handleSubmit = async () => {
       email: email.value,
       password: password.value,
     };
-    console.log(playerData);
-
     const response = await playerService.loginPlayer(playerData);
-    console.log(response);
-
-    authStore.login(response.data.name, response.data.email, response.data.id, playerData.password);
-    console.log("User logged in:", authStore.user);
-
+    authStore.login(response.name, response.email, response.id, playerData.password);
     router.push("/home");
   } catch (err: any) {
-    console.error(err);
-    error.value = err;
+    console.error("Error in logging in Player", err);
   }
 };
 </script>
@@ -87,11 +77,6 @@ const handleSubmit = async () => {
         </div>
       </CardContent>
     </Card>
-
-    <div v-if="error" class="text-center text-red-600 font-semibold mt-4">
-      {{ error }}
-    </div>
-
     <div
       class="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary"
     >

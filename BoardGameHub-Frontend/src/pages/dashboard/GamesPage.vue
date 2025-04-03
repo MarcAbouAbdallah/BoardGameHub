@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination/Pagination.vue";
 import { Toaster } from "@/components/ui/toast";
 import CreateGameModal from "@/components/popups/CreateGameModal.vue";
+import router from "@/router";
 
 //refs
 const games = ref<Game[]>([]);
@@ -31,6 +32,12 @@ const authStore = useAuthStore();
 
 
 onMounted(async () => {
+
+  if (!authStore.user?.userEmail) {
+    router.push("/");
+    return;
+  }
+
   try {
     const result = await gameService.getAllGames();
     games.value = result.sort((a: Game, b: Game) => a.name.localeCompare(b.name));
@@ -40,7 +47,7 @@ onMounted(async () => {
       const collection = await getPlayerCollection(authStore.user.userId);
 
       console.log("Fetched player collection:", collection);
-      
+
       playerCollectionGameIds.value = collection.map((copy: any) => copy.gameId);
 
 
