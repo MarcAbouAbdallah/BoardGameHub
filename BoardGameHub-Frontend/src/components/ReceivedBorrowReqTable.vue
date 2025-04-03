@@ -12,6 +12,7 @@ import DataTableCard from "./DataTableCard.vue";
 import Alert from "./alert/Alert.vue";
 import { useToast } from "./ui/toast";
 import { ref } from "vue";
+import { NoSymbolIcon, CheckBadgeIcon } from "@heroicons/vue/24/solid";
 
 import { sampleBorrowRequests } from "@/data/sampleGames";
 
@@ -68,16 +69,28 @@ const rejectRequest = (requestId: number, gameId: number) => {
                   :action-func="acceptRequest"
                   :action-text="'Accept'"
                   :description="'Are you sure you want to accept this request?'"
-                  :trigger="'Accept'"
-                  class="bg-green-700 hover:bg-green-900 text-white"
-                />
+                >
+                  <Button
+                    variant="outline"
+                    class="bg-green-700 hover:bg-green-900 text-white flex gap-2 items-center pl-2"
+                  >
+                    <CheckBadgeIcon class="h-4 w-4" />
+                    Accept
+                  </Button>
+                </Alert>
                 <Alert
                   :action-func="rejectRequest"
                   :action-text="'Reject'"
                   :description="'Are you sure you want to reject this request?'"
-                  :trigger="'Reject'"
-                  class="bg-red-700 hover:bg-red-900 text-white ml-2"
-                />
+                >
+                  <Button
+                    variant="destructive"
+                    class="bg-red-700 hover:bg-red-900 text-white flex gap-2 items-center pl-2"
+                  >
+                    <NoSymbolIcon class="h-4 w-4" />
+                    Reject
+                  </Button>
+                </Alert>
               </TableCell>
             </TableRow>
           </template>
