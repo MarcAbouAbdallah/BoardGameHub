@@ -1,9 +1,11 @@
 package ca.mcgill.ecse321.boardgamehub.service;
 
 import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
+import ca.mcgill.ecse321.boardgamehub.model.BorrowRequest;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
@@ -12,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,11 +30,23 @@ public class PersonalCollectionService {
     private GameRepository gameRepository;
     @Autowired
     private GameCopyRepository gameCopyRepository;
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepository;
 
     @Transactional(readOnly = true)
     public List<GameCopy> getPersonalCollection(int playerId) {
         Player player = findPlayerOrThrow(playerId);
-        return gameCopyRepository.findByOwner(player);
+        List<GameCopy> list = gameCopyRepository.findByOwner(player);
+        int index = 0;
+        for (GameCopy c: list) {
+            if (currentDateOverlapsWithRequest(c)) {
+                list.get(index).setIsAvailable(false);
+            } else {
+                list.get(index).setIsAvailable(true);
+            }
+            index++;
+        }
+        return list;
     }
 
     @Transactional
@@ -84,6 +101,7 @@ public class PersonalCollectionService {
         return collection.stream()
                 .filter(GameCopy::getIsAvailable)
                 .collect(Collectors.toList());
+
     }
 
     @Transactional(readOnly = true)
@@ -152,5 +170,17 @@ public class PersonalCollectionService {
             .orElseThrow(() -> new BoardGameHubException(
                 HttpStatus.NOT_FOUND,
                 String.format("Game with ID %d not found.", gameId)));
+    }
+
+    private boolean currentDateOverlapsWithRequest(GameCopy copy) {
+        List<BorrowRequest> list = borrowRequestRepository.findByGame(copy);
+        Date now = Date.valueOf(LocalDate.now());
+        for (BorrowRequest b: list) {
+            if (b.getStartDate().equals(now) || b.getEndDate().equals(now) || (b.getStartDate().before(now) && b.getEndDate().after(now))) {
+                return true;
+            }
+        }
+        return false;
+
     }
 }

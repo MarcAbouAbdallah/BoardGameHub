@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.boardgamehub.repo;
 
 import ca.mcgill.ecse321.boardgamehub.model.BorrowRequest;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 
 import org.springframework.data.repository.CrudRepository;
 
@@ -11,5 +12,6 @@ public interface BorrowRequestRepository extends CrudRepository<BorrowRequest, I
     public BorrowRequest findBorrowRequestById(int id);
     public List<BorrowRequest> findByRequester(Player requester);
     public List<BorrowRequest> findByRequestee(Player requestee);
+    public List<BorrowRequest> findByGame(GameCopy game);
 }
 

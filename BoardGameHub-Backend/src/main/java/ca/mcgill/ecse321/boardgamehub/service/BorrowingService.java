@@ -59,6 +59,11 @@ public class BorrowingService {
         Date startDate = Date.valueOf(dto.getStartDate());
         Date endDate = Date.valueOf(dto.getEndDate());
 
+
+        if (overlapsWithExistingRequest(startDate, endDate, gameCopy)) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Borrowing dates overlap with another accepted request.");
+        }
+
         BorrowRequest borrowRequest = new BorrowRequest(requester, requestee, gameCopy, dto.getComment(), startDate, endDate);
         return borrowRequestRepo.save(borrowRequest);
     }
@@ -85,6 +90,11 @@ public class BorrowingService {
         if (statusDto.getStatus() != BorrowStatus.RETURNED && request.getStatus() != BorrowStatus.PENDING) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be accepted or declined.");
         }
+
+        if (overlapsWithExistingRequest(request.getStartDate(), request.getEndDate(), request.getGame())) {
+            throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Borrowing dates overlap with another accepted request.");
+        }
+
         request.setStatus(statusDto.getStatus());
         return borrowRequestRepo.save(request);
     }
@@ -194,5 +204,21 @@ public class BorrowingService {
         if (dto.getEndDate().isBefore(dto.getStartDate())) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "End date must be after start date.");
         }
+    }
+
+    //Helper fct to check if a gamecopy is currently borrowed
+    private boolean overlapsWithExistingRequest(Date startDate, Date endDate, GameCopy gameCopy) {
+        List<BorrowRequest> list = borrowRequestRepo.findByGame(gameCopy);
+        for (BorrowRequest b: list) {
+            if (b.getStatus() != BorrowStatus.PENDING && b.getStatus() != BorrowStatus.ACCEPTED) continue;
+            if ((b.getEndDate().before(endDate) && b.getEndDate().after(startDate)) ||
+                (b.getStartDate().before(endDate) && b.getStartDate().after(startDate)) ||
+                (b.getStartDate().before(startDate) && b.getEndDate().after(endDate)) ||
+                (b.getStartDate().equals(endDate)) ||
+                (b.getEndDate().equals(startDate)))  {
+                    return true;
+            }
+        }
+        return false;
     }
 }
