@@ -11,7 +11,7 @@ public class GameCopy {
     @GeneratedValue
     private int id;
 
-    private boolean isAvailable;
+    //private boolean isAvailable;
 
     @ManyToOne
     private Game game;
@@ -22,8 +22,8 @@ public class GameCopy {
     protected GameCopy(){
     }
 
-    public GameCopy(boolean isAvailable, Game game, Player owner) {
-        this.isAvailable = isAvailable;
+    public GameCopy(Game game, Player owner) {
+        //this.isAvailable = isAvailable;
         this.game = game;
         this.owner = owner;
     }
@@ -32,9 +32,9 @@ public class GameCopy {
         return id;
     }
 
-    public boolean getIsAvailable(){
-        return isAvailable;
-    }
+    // public boolean getIsAvailable(){
+    //     return isAvailable;
+    // }
 
     public Game getGame(){
         return game;
@@ -49,10 +49,10 @@ public class GameCopy {
         return true;
     }
 
-    public boolean setIsAvailable(boolean aIsAvailable){
-        this.isAvailable = aIsAvailable;
-        return true;
-    }
+    // public boolean setIsAvailable(boolean aIsAvailable){
+    //     this.isAvailable = aIsAvailable;
+    //     return true;
+    // }
 
     public void setGame(Game game) {
         this.game = game;
@@ -66,7 +66,7 @@ public class GameCopy {
     public String toString() {
         return super.toString() + "[" +
             "id" + ":" + getId() + "," +
-            "isAvailable" + ":" + getIsAvailable() + "," +
+            //"isAvailable" + ":" + getIsAvailable() + "," +
             "game" + ":" + (game != null ? game.getName() : "null") + "," +
             "owner" + ":" + (owner != null ? owner.getName() : "null") + "]";
     }

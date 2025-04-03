@@ -11,6 +11,7 @@ public class ReviewResponseDto {
     private int reviewerId;
     private String gameName;
     private Date reviewDate;
+    private String reviewerName;
 
     protected ReviewResponseDto() {
 
@@ -23,6 +24,7 @@ public class ReviewResponseDto {
         this.reviewerId = review.getReviewer().getId();
         this.gameName = review.getGame().getName();
         this.reviewDate = review.getDate();
+        this.reviewerName = review.getReviewer().getName();
     }
 
     public static ReviewResponseDto fromReview(Review review) {
@@ -34,6 +36,14 @@ public class ReviewResponseDto {
         response.gameName = review.getGame().getName();
         response.reviewDate = review.getDate();
         return response;
+    }
+
+    public String getReviewerName() {
+        return reviewerName;
+    }
+
+    public void setReviewerName(String reviewerName) {
+        this.reviewerName = reviewerName;
     }
 
     public int getId() {

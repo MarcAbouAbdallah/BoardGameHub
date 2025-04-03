@@ -14,20 +14,13 @@ public class GameCopyResponseDto {
     protected GameCopyResponseDto() {
     }
 
-    public GameCopyResponseDto(
-            int gameCopyId, 
-            boolean isAvailable, 
-            String gameName, 
-            int gameId, 
-            int ownerId, 
-            String ownerName) {
-
-        this.gameCopyId = gameCopyId;
+    public GameCopyResponseDto(GameCopy copy, boolean isAvailable) {
+        this.gameCopyId = copy.getId();
         this.isAvailable = isAvailable;
-        this.gameName = gameName;
-        this.gameId = gameId;
-        this.ownerId = ownerId;
-        this.ownerName = ownerName;
+        this.gameName = copy.getGame().getName();
+        this.gameId = copy.getGame().getId();
+        this.ownerId = copy.getOwner().getId();
+        this.ownerName = copy.getOwner().getName();
     }
 
     public int getGameCopyId() {
@@ -78,14 +71,16 @@ public class GameCopyResponseDto {
         this.ownerName = ownerName;
     }
     
-    public static GameCopyResponseDto fromGameCopy(GameCopy copy) {
-        GameCopyResponseDto dto = new GameCopyResponseDto();
-        dto.setGameCopyId(copy.getId());
-        dto.setIsAvailable(copy.getIsAvailable());
-        dto.setGameId(copy.getGame().getId());
-        dto.setGameName(copy.getGame().getName());
-        dto.setOwnerId(copy.getOwner().getId());
-        dto.setOwnerName(copy.getOwner().getName());
-        return dto;
-    }
+    //This function is not in use due to the new way we check for availability.
+
+    // public static GameCopyResponseDto fromGameCopy(GameCopy copy) {
+    //     GameCopyResponseDto dto = new GameCopyResponseDto();
+    //     dto.setGameCopyId(copy.getId());
+    //     dto.setIsAvailable(copy.getIsAvailable());
+    //     dto.setGameId(copy.getGame().getId());
+    //     dto.setGameName(copy.getGame().getName());
+    //     dto.setOwnerId(copy.getOwner().getId());
+    //     dto.setOwnerName(copy.getOwner().getName());
+    //     return dto;
+    // }
 }

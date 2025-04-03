@@ -69,7 +69,7 @@ public class RegistrationIntegrationTest {
 
     private static final Player VALID_PLAYER = new Player("John", "john@mail.com", "jhKLEHGH75*(#$&", true);
     private static final Game VALID_GAME = new Game("Monopoly", 4, 2, "Fun game.", "https://images.unsplash.com/photo-1640461470346-c8b56497850a?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-    private static final GameCopy VALID_GAMECOPY = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+    private static final GameCopy VALID_GAMECOPY = new GameCopy(VALID_GAME, VALID_PLAYER);
     private static final Event VALID_EVENT = new Event("Monopoly Club", "McGill Library", VALID_DESCRIPTION_STRING, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_PLAYER, VALID_GAMECOPY);
 
     @BeforeAll

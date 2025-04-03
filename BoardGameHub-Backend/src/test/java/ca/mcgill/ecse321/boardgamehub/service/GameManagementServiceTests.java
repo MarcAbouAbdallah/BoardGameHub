@@ -49,7 +49,7 @@ public class GameManagementServiceTests {
         
         validPlayer = new Player("Alice", "alice@email.com", "securePass", false);
         
-        validGameCopy = new GameCopy(true, validGame, validPlayer);
+        validGameCopy = new GameCopy(validGame, validPlayer);
     }
 
     @Test

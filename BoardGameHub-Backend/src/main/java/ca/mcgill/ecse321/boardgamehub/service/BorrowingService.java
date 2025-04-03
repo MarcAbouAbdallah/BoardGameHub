@@ -83,11 +83,11 @@ public class BorrowingService {
     @Transactional
     public BorrowRequest updateRequestStatus(int requestId, BorrowStatusUpdateDto statusDto) {
         BorrowRequest request = findBorrowRequestById(requestId);
-        if (statusDto.getStatus() != BorrowStatus.ACCEPTED && statusDto.getStatus() != BorrowStatus.DECLINED && statusDto.getStatus() != BorrowStatus.RETURNED) {
+        if (statusDto.getStatus() != BorrowStatus.ACCEPTED && statusDto.getStatus() != BorrowStatus.DECLINED) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "The request must either be accepted, declined or returned.");
         }
 
-        if (statusDto.getStatus() != BorrowStatus.RETURNED && request.getStatus() != BorrowStatus.PENDING) {
+        if (request.getStatus() != BorrowStatus.PENDING) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be accepted or declined.");
         }
 
@@ -178,7 +178,7 @@ public class BorrowingService {
         if ("HISTORY".equals(normalizedStatus)) {
             // This is for lending history (accpeted and returned requests)
             return requests.stream()
-                    .filter(req -> req.getStatus() == BorrowStatus.ACCEPTED || req.getStatus() == BorrowStatus.RETURNED)
+                    .filter(req -> req.getStatus() == BorrowStatus.ACCEPTED)
                     .collect(Collectors.toList());
         }
 

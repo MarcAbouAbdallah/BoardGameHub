@@ -34,7 +34,7 @@ public class GameCopyController {
     public List<GameCopyResponseDto> getPersonalCollection(@RequestBody GameCopySearchDto searchDto) {
         List<GameCopy> collection = collectionService.getPersonalCollection(searchDto.getPlayerId());
         return collection.stream()
-            .map(GameCopyResponseDto::fromGameCopy)
+            .map(gameCopy -> new GameCopyResponseDto(gameCopy, collectionService.isAvailable(gameCopy)))
             .toList();
     }
 
@@ -49,7 +49,7 @@ public class GameCopyController {
     public List<GameCopyResponseDto> getAvailableGameCopies(@RequestBody GameCopySearchDto searchDto) {
         List<GameCopy> available = collectionService.getAvailableGames(searchDto.getPlayerId());
         return available.stream()
-            .map(GameCopyResponseDto::fromGameCopy)
+            .map(gameCopy -> new GameCopyResponseDto(gameCopy, collectionService.isAvailable(gameCopy)))
             .toList();
     }
 
@@ -64,7 +64,7 @@ public class GameCopyController {
     public List<GameCopyResponseDto> getGameCopiesForGame(@PathVariable int id) {
         List<GameCopy> copies = collectionService.getGameCopiesForGame(id);
         return copies.stream()
-            .map(GameCopyResponseDto::fromGameCopy)
+            .map(gameCopy -> new GameCopyResponseDto(gameCopy, collectionService.isAvailable(gameCopy)))
             .toList();
     }
 
@@ -78,7 +78,7 @@ public class GameCopyController {
     @ResponseStatus(HttpStatus.OK)
     public GameCopyResponseDto getGameCopyById(@PathVariable int gameCopyId) {
         GameCopy copy = collectionService.getGameCopyById(gameCopyId);
-        return GameCopyResponseDto.fromGameCopy(copy);
+        return new GameCopyResponseDto(copy, collectionService.isAvailable(copy));
     }
 
     /**
@@ -92,33 +92,34 @@ public class GameCopyController {
     @ResponseStatus(HttpStatus.CREATED)
     public GameCopyResponseDto addGameToPersonalCollection(@RequestBody GameCopyCreationDto creationDto) {
         GameCopy newCopy = collectionService.addGameToPersonalCollection(creationDto.getPlayerId(), creationDto.getGameId());
-        return GameCopyResponseDto.fromGameCopy(newCopy);
+        return new GameCopyResponseDto(newCopy, collectionService.isAvailable(newCopy));
     }
 
-    /**
-     * Update the availability of a specific GameCopy using its game copy ID.
-     * If isAvailable = false, the game copy is lent out; if true, it is returned.
-     *
-     * @param gameCopyId The ID of the GameCopy to update.
-     * @param dto        A DTO containing the new availability status and the ownerId (for permission checking).
-     * @return The updated GameCopy as a GameCopyResponseDto.
-     */
-    @PatchMapping("/{gameCopyId}")
-    @ResponseStatus(HttpStatus.OK)
-    public GameCopyResponseDto updateGameAvailability(
-            @PathVariable int gameCopyId,
-            @RequestBody GameCopyResponseDto dto
-    ) {
-        int playerId = dto.getOwnerId();
-        boolean isAvailable = dto.getIsAvailable();
-        GameCopy updated;
-        if (isAvailable) {
-            updated = collectionService.returnGameCopy(playerId, gameCopyId);
-        } else {
-            updated = collectionService.lendGameCopy(playerId, gameCopyId);
-        }
-        return GameCopyResponseDto.fromGameCopy(updated);
-    }
+    //Endpoint removed as functionality is no longer used
+    // /**
+    //  * Update the availability of a specific GameCopy using its game copy ID.
+    //  * If isAvailable = false, the game copy is lent out; if true, it is returned.
+    //  *
+    //  * @param gameCopyId The ID of the GameCopy to update.
+    //  * @param dto        A DTO containing the new availability status and the ownerId (for permission checking).
+    //  * @return The updated GameCopy as a GameCopyResponseDto.
+    //  */
+    // @PatchMapping("/{gameCopyId}")
+    // @ResponseStatus(HttpStatus.OK)
+    // public GameCopyResponseDto updateGameAvailability(
+    //         @PathVariable int gameCopyId,
+    //         @RequestBody GameCopyResponseDto dto
+    // ) {
+    //     int playerId = dto.getOwnerId();
+    //     boolean isAvailable = dto.getIsAvailable();
+    //     GameCopy updated;
+    //     if (isAvailable) {
+    //         updated = collectionService.returnGameCopy(playerId, gameCopyId);
+    //     } else {
+    //         updated = collectionService.lendGameCopy(playerId, gameCopyId);
+    //     }
+    //     return GameCopyResponseDto.fromGameCopy(updated);
+    // }
 
     /**
      * Remove a GameCopy from the player's personal collection by game copy ID.
