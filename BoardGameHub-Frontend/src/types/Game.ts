@@ -4,4 +4,5 @@ export interface Game {
     description: string;
     minPlayers: number;
     maxPlayers: number;
+    photoURL: string;
   }

@@ -37,7 +37,7 @@ watch(isOpen, (newVal) => {
       minPlayers: props.game.minPlayers,
       maxPlayers: props.game.maxPlayers,
       gameDescription: props.game.description,
-      gameImage: "", // optional – not used by backend right now
+      gameImage: props.game.photoURL, // optional – not used by backend right now
     };
   }
 });
@@ -59,7 +59,11 @@ const handleSubmit = async () => {
       description: formData.value.gameDescription,
       minPlayers: formData.value.minPlayers,
       maxPlayers: formData.value.maxPlayers,
+      photoURL: formData.value.gameImage,
     };
+
+    //debug
+    console.log("Sending updatedFields:", updatedFields);
 
     const updatedGame = await gameService.updateGame(props.game.id, updatedFields);
     emit("game-updated", updatedGame);
