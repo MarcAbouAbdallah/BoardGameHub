@@ -102,7 +102,7 @@ const handleSubmit = async () => {
           />
         </div>
         <div class="flex gap-2 items-center">
-          <Label for="min-players" class="w-full">Minimum Playerse</Label>
+          <Label for="min-players" class="w-full">Minimum Players</Label>
           <Input v-model="formData.minPlayers" id="min-players" type="number" placeholder="0" />
         </div>
         <div class="flex gap-2 items-center">

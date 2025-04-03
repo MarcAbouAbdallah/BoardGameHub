@@ -45,6 +45,7 @@ const handleSubmit = async () => {
       description: formData.value.gameDescription,
       minPlayers: formData.value.minPlayers,
       maxPlayers: formData.value.maxPlayers,
+      photoURL: formData.value.gameImage,
     };
 
     const createdGame = await gameService.createGame(gameToSend);
