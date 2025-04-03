@@ -11,13 +11,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ref, onMounted, watch } from "vue";
 import { defineProps } from "vue";
-import gameService from "@/services/gameService";
+import gameService  from "@/services/gameService";
 import { gameCopyService } from "@/services/GameCopyService";
 import { useAuthStore } from "@/stores/authStore";
 import { storeToRefs } from "pinia";
+import { useToast } from "@/components/ui/toast/use-toast";
 
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
+const { toast } = useToast();
 
 const props = defineProps<{
   close: () => void;
@@ -66,6 +68,7 @@ watch(selectedGameId, async (newGameId) => {
 
 const handleSubmit = async () => {
   try {
+    // Validation checks (game, copy, user)
     if (!selectedGameId.value) {
       error.value = "Please select a game.";
       return;
@@ -91,14 +94,19 @@ const handleSubmit = async () => {
       game: Number(selectedGameCopyId.value),
     };
 
-    // We call the parent's createEvent prop to actually create it
+    // Call parent's createEvent
     await props.createEvent(payload);
 
-    // If the call is successful in the parent, close the modal
-    props.close();
-  } catch (err) {
+    // Remove props.close() here; parent decides when to close.
+  } catch (err: any) {
     console.error("Error creating event:", err);
-    error.value = "An error occurred while creating the event. Please try again.";
+    toast({
+      title: "Creation Error",
+      description: err.response?.data?.errors?.[0] || err.message || "An error occurred. Please try again.",
+      variant: "destructive",
+      duration: 2000,
+    });
+    error.value = err.response?.data?.message || err.message || "An error occurred. Please try again.";
   }
 };
 
@@ -211,22 +219,20 @@ onMounted(async () => {
         </div>
         <!-- Game Copy Dropdown -->
         <div class="flex gap-2 items-center">
-          <Label for="gamecopy-select" class="w-full">Select Game Copy</Label>
+          <Label for="gamecopy-select" class="w-full">Select Game Owner</Label>
           <select
             id="gamecopy-select"
             v-model="selectedGameCopyId"
             class="w-full border p-2 rounded"
             required
           >
-            <option disabled value="">-- Choose a Game Copy --</option>
+            <option disabled value="">-- Choose a Game First --</option>
             <option v-for="copy in gameCopies" :key="copy.gameCopyId" :value="copy.gameCopyId">
-              Copy #{{ copy.gameCopyId }} (Owner: {{ copy.ownerName }})
-              ({{ copy.isAvailable ? "Available" : "Unavailable" }})
+              {{ copy.ownerName }}
             </option>
           </select>
         </div>
         <Button type="submit" class="mt-4">Create Event</Button>
-        <p v-if="error" class="text-red-600">{{ error }}</p>
       </form>
     </DialogContent>
   </Dialog>

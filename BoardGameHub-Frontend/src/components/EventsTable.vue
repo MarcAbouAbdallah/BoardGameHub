@@ -270,14 +270,18 @@ const createEvent = async (eventData: any) => {
       duration: 2000,
     });
     await softReloadEvents();
+    // Close modal only on success.
     isCreateEventModalOpen.value = false;
   } catch (err: any) {
+    // Show a quick parent toast if desired.
     toast({
       title: "Creation Failed",
       description: err.response?.data?.message || err.message,
       variant: "destructive",
       duration: 2000,
     });
+    // Rethrow so child modal’s catch block can handle it.
+    throw err;
   }
 };
 
@@ -370,6 +374,8 @@ const updateEvent = async (eventId: number, updatedData: any) => {
       variant: "destructive",
       duration: 2000,
     });
+    // Rethrow so UpdateEventModal can catch and stay open
+    throw err;
   }
 };
 
@@ -405,7 +411,7 @@ const deleteEvent = async (eventId: number) => {
   } catch (err: any) {
     toast({
       title: "Deletion Failed",
-      description: err.response?.data?.message || err.message,
+      description: err.response?.data?.errors?.[0] || err.message,
       variant: "destructive",
       duration: 2000,
     });

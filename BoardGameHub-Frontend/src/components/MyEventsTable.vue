@@ -261,29 +261,6 @@ const isRegistered = (eventId: number) => {
   return regs.some(reg => reg.registrantId === user.value.userId || reg.registrant === user.value.username);
 };
 
-const createEvent = async (eventData: any) => {
-  if (!user.value?.userId) return;
-  eventData.organizer = user.value.userId;
-  try {
-    await eventService.createEvent(eventData);
-    toast({
-      title: "Event Created",
-      description: "Event created successfully.",
-      variant: "default",
-      duration: 2000,
-    });
-    await softReloadEvents();
-    isCreateEventModalOpen.value = false;
-  } catch (err: any) {
-    toast({
-      title: "Creation Failed",
-      description: err.response?.data?.message || err.message,
-      variant: "destructive",
-      duration: 2000,
-    });
-  }
-};
-
 const registerEvent = async (eventId: number) => {
   if (!user.value?.userId) {
     toast({
@@ -375,6 +352,7 @@ const updateEvent = async (eventId: number, updatedData: any) => {
       variant: "destructive",
       duration: 2000,
     });
+    throw err;
   }
 };
 

@@ -15,6 +15,7 @@ import gameService from "@/services/gameService";
 import { gameCopyService } from "@/services/GameCopyService";
 import { useAuthStore } from "@/stores/authStore";
 import { storeToRefs } from "pinia";
+import { useToast } from "@/components/ui/toast";
 
 const props = defineProps<{
   close: () => void;
@@ -23,6 +24,7 @@ const props = defineProps<{
 }>();
 
 const authStore = useAuthStore();
+const { toast } = useToast();
 const { user } = storeToRefs(authStore);
 
 const formData = ref({
@@ -154,9 +156,16 @@ const handleSubmit = async () => {
 
     await props.updateEvent(props.eventToEdit.id, payload);
     props.close();
-  } catch (err) {
-    console.error("Error updating event:", err);
-    error.value = "An error occurred while updating the event. Please try again.";
+
+  } catch (err: any) {
+    console.error("Error creating event:", err);
+    toast({
+      title: "Edit Failed",
+      description: err.response?.data?.errors?.[0] || err.message || "An error occurred. Please try again.",
+      variant: "destructive",
+      duration: 2000,
+    });
+    error.value = err.response?.data?.message || err.message || "An error occurred. Please try again.";
   }
 };
 
@@ -286,7 +295,6 @@ onMounted(async () => {
           </select>
         </div>
         <Button type="submit" class="mt-4">Update Event</Button>
-        <p v-if="error" class="text-red-600">{{ error }}</p>
       </form>
     </DialogContent>
   </Dialog>
