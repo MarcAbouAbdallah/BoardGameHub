@@ -111,9 +111,8 @@ const handleAddToCollectionClick = async (gameId: number) => {
           {{ props.game.description }}
         </CardDescription>
 
-
       </CardContent>
 
     </Card>
-  </GameSheet>
+  </GameSheet :game="props.game">
 </template>

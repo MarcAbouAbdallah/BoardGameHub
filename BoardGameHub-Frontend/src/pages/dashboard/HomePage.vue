@@ -4,10 +4,9 @@ import MyEventsTable from "@/components/MyEventsTable.vue";
 import GamesTable from "@/components/GamesTable.vue";
 import BorrowRequestTable from "@/components/BorrowRequestTable.vue";
 import GameReviewTable from "@/components/GameReviewTable.vue";
-import { sampleEvents } from "@/data/sampleEvents";
 import { sampleGameCollection } from "@/data/sampleGames";
 import Toaster from "@/components/ui/toast/Toaster.vue";
-import RecievedBorrowReqTable from "@/components/ReceivedBorrowReqTable.vue";
+import ReceivedBorrowReqTable from "@/components/ReceivedBorrowReqTable.vue";
 import { useAuthStore } from "@/stores/authStore";
 import { onMounted } from "vue";
 import router from "@/router";
@@ -28,8 +27,8 @@ onMounted(() => {
   <Header />
   <div class="flex flex-col items-start my-24 mx-10">
     <GamesTable :games="sampleGameCollection" />
-    <MyEventsTable :events="sampleEvents" :is-home-page="true" :title="'My Events'" />
-    <RecievedBorrowReqTable />
+    <MyEventsTable :is-home-page="true" :title="'My Events'" />
+    <ReceivedBorrowReqTable />
     <BorrowRequestTable />
     <GameReviewTable />
   </div>

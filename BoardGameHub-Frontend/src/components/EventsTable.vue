@@ -159,7 +159,7 @@ import {
   ChevronDown,
   ChevronUp,
   Plus,
-  RefreshCcw,
+  //RefreshCcw,
   Edit,
   Trash2
 } from "lucide-vue-next";
@@ -426,9 +426,11 @@ const toggleRowExpansion = async (eventId: number) => {
   }
 };
 
+/*
 const refreshNoBlink = async () => {
   await softReloadEvents();
 };
+*/
 
 onMounted(async () => {
   await fetchEventsInitially();
