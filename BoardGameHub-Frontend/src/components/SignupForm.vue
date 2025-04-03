@@ -6,46 +6,23 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "vue-router";
 import { playerService } from "@/services/PlayerService";
 import { ref } from "vue";
-import { useToast } from "@/components/ui/toast";
-import { AxiosError } from "axios";
 
 const router = useRouter();
 const name = ref("");
 const email = ref("");
 const password = ref("");
-const { toast } = useToast();
 
 const handleSubmit = async () => {
   try {
-    const playerData = {
+    const player = {
       name: name.value,
       email: email.value,
       password: password.value,
     };
-    console.log(playerData);
-    const response = await playerService.createPlayer(playerData);
-    console.log(response);
-
-    if (response.status === 200 || response.status === 201) {
-      toast({ title: "Success", description: "Account created successfully!", variant: "default", duration: 3000 });
-
-    } 
-    else {
-      toast({ title: "Error", description: "Invalid email or password.", variant: "destructive", duration: 5000 });
-    }
-  } 
-  catch (err: unknown) {
-    console.error("Error creating player:", err);
-    if (err instanceof AxiosError) {
-      if (err.response) {
-        if (err.response.status === 409){
-          toast({ title: "Error", description: "Email already in use. Please use a different email.", variant: "destructive", duration: 5000 });
-        }
-        else {
-        toast({ title: "Error", description: "Something went wrong. Try again.", variant: "destructive", duration: 5000 });
-        }
-      }
-    }
+    await playerService.createPlayer(player);
+    router.push("/");
+  } catch (err: any) {
+    console.log("Error Signing up the player", err);
   }
 };
 </script>

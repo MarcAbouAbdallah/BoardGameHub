@@ -31,7 +31,7 @@ public class BoardGameHubExceptionHandler {
         ErrorDto responseBody = new ErrorDto(errorMessages);
         return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.BAD_REQUEST);
     }
-    
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorDto> handleConstraintViolationException(ConstraintViolationException ex) {
         List<String> errorMessages = ex.getConstraintViolations().stream()
@@ -42,7 +42,7 @@ public class BoardGameHubExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDto> handleGenericException(Exception ex) {
-        ErrorDto responseBody = new ErrorDto(ex.getMessage().toString().split(":")[1].trim());
+        ErrorDto responseBody = new ErrorDto(ex.getMessage());
         return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
