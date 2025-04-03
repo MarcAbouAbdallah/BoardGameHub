@@ -8,6 +8,20 @@ import { sampleEvents } from "@/data/sampleEvents";
 import { sampleGameCollection } from "@/data/sampleGames";
 import Toaster from "@/components/ui/toast/Toaster.vue";
 import RecievedBorrowReqTable from "@/components/ReceivedBorrowReqTable.vue";
+import { useAuthStore } from "@/stores/authStore";
+import { onMounted } from "vue";
+import router from "@/router";
+
+const authStore = useAuthStore();
+const isLoggedIn = authStore.user;
+
+console.log("isLoggedIn", isLoggedIn);
+
+onMounted(() => {
+  if (!isLoggedIn.userEmail) {
+    router.push("/");
+  }
+});
 </script>
 
 <template>

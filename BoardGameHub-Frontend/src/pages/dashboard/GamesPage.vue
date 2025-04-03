@@ -6,6 +6,18 @@ import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination/Pagination.vue";
 import { Toaster } from "@/components/ui/toast";
 import CreateGameModal from "@/components/popups/CreateGameModal.vue";
+import { useAuthStore } from "@/stores/authStore";
+import { onMounted } from "vue";
+import router from "@/router";
+
+const authStore = useAuthStore();
+const isLoggedIn = authStore.user;
+
+onMounted(() => {
+  if (!isLoggedIn.userEmail) {
+    router.push("/");
+  }
+});
 </script>
 
 <template>
