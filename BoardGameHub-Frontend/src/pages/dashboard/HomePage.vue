@@ -14,7 +14,7 @@ import RecievedBorrowReqTable from "@/components/ReceivedBorrowReqTable.vue";
   <Header />
   <div class="flex flex-col items-start my-24 mx-10">
     <GamesTable :games="sampleGameCollection" />
-    <MyEventsTable :events="sampleEvents" :is-home-page="true" :title="'My Game Events'" />
+    <MyEventsTable :events="sampleEvents" :is-home-page="true" :title="'My Events'" />
     <RecievedBorrowReqTable />
     <BorrowRequestTable />
     <GameReviewTable />

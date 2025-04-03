@@ -84,7 +84,7 @@ const updateRequestStatus = async (
             <TableHead class="font-bold text-lg text-black">Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody v-if="borrowRequests.length > 0">
           <template v-for="(request, index) in borrowRequests" :key="request.id">
             <TableRow :class="{ 'bg-gray-50': index % 2 === 0 }">
               <TableCell class="text-start">{{ request.gameTitle }}</TableCell>
@@ -111,6 +111,11 @@ const updateRequestStatus = async (
               </TableCell>
             </TableRow>
           </template>
+        </TableBody>
+        <TableBody v-else>
+          <TableRow>
+            <TableCell colspan="6" class="text-center"> No incoming requests found. </TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </DataTableCard>

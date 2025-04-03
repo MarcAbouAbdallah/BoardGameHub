@@ -118,7 +118,7 @@ const handleCancel = async (requestId: string) => {
         </TableBody>
         <TableBody v-else>
           <TableRow>
-            <TableCell colspan="6" class="text-center"> No borrow requests found. </TableCell>
+            <TableCell colspan="6" class="text-center"> No outgoing requests found. </TableCell>
           </TableRow>
         </TableBody>
       </Table>

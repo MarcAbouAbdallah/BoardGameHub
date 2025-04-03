@@ -106,46 +106,6 @@ const props = defineProps({
                 <div class="flex flex-col items-start space-y-2">
                   <p><strong>Game Description:</strong> {{ game.description }}</p>
                 </div>
-                <div v-if="!game.isBorrowed" class="mt-4">
-                  <h3 class="font-bold mb-2 text-start">Recieved Borrow Requests:</h3>
-                  <div class="bg-gray-200 border rounded-md max-h-[200px] overflow-y-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableHead class="font-bold text-md text-black">User</TableHead>
-                        <TableHead class="font-bold text-md text-black">Start Date</TableHead>
-                        <TableHead class="font-bold text-md text-black">End Date</TableHead>
-                        <TableHead class="font-bold text-md text-black">Comment</TableHead>
-                        <TableHead class="font-bold text-md text-black">Actions</TableHead>
-                      </TableHeader>
-                      <TableBody>
-                        <template v-for="request in game.borrowRequests" :key="request.id">
-                          <TableRow>
-                            <TableCell class="text-start">{{ request.user }}</TableCell>
-                            <TableCell class="text-start">{{ request.startDate }}</TableCell>
-                            <TableCell class="text-start">{{ request.endDate }}</TableCell>
-                            <TableCell class="text-start">{{ request.comment }}</TableCell>
-                            <TableCell class="text-start">
-                              <Alert
-                                :action-func="acceptRequest"
-                                :action-text="'Accept'"
-                                :description="'Are you sure you want to accept this request?'"
-                                :trigger="'Accept'"
-                                class="bg-green-700 hover:bg-green-900 text-white"
-                              />
-                              <Alert
-                                :action-func="rejectRequest"
-                                :action-text="'Reject'"
-                                :description="'Are you sure you want to reject this request?'"
-                                :trigger="'Reject'"
-                                class="bg-red-700 hover:bg-red-900 text-white ml-2"
-                              />
-                            </TableCell>
-                          </TableRow>
-                        </template>
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
               </TableCell>
             </TableRow>
           </template>
