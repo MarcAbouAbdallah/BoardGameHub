@@ -80,18 +80,13 @@ const handleUpdate = async (updatedReview: any) => {
       variant: "default",
     });
   } catch (err: any) {
-    const errorMsg =
-      err.response?.data?.comment ||
-      err.response?.data?.message ||
-      err.message ||
-      "An error occurred.";
+  toast({
+    title: "Update Failed",
+    description: err,
+    variant: "destructive",
+  });
+}
 
-    toast({
-      title: "Update Failed",
-      description: errorMsg,
-      variant: "destructive",
-    });
-  }
 };
 </script>
 
