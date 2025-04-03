@@ -20,7 +20,7 @@ import {
     :total="100"
     :sibling-count="1"
     show-edges
-    :default-page="2"
+    :default-page="1"
   >
     <PaginationList
       v-slot="{ items }"

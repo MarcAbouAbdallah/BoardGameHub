@@ -29,13 +29,13 @@ public class GameCopyController {
      * @param searchDto A DTO carrying the playerId.
      * @return A list of GameCopyResponseDto objects
      */
-    @GetMapping
+    @GetMapping("/players/{playerId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<GameCopyResponseDto> getPersonalCollection(@RequestBody GameCopySearchDto searchDto) {
-        List<GameCopy> collection = collectionService.getPersonalCollection(searchDto.getPlayerId());
+    public List<GameCopyResponseDto> getPersonalCollection(@PathVariable int playerId) {
+        List<GameCopy> collection = collectionService.getPersonalCollection(playerId);
         return collection.stream()
-            .map(GameCopyResponseDto::fromGameCopy)
-            .toList();
+                .map(GameCopyResponseDto::fromGameCopy)
+                .toList();
     }
 
     /**
@@ -49,8 +49,8 @@ public class GameCopyController {
     public List<GameCopyResponseDto> getAvailableGameCopies(@RequestBody GameCopySearchDto searchDto) {
         List<GameCopy> available = collectionService.getAvailableGames(searchDto.getPlayerId());
         return available.stream()
-            .map(GameCopyResponseDto::fromGameCopy)
-            .toList();
+                .map(GameCopyResponseDto::fromGameCopy)
+                .toList();
     }
 
     /**
@@ -64,8 +64,8 @@ public class GameCopyController {
     public List<GameCopyResponseDto> getGameCopiesForGame(@PathVariable int id) {
         List<GameCopy> copies = collectionService.getGameCopiesForGame(id);
         return copies.stream()
-            .map(GameCopyResponseDto::fromGameCopy)
-            .toList();
+                .map(GameCopyResponseDto::fromGameCopy)
+                .toList();
     }
 
     /**
@@ -82,7 +82,8 @@ public class GameCopyController {
     }
 
     /**
-     * Create a new GameCopy in the player's personal collection by specifying a game ID.
+     * Create a new GameCopy in the player's personal collection by specifying a
+     * game ID.
      * This endpoint creates a new copy based on an existing game.
      *
      * @param creationDto A DTO carrying the playerId and the gameId to add.
@@ -91,7 +92,8 @@ public class GameCopyController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public GameCopyResponseDto addGameToPersonalCollection(@RequestBody GameCopyCreationDto creationDto) {
-        GameCopy newCopy = collectionService.addGameToPersonalCollection(creationDto.getPlayerId(), creationDto.getGameId());
+        GameCopy newCopy = collectionService.addGameToPersonalCollection(creationDto.getPlayerId(),
+                creationDto.getGameId());
         return GameCopyResponseDto.fromGameCopy(newCopy);
     }
 
@@ -100,15 +102,15 @@ public class GameCopyController {
      * If isAvailable = false, the game copy is lent out; if true, it is returned.
      *
      * @param gameCopyId The ID of the GameCopy to update.
-     * @param dto        A DTO containing the new availability status and the ownerId (for permission checking).
+     * @param dto        A DTO containing the new availability status and the
+     *                   ownerId (for permission checking).
      * @return The updated GameCopy as a GameCopyResponseDto.
      */
     @PatchMapping("/{gameCopyId}")
     @ResponseStatus(HttpStatus.OK)
     public GameCopyResponseDto updateGameAvailability(
             @PathVariable int gameCopyId,
-            @RequestBody GameCopyResponseDto dto
-    ) {
+            @RequestBody GameCopyResponseDto dto) {
         int playerId = dto.getOwnerId();
         boolean isAvailable = dto.getIsAvailable();
         GameCopy updated;
@@ -128,7 +130,7 @@ public class GameCopyController {
     @DeleteMapping("/{gameCopyId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeGameFromPersonalCollection(@PathVariable int gameCopyId,
-                                                @RequestParam int userId) {
+            @RequestParam int userId) {
         collectionService.removeGameCopy(userId, gameCopyId);
     }
 }

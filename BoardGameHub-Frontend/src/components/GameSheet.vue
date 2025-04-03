@@ -16,13 +16,19 @@ import { defineProps } from "vue";
 import BorrowReqModal from "./popups/BorrowReqModal.vue";
 import CreateReviewModal from "./popups/CreateReviewModal.vue";
 import UpdateGameModal from "./popups/update/UpdateGameModal.vue";
+import type { Game } from "@/types/Game";
 
-const props = defineProps({
-  game: {
-    type: Object,
-    required: true,
-  },
-});
+const props = defineProps<{
+  game: Game;
+}>();
+
+const emit = defineEmits<{
+  (e: "game-updated", updatedGame: Game): void;
+}>();
+
+const handleGameUpdated = (updatedGame: Game) => {
+  emit("game-updated", updatedGame);
+};
 </script>
 
 <template>
@@ -73,7 +79,9 @@ const props = defineProps({
         </div>
       </div>
 
-      <UpdateGameModal />
+      <UpdateGameModal :game="props.game" @game-updated="handleGameUpdated" />
+
+
     </SheetContent>
   </Sheet>
 </template>

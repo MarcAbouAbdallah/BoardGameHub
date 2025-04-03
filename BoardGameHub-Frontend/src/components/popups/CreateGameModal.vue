@@ -14,6 +14,10 @@ import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import DialogClose from "../ui/dialog/DialogClose.vue";
 
+import type { Game } from "@/types/Game";
+import gameService from "@/services/gameService";
+
+
 const formData = ref({
   gameName: "",
   minPlayers: 0,
@@ -24,6 +28,11 @@ const formData = ref({
 
 const isOpen = ref(false);
 
+const emit = defineEmits<{
+  (e: 'game-created', newGame: Game): void;
+}>();
+
+
 const close = () => {
   isOpen.value = false;
   console.log("Dialog closed");
@@ -31,9 +40,27 @@ const close = () => {
 
 const handleSubmit = async () => {
   try {
-    console.log("Form Data:", formData.value);
-    // Call the API to create the game here
+    const gameToSend = {
+      name: formData.value.gameName,
+      description: formData.value.gameDescription,
+      minPlayers: formData.value.minPlayers,
+      maxPlayers: formData.value.maxPlayers,
+      photoURL: formData.value.gameImage,
+    };
+
+    const createdGame = await gameService.createGame(gameToSend);
+    emit("game-created", createdGame); // Tell parent about it
+
+    // Reset form and close modal
+    formData.value = {
+      gameName: "",
+      minPlayers: 0,
+      maxPlayers: 0,
+      gameDescription: "",
+      gameImage: "",
+    };
     isOpen.value = false;
+
   } catch (err) {
     console.error("An error occurred. Please try again.", err);
   }

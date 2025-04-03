@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ref, watch, onMounted, nextTick } from "vue";
 import { defineProps } from "vue";
-import { gameService } from "@/services/GameService";
+import gameService from "@/services/gameService";
 import { gameCopyService } from "@/services/GameCopyService";
 import { useAuthStore } from "@/stores/authStore";
 import { storeToRefs } from "pinia";
