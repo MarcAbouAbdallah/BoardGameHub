@@ -107,7 +107,7 @@ const handleAddToCollectionClick = async (gameId: number) => {
 
         <CardTitle class="text-lg text-center mb-1 font-bold overflow-hidden whitespace-nowrap text-ellipsis">{{
           props.game.name }}</CardTitle>
-        <CardDescription class="text-sm text-gray-500 text-center line-clamp-2">
+        <CardDescription class="text-sm text-gray-500 text-center line-clamp-1">
           {{ props.game.description }}
         </CardDescription>
 

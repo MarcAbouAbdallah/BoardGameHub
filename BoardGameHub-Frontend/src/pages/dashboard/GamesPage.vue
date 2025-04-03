@@ -33,7 +33,8 @@ const authStore = useAuthStore();
 onMounted(async () => {
   try {
     const result = await gameService.getAllGames();
-    games.value = result;
+    games.value = result.sort((a: Game, b: Game) => a.name.localeCompare(b.name));
+
 
     if (authStore.user?.userId) {
       const collection = await getPlayerCollection(authStore.user.userId);
