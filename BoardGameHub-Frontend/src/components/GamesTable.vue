@@ -15,34 +15,13 @@ import {
 } from "@/components/ui/table";
 import DataTableCard from "./DataTableCard.vue";
 import { ref } from "vue";
-import { useToast } from "./ui/toast";
-import Alert from "./alert/Alert.vue";
 
 const loading = ref(false);
 const error = ref("");
 const expandedRows = ref<Record<number, boolean>>({});
-const { toast } = useToast();
 
 const toggleRowExpansion = (rowId: number) => {
   expandedRows.value[rowId] = !expandedRows.value[rowId];
-};
-
-const acceptRequest = (requestId: number, gameId: number) => {
-  //TODO: Implement the accept request logic
-  toast({
-    title: "Request Accepted",
-    description: `Request ${requestId} for game ${gameId} has been accepted.`,
-    variant: "default",
-  });
-};
-
-const rejectRequest = (requestId: number, gameId: number) => {
-  //TODO: Implement the accept request logic
-  toast({
-    title: "Request Rejected",
-    description: `Request ${requestId} for game ${gameId} has been rejected.`,
-    variant: "destructive",
-  });
 };
 
 const props = defineProps({
