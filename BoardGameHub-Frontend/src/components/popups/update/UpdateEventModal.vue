@@ -15,6 +15,7 @@ import gameService from "@/services/gameService";
 import { gameCopyService } from "@/services/GameCopyService";
 import { useAuthStore } from "@/stores/authStore";
 import { storeToRefs } from "pinia";
+import { useToast } from "@/components/ui/toast";
 
 const props = defineProps<{
   close: () => void;
@@ -23,6 +24,7 @@ const props = defineProps<{
 }>();
 
 const authStore = useAuthStore();
+const { toast } = useToast();
 const { user } = storeToRefs(authStore);
 
 const formData = ref({
@@ -154,9 +156,16 @@ const handleSubmit = async () => {
 
     await props.updateEvent(props.eventToEdit.id, payload);
     props.close();
-  } catch (err) {
-    console.error("Error updating event:", err);
-    error.value = "An error occurred while updating the event. Please try again.";
+
+  } catch (err: any) {
+    console.error("Error creating event:", err);
+    toast({
+      title: "Edit Failed",
+      description: err.response?.data?.errors?.[0] || err.message || "An error occurred. Please try again.",
+      variant: "destructive",
+      duration: 2000,
+    });
+    error.value = err.response?.data?.message || err.message || "An error occurred. Please try again.";
   }
 };
 
@@ -272,26 +281,20 @@ onMounted(async () => {
         </div>
         <!-- Game Copy Dropdown -->
         <div class="flex gap-2 items-center">
-          <Label for="gamecopy-select" class="w-full">Select Game Copy</Label>
+          <Label for="gamecopy-select" class="w-full">Select Game Owner</Label>
           <select
             id="gamecopy-select"
             v-model="selectedGameCopyId"
             class="w-full border p-2 rounded"
             required
           >
-            <option disabled value="">-- Choose a Game Copy --</option>
-            <option
-              v-for="copy in gameCopies"
-              :key="copy.gameCopyId"
-              :value="String(copy.gameCopyId)"
-            >
-              Copy #{{ copy.gameCopyId }} (Owner: {{ copy.ownerName }})
-              ({{ copy.isAvailable ? "Available" : "Unavailable" }})
+            <option disabled value="">-- Choose a Game First --</option>
+            <option v-for="copy in gameCopies" :key="copy.gameCopyId" :value="copy.gameCopyId">
+              {{ copy.ownerName }}
             </option>
           </select>
         </div>
         <Button type="submit" class="mt-4">Update Event</Button>
-        <p v-if="error" class="text-red-600">{{ error }}</p>
       </form>
     </DialogContent>
   </Dialog>

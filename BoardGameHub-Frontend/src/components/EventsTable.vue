@@ -14,10 +14,6 @@
           <Plus class="h-4 w-4" />
           Create Event
         </Button>
-        <Button @click="refreshNoBlink">
-          <RefreshCcw class="h-4 w-4" />
-          Refresh
-        </Button>
       </div>
     </div>
 
@@ -84,7 +80,21 @@
               <TableCell colspan="8" class="px-20">
                 <div class="flex flex-col items-start gap-2">
                   <p class="text-start max-w-[900px]">
-                    <strong>Description:</strong> {{ event.description }}
+                    <strong>Description: </strong>
+                    <span>{{ event.description }}</span>
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>Start Time: </strong>
+                    <span>{{ event.startTime }}</span>
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>End Time: </strong>
+                    <span>{{ event.endTime }}</span>
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>Organizer: </strong>
+                    <span v-if="isOrganizer(event)">You</span>
+                    <span v-else>{{ event.organizerName }}</span>
                   </p>
                   <p class="text-start max-w-[900px]">
                     <strong>Registrations:</strong>
@@ -260,14 +270,18 @@ const createEvent = async (eventData: any) => {
       duration: 2000,
     });
     await softReloadEvents();
+    // Close modal only on success.
     isCreateEventModalOpen.value = false;
   } catch (err: any) {
+    // Show a quick parent toast if desired.
     toast({
       title: "Creation Failed",
       description: err.response?.data?.message || err.message,
       variant: "destructive",
       duration: 2000,
     });
+    // Rethrow so child modal’s catch block can handle it.
+    throw err;
   }
 };
 
@@ -290,7 +304,6 @@ const registerEvent = async (eventId: number) => {
       duration: 2000,
     });
     await softReloadEvents();
-    // Update all event registrations to ensure buttons are reactive
     await fetchAllEventRegistrations();
   } catch (err: any) {
     toast({
@@ -321,7 +334,6 @@ const unregisterEvent = async (eventId: number) => {
       duration: 2000,
     });
     await softReloadEvents();
-    // Update all event registrations to ensure buttons are reactive
     await fetchAllEventRegistrations();
   } catch (err: any) {
     toast({
@@ -362,6 +374,8 @@ const updateEvent = async (eventId: number, updatedData: any) => {
       variant: "destructive",
       duration: 2000,
     });
+    // Rethrow so UpdateEventModal can catch and stay open
+    throw err;
   }
 };
 
@@ -397,7 +411,7 @@ const deleteEvent = async (eventId: number) => {
   } catch (err: any) {
     toast({
       title: "Deletion Failed",
-      description: err.response?.data?.message || err.message,
+      description: err.response?.data?.errors?.[0] || err.message,
       variant: "destructive",
       duration: 2000,
     });
@@ -416,10 +430,9 @@ const refreshNoBlink = async () => {
   await softReloadEvents();
 };
 
-onMounted(() => {
-  fetchEventsInitially();
-  // Also fetch all event registrations on mount
-  fetchAllEventRegistrations();
+onMounted(async () => {
+  await fetchEventsInitially();
+  await fetchAllEventRegistrations();
   pollingInterval = window.setInterval(softReloadEvents, 30000);
 });
 
