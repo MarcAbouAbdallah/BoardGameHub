@@ -39,7 +39,7 @@ const onAction = () => {
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <button @click="onAction" class="text-white px-4 py-2 text-sm">
+        <button @click="onAction" class="text-black px-4 py-2 text-sm">
           {{ actionText }}
         </button>
       </AlertDialogFooter>
