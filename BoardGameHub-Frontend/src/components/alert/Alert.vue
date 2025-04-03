@@ -14,10 +14,8 @@ import {
 const isOpen = ref(false);
 
 const props = defineProps<{
-  trigger: string;
   description: string;
   actionText: string;
-  class?: string;
   actionFunc: any;
 }>();
 
@@ -30,7 +28,7 @@ const onAction = () => {
 <template>
   <AlertDialog v-model:open="isOpen">
     <AlertDialogTrigger asChild>
-      <button :class="props.class">{{ trigger }}</button>
+      <slot />
     </AlertDialogTrigger>
     <AlertDialogContent>
       <AlertDialogHeader>

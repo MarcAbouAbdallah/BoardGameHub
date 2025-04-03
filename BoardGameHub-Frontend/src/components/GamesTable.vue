@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import DataTableCard from "./DataTableCard.vue";
 import { ref } from "vue";
+import Alert from "./alert/Alert.vue";
 
 const loading = ref(false);
 const error = ref("");
@@ -30,6 +31,28 @@ const props = defineProps({
     required: true,
   },
 });
+
+const handleRemoveGame = async (gameId: number) => {
+  try {
+    loading.value = true;
+    //TODO: Call the API to remove the game
+  } catch (err) {
+    error.value = "Error removing game";
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleReturnGame = async (gameId: number) => {
+  try {
+    loading.value = true;
+    //TODO: Call the API to return the game
+  } catch (err) {
+    error.value = "Error returning game";
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <template>
@@ -43,6 +66,7 @@ const props = defineProps({
             <TableHead class="font-bold text-lg text-black">Game</TableHead>
             <TableHead class="font-bold text-lg text-black">Type</TableHead>
             <TableHead class="font-bold text-lg text-black">Owner</TableHead>
+            <TableHead class="font-bold text-lg text-black">Status</TableHead>
             <TableHead class="font-bold text-lg text-black">minPlayers</TableHead>
             <TableHead class="font-bold text-lg text-black">maxPlayers</TableHead>
             <TableHead class="font-bold text-lg text-black">Actions</TableHead>
@@ -67,17 +91,44 @@ const props = defineProps({
                 <Badge class="bg-green-800 min-w-[75px] text-center" v-else>Owned</Badge>
               </TableCell>
               <TableCell class="text-start">{{ game.owner }} </TableCell>
+              <TableCell class="text-start">
+                <Badge
+                  class="bg-green-800 min-w-[75px] text-center"
+                  v-if="game.isAvailable && !game.isBorrowed"
+                >
+                  Available</Badge
+                >
+                <Badge
+                  class="bg-red-800 min-w-[75px] text-center"
+                  v-else-if="!game.isAvailable && !game.isBorrowed"
+                  >Unavailable</Badge
+                >
+              </TableCell>
               <TableCell class="text-start">{{ game.minPlayers }}</TableCell>
               <TableCell class="text-start">{{ game.maxPlayers }}</TableCell>
               <TableCell class="text-start">
-                <Button variant="destructive" v-if="!game.isBorrowed">
-                  <Trash class="h-4 w-4" />
-                  Remove
-                </Button>
-                <Button variant="outline" class="ml-2" v-else>
-                  <Undo2 class="h-4 w-4" />
-                  Return
-                </Button>
+                <Alert
+                  :description="'Are you sure you want to remove this game?'"
+                  actionText="Remove"
+                  :actionFunc="() => handleRemoveGame(game.id)"
+                  v-if="!game.isBorrowed"
+                >
+                  <Button variant="destructive">
+                    <Trash class="h-4 w-4" />
+                    Remove
+                  </Button>
+                </Alert>
+                <Alert
+                  :description="'Are you sure you want to return this game?'"
+                  actionText="Return"
+                  :actionFunc="() => handleReturnGame(game.id)"
+                  v-else
+                >
+                  <Button variant="outline" class="min-w-[109px]">
+                    <Undo2 class="h-4 w-4" />
+                    Return
+                  </Button>
+                </Alert>
               </TableCell>
             </TableRow>
             <TableRow v-if="expandedRows[game.id]">
