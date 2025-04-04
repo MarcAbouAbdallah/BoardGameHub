@@ -74,7 +74,7 @@ const handleCancel = async (requestId: string) => {
 
 <template>
   <div class="p-6 space-y-6 w-9/12 mx-auto">
-    <CustomTableHeader :title="'My Borrow Requests'" />
+    <CustomTableHeader :title="'My Sent Requests'" />
     <DataTableCard :is-loading="loading" :error="error">
       <Table class="w-full mt-4">
         <TableHeader>
@@ -110,7 +110,7 @@ const handleCancel = async (requestId: string) => {
                   variant="outline"
                   @click="handleCancel(request.id)"
                 >
-                  Cancel Request
+                  Cancel
                 </Button>
               </TableCell>
             </TableRow>
@@ -118,7 +118,7 @@ const handleCancel = async (requestId: string) => {
         </TableBody>
         <TableBody v-else>
           <TableRow>
-            <TableCell colspan="6" class="text-center"> No borrow requests found. </TableCell>
+            <TableCell colspan="6" class="text-center"> No outgoing requests found. </TableCell>
           </TableRow>
         </TableBody>
       </Table>

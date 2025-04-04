@@ -13,6 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import DialogClose from "@/components/ui/dialog/DialogClose.vue";
+import type { Game } from "@/types/Game";
+import { defineProps, watch} from "vue";
+import gameService from "@/services/gameService";
+
+
+const props = defineProps<{ game: Game }>();
 
 const formData = ref({
   gameName: "",
@@ -24,20 +30,49 @@ const formData = ref({
 
 const isOpen = ref(false);
 
+watch(isOpen, (newVal) => {
+  if (newVal) {
+    formData.value = {
+      gameName: props.game.name,
+      minPlayers: props.game.minPlayers,
+      maxPlayers: props.game.maxPlayers,
+      gameDescription: props.game.description,
+      gameImage: props.game.photoURL, // optional – not used by backend right now
+    };
+  }
+});
+
+
 const close = () => {
   isOpen.value = false;
   console.log("Dialog closed");
 };
 
+const emit = defineEmits<{
+  (e: "game-updated", updatedGame: Game): void;
+}>();
+
 const handleSubmit = async () => {
   try {
-    console.log("Form Data:", formData.value);
-    // Call the API to create the game here
+    const updatedFields = {
+      name: formData.value.gameName,
+      description: formData.value.gameDescription,
+      minPlayers: formData.value.minPlayers,
+      maxPlayers: formData.value.maxPlayers,
+      photoURL: formData.value.gameImage,
+    };
+
+    //debug
+    console.log("Sending updatedFields:", updatedFields);
+
+    const updatedGame = await gameService.updateGame(props.game.id, updatedFields);
+    emit("game-updated", updatedGame);
     isOpen.value = false;
   } catch (err) {
-    console.error("An error occurred. Please try again.", err);
+    console.error("Failed to update game:", err);
   }
 };
+
 </script>
 
 <template>
@@ -45,12 +80,12 @@ const handleSubmit = async () => {
     <DialogTrigger as-child>
       <Button variant="outline" class="absolute top-2 left-2 border-1 border-black">
         <Pen class="h-4 w-4" />
-        Update Game
+        Edit Game
       </Button>
     </DialogTrigger>
     <DialogContent :close="close">
       <DialogHeader>
-        <DialogTitle>Update the game</DialogTitle>
+        <DialogTitle>Edit the game</DialogTitle>
         <DialogDescription>
           Modify the game details below. Leave any field blank if you want to keep the current
           value.
@@ -67,7 +102,7 @@ const handleSubmit = async () => {
           />
         </div>
         <div class="flex gap-2 items-center">
-          <Label for="min-players" class="w-full">Minimum Playerse</Label>
+          <Label for="min-players" class="w-full">Minimum Players</Label>
           <Input v-model="formData.minPlayers" id="min-players" type="number" placeholder="0" />
         </div>
         <div class="flex gap-2 items-center">
@@ -93,7 +128,7 @@ const handleSubmit = async () => {
           />
         </div>
         <div class="flex gap-2 items-center flex-end">
-          <Button type="submit" class="mt-4 w-fit">Add Game</Button>
+          <Button type="submit" class="mt-4 w-fit">Confirm</Button>
           <DialogClose class="w-fit p-0 mt-4">
             <Button variant="outline">Cancel</Button>
           </DialogClose>

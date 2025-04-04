@@ -138,26 +138,7 @@ export const sampleGameCollection = [
     minPlayers: 3,
     isBorrowed: false,
     owner: "Mubeen",
-    borrowRequests: [
-      {
-        user: "Alice",
-        startDate: "2023-11-01",
-        endDate: "2023-11-07",
-        comment: "Looking forward to trying this game!",
-      },
-      {
-        user: "Charlie",
-        startDate: "2023-11-10",
-        endDate: "2023-11-15",
-        comment: "Excited to play this with friends!",
-      },
-      {
-        user: "Charlie",
-        startDate: "2023-11-10",
-        endDate: "2023-11-15",
-        comment: "Excited to play this with friends!",
-      },
-    ],
+    isAvailable: true,
   },
   {
     id: 11,
@@ -168,32 +149,7 @@ export const sampleGameCollection = [
     minPlayers: 1,
     isBorrowed: false,
     owner: "Mubeen",
-    borrowRequests: [
-      {
-        user: "Bob",
-        startDate: "2023-11-05",
-        endDate: "2023-11-12",
-        comment: "Heard great things about this game!",
-      },
-      {
-        user: "Charlie",
-        startDate: "2023-11-10",
-        endDate: "2023-11-15",
-        comment: "Excited to play this with friends!",
-      },
-      {
-        user: "Charlie",
-        startDate: "2023-11-10",
-        endDate: "2023-11-15",
-        comment: "Excited to play this with friends!",
-      },
-      {
-        user: "Charlie",
-        startDate: "2023-11-10",
-        endDate: "2023-11-15",
-        comment: "Excited to play this with friends!",
-      },
-    ],
+    isAvailable: true,
   },
   {
     id: 12,
@@ -214,32 +170,7 @@ export const sampleGameCollection = [
     minPlayers: 1,
     isBorrowed: false,
     owner: "Mubeen",
-    borrowRequests: [
-      {
-        user: "Charlie",
-        startDate: "2023-11-10",
-        endDate: "2023-11-15",
-        comment: "Excited to play this with friends!",
-      },
-      {
-        user: "Charlie",
-        startDate: "2023-11-10",
-        endDate: "2023-11-15",
-        comment: "Excited to play this with friends!",
-      },
-      {
-        user: "Charlie",
-        startDate: "2023-11-10",
-        endDate: "2023-11-15",
-        comment: "Excited to play this with friends!",
-      },
-      {
-        user: "Charlie",
-        startDate: "2023-11-10",
-        endDate: "2023-11-15",
-        comment: "Excited to play this with friends!",
-      },
-    ],
+    isAvailable: false,
   },
   {
     id: 14,

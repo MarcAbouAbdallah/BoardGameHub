@@ -1,86 +1,18 @@
-<script setup lang="ts">
-import { ChevronDown, ChevronUp, ClipboardCheck, Trash, Undo } from "lucide-vue-next";
-import CustomTableHeader from "@/components/TableHeader.vue";
-import { ref } from "vue";
-import { Badge } from "./ui/badge";
-import { useToast } from "@/components/ui/toast/use-toast";
-import updateEventModal from "./popups/update/UpdateEventModal.vue";
-// import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-// import {
-//   DropdownMenu,
-//   DropdownMenuTrigger,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-// } from "@/components/ui/dropdown-menu";
-// import { expandRows } from "@tanstack/vue-table";
-// import { set } from "@vueuse/core";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import DataTableCard from "./DataTableCard.vue";
-import { Button } from "./ui/button";
-
-import { defineProps } from "vue";
-
-const { toast } = useToast();
-const loading = ref(false);
-const error = ref("");
-const expandedRows = ref<Record<number, boolean>>({});
-interface Event {
-  id: number;
-  name: string;
-  game: string;
-  location: string;
-  date: string;
-  remainingSeats: number;
-  capacity: number;
-  description: string;
-  type: string;
-  participants: string[];
-}
-
-const registerEvent = (eventId: number) => {
-  //TO DO: Implement registration logic
-  console.log("Registering for event with ID:", eventId);
-  toast({
-    title: "Registration Successful",
-    description: `You have successfully registered for the event.`,
-    variant: "default",
-    duration: 2000,
-  });
-};
-
-const props = defineProps<{
-  events: Event[];
-  isHomePage: boolean;
-  title: string;
-}>();
-
-const toggleRowExpansion = (rowId: number) => {
-  expandedRows.value[rowId] = !expandedRows.value[rowId];
-};
-
-// const fetchEvents = async () => {
-//   try {
-//     loading.value = true;
-//     events.value = await fetch("/api/events").then((res) => res.json());
-//   } catch (err) {
-//     error.value = "Failed to load events.";
-//     console.error(err);
-//   } finally {
-//     loading.value = false;
-//   }
-// };
-</script>
-
 <template>
-  <div class="p-6 space-y-6 w-9/12 mx-auto">
-    <CustomTableHeader :title="props.title" />
+  <Header />
+  <Toaster position="top-right" />
+
+  <div class="p-6 space-y-6 mt-24 w-9/12 mx-auto">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Game Events</h1>
+      <div class="flex items-center gap-2">
+        <Button variant="outline" class="flex items-center border-black">
+          <FilterIcon class="h-4 w-4" />
+          Filters
+        </Button>
+      </div>
+    </div>
+
     <DataTableCard :is-loading="loading" :error="error">
       <Table>
         <TableHeader>
@@ -88,90 +20,404 @@ const toggleRowExpansion = (rowId: number) => {
             <TableHead></TableHead>
             <TableHead class="font-bold text-lg text-black">Event Name</TableHead>
             <TableHead class="font-bold text-lg text-black">Game</TableHead>
-            <TableHead class="font-bold text-lg text-black" v-if="isHomePage">Type</TableHead>
-            <TableHead class="font-bold text-lg text-black" v-else>Location</TableHead>
+            <TableHead class="font-bold text-lg text-black">Location</TableHead>
             <TableHead class="font-bold text-lg text-black">Date</TableHead>
             <TableHead class="font-bold text-lg text-black">Remaining Seats</TableHead>
-            <TableHead class="font-bold text-lg text-black">Actions</TableHead>
+            <TableHead class="font-bold text-lg text-black">Capacity</TableHead>
+            <TableHead class="font-bold text-lg text-black">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <template v-for="Event in props.events" :key="Event.name">
+          <template v-for="event in filteredEvents" :key="event.id">
             <TableRow>
               <TableCell>
                 <Button
                   variant="outline"
                   class="p-2 border-none bg-transparent"
-                  @click="toggleRowExpansion(Event.id)"
+                  @click="toggleRowExpansion(event.id)"
                 >
-                  <ChevronUp v-if="expandedRows[Event.id]" class="h-4 w-4" />
+                  <ChevronUp v-if="expandedRows[event.id]" class="h-4 w-4" />
                   <ChevronDown v-else class="h-4 w-4" />
                 </Button>
               </TableCell>
-              <TableCell class="text-start">{{ Event.name }}</TableCell>
-              <TableCell class="text-start">{{ Event.game }}</TableCell>
-              <TableCell class="text-start" v-if="isHomePage">
-                <Badge
-                  :class="[
-                    'min-w-[77px]',
-                    Event.type === 'Created' ? 'bg-green-800' : 'bg-blue-800',
-                  ]"
-                >
-                  {{ Event.type }}
-                </Badge>
+              <TableCell class="text-start">{{ event.name }}</TableCell>
+              <TableCell class="text-start">
+                {{ event.game && event.game.name ? event.game.name : event.gameName }}
               </TableCell>
-              <TableCell class="text-start" v-else>{{ Event.location }}</TableCell>
-              <TableCell class="text-start">{{ Event.date }}</TableCell>
-              <TableCell class="text-start">{{ Event.remainingSeats }}</TableCell>
-              <TableCell class="text-start"
-                ><div v-if="isHomePage">
-                  <div v-if="Event.type == 'Created'" class="flex gap-6">
-                    <Button variant="destructive" size="sm" class="border-black">
-                      <Trash class="h-4 w-4" />
-                      Delete Event
-                    </Button>
-                  </div>
-                  <Button v-else variant="destructive" size="sm" class="border-black min-w-[118px]">
-                    <Undo class="h-4 w-4" />
-                    Unregister
+              <TableCell class="text-start">{{ event.location }}</TableCell>
+              <TableCell class="text-start">{{ event.date }}</TableCell>
+              <TableCell class="text-start">
+                {{ event.maxParticipants - event.participantsCount }}
+              </TableCell>
+              <TableCell class="text-start">{{ event.maxParticipants }}</TableCell>
+              <TableCell class="text-start">
+                <div class="flex items-center gap-2 w-48 justify-between">
+                  <!-- Register or Opt Out based on isRegistered -->
+                  <Button variant="outline" size="sm" v-if="!isRegistered(event.id)" @click="registerEvent(event.id)">
+                    Register
+                  </Button>
+                  <Button variant="outline" size="sm" v-else @click="unregisterEvent(event.id)">
+                    Opt Out
+                  </Button>
+
+                  <!-- Organizer-only buttons -->
+                  <Button variant="outline" size="icon" v-if="isOrganizer(event)" @click="openEditEventModal(event)">
+                    <Edit class="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" v-if="isOrganizer(event)" @click="deleteEvent(event.id)">
+                    <Trash2 class="h-4 w-4" />
                   </Button>
                 </div>
-                <Button v-else variant="outline" size="sm" @click="registerEvent(Event.id)">
-                  <ClipboardCheck class="h-4 w-4" />
-                  Register
-                </Button></TableCell
-              >
+              </TableCell>
             </TableRow>
-            <TableRow v-if="expandedRows[Event.id]">
-              <TableCell colspan="7" class="px-20">
-                <div class="flex justify-between items-center mb-4">
-                  <div class="flex flex-col items-start gap-2">
-                    <p class="text-start max-w-[900px]">
-                      <strong>Description:</strong> {{ Event.description }}
-                    </p>
-                    <p class="text-start max-w-[900px]">
-                      <strong>Registrations: </strong>
-                      <span v-if="Event.participants.length == 0">No Registrations Yet</span
-                      >{{ Event.participants.join(", ") }}
-                    </p>
-                    <p v-if="isHomePage" class="text-start max-w-[900px]">
-                      <strong>Location: </strong> {{ Event.location }}
-                    </p>
-                    <p class="text-start max-w-[900px]">
-                      <strong>Capacity </strong> {{ Event.capacity }}
-                    </p>
-                  </div>
+
+            <!-- Expanded row for registrations -->
+            <TableRow v-if="expandedRows[event.id]">
+              <TableCell colspan="8" class="px-20">
+                <div class="flex flex-col items-start gap-2">
+                  <p class="text-start max-w-[900px]">
+                    <strong>Description: </strong>
+                    <span>{{ event.description }}</span>
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>Start Time: </strong>
+                    <span>{{ event.startTime }}</span>
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>End Time: </strong>
+                    <span>{{ event.endTime }}</span>
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>Organizer: </strong>
+                    <span v-if="isOrganizer(event)">You</span>
+                    <span v-else>{{ event.organizerName }}</span>
+                  </p>
+                  <p class="text-start max-w-[900px]">
+                    <strong>Registrations:</strong>
+                    <span v-if="registrationsByEvent[event.id]?.length">
+                      <ul>
+                        <li
+                          v-for="(registration, index) in registrationsByEvent[event.id]"
+                          :key="index"
+                        >
+                          {{ registration.registrant }}
+                        </li>
+                      </ul>
+                    </span>
+                    <span v-else>
+                      None
+                    </span>
+                  </p>
                 </div>
               </TableCell>
             </TableRow>
           </template>
-          <TableRow v-if="events.length === 0">
-            <TableCell colspan="7" class="text-center py-8 text-muted-foreground">
+
+          <!-- No events found -->
+          <TableRow v-if="!loading && events.length === 0">
+            <TableCell colspan="8" class="text-center py-8 text-muted-foreground">
               No events found. Create your first event by clicking the "Create Event" button.
             </TableCell>
           </TableRow>
         </TableBody>
       </Table>
     </DataTableCard>
+
+    <!-- Create Event Modal -->
+    <CreateEventModal
+      v-if="isCreateEventModalOpen"
+      :close="() => { isCreateEventModalOpen = false }"
+      :createEvent="createEvent"
+    />
+
+    <!-- Edit Event Modal -->
+    <EditEventModal
+      v-if="isEditEventModalOpen"
+      :close="closeEditEventModal"
+      :eventToEdit="editEventData"
+      :updateEvent="updateEvent"
+    />
   </div>
 </template>
+
+<script setup lang="ts">
+import Header from "@/components/Header.vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
+import { useToast } from "@/components/ui/toast/use-toast";
+import { Toaster } from "@/components/ui/toast";
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/stores/authStore";
+
+import { Button } from "@/components/ui/button";
+import DataTableCard from "@/components/DataTableCard.vue";
+import {
+  FilterIcon,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  RefreshCcw,
+  Edit,
+  Trash2
+} from "lucide-vue-next";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+
+import CreateEventModal from "@/components/popups/CreateEventModal.vue";
+import EditEventModal from "@/components/popups/update/UpdateEventModal.vue";
+
+// Services
+import { eventService } from "@/services/EventService";
+import { registrationService } from "@/services/RegistrationService";
+
+const authStore = useAuthStore();
+const { user } = storeToRefs(authStore);
+
+const events = ref<any[]>([]);
+const error = ref("");
+const loading = ref(false);
+const expandedRows = ref<Record<number, boolean>>({});
+const registrationsByEvent = ref<Record<number, any[]>>({});
+
+// Modal states
+const isCreateEventModalOpen = ref<boolean>(false);
+const isEditEventModalOpen = ref<boolean>(false);
+const editEventData = ref<any | null>(null);
+
+const { toast } = useToast();
+let pollingInterval: number | undefined;
+
+const filteredEvents = computed(() =>
+  events.value.filter(
+    (event) => isRegistered(event.id) || isOrganizer(event)
+  )
+);
+
+const softReloadEvents = async () => {
+  try {
+    error.value = "";
+    const data = await eventService.getAllEvents();
+    events.value = data;
+  } catch (err: any) {
+    error.value = "Failed to load events.";
+    console.error(err);
+  }
+};
+
+const fetchEventsInitially = async () => {
+  try {
+    loading.value = true;
+    error.value = "";
+    const data = await eventService.getAllEvents();
+    events.value = data;
+  } catch (err) {
+    error.value = "Failed to load events initially.";
+    console.error(err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const fetchRegistrationsForEvent = async (eventId: number) => {
+  try {
+    const regs = await registrationService.findRegistrationsByEvent(eventId);
+    registrationsByEvent.value[eventId] = regs;
+  } catch (err) {
+    console.error(`Error fetching registrations for event ${eventId}:`, err);
+    registrationsByEvent.value[eventId] = [];
+  }
+};
+
+// New function to fetch registrations for all visible events
+const fetchAllEventRegistrations = async () => {
+  try {
+    for (const event of events.value) {
+      await fetchRegistrationsForEvent(event.id);
+    }
+  } catch (err) {
+    console.error("Error fetching all event registrations:", err);
+  }
+};
+
+const isOrganizer = (event: any) => {
+  if (!user.value?.userId) return false;
+  if (event.organizer && event.organizer.id) {
+    return event.organizer.id === user.value.userId;
+  } else if (event.organizerName) {
+    return event.organizerName === user.value.username;
+  }
+  return false;
+};
+
+const isRegistered = (eventId: number) => {
+  const regs = registrationsByEvent.value[eventId];
+  if (!regs || !user.value?.userId) return false;
+  // Adjust this condition to match your backend fields:
+  return regs.some(reg => reg.registrantId === user.value.userId || reg.registrant === user.value.username);
+};
+
+const registerEvent = async (eventId: number) => {
+  if (!user.value?.userId) {
+    toast({
+      title: "Please Login",
+      description: "You need to be logged in to register for an event.",
+      variant: "destructive",
+      duration: 2000,
+    });
+    return;
+  }
+  try {
+    await registrationService.registerToEvent(eventId, user.value.userId);
+    toast({
+      title: "Registration Successful",
+      description: "You have successfully registered for the event.",
+      variant: "default",
+      duration: 2000,
+    });
+    await softReloadEvents();
+    // Update all event registrations to ensure buttons are reactive
+    await fetchAllEventRegistrations();
+  } catch (err: any) {
+    toast({
+      title: "Registration Failed",
+      description: err.response?.data?.message || err.message,
+      variant: "destructive",
+      duration: 2000,
+    });
+  }
+};
+
+const unregisterEvent = async (eventId: number) => {
+  if (!user.value?.userId) {
+    toast({
+      title: "Please Login",
+      description: "You need to be logged in to unregister from an event.",
+      variant: "destructive",
+      duration: 2000,
+    });
+    return;
+  }
+  try {
+    await registrationService.unregisterFromEvent(eventId, user.value.userId);
+    toast({
+      title: "Unregistered",
+      description: "You have opted out of the event.",
+      variant: "default",
+      duration: 2000,
+    });
+    await softReloadEvents();
+    // Update all event registrations to ensure buttons are reactive
+    await fetchAllEventRegistrations();
+  } catch (err: any) {
+    toast({
+      title: "Unregistration Failed",
+      description: err.response?.data?.message || err.message,
+      variant: "destructive",
+      duration: 2000,
+    });
+  }
+};
+
+const openEditEventModal = (event: any) => {
+  editEventData.value = { ...event };
+  isEditEventModalOpen.value = true;
+};
+
+const closeEditEventModal = () => {
+  isEditEventModalOpen.value = false;
+  editEventData.value = null;
+};
+
+const updateEvent = async (eventId: number, updatedData: any) => {
+  try {
+    if (!user.value?.userId) throw new Error("No user logged in.");
+    updatedData.userId = user.value.userId;
+    await eventService.updateEvent(eventId, updatedData);
+    toast({
+      title: "Event Updated",
+      description: "Event updated successfully.",
+      variant: "default",
+      duration: 2000,
+    });
+    await softReloadEvents();
+  } catch (err: any) {
+    toast({
+      title: "Update Failed",
+      description: err.response?.data?.message || err.message,
+      variant: "destructive",
+      duration: 2000,
+    });
+    throw err;
+  }
+};
+
+const deleteEvent = async (eventId: number) => {
+  if (!user.value?.userId) {
+    toast({
+      title: "Please Login",
+      description: "You must be logged in to delete an event.",
+      variant: "destructive",
+      duration: 2000,
+    });
+    return;
+  }
+  const eventToDelete = events.value.find(e => e.id === eventId);
+  if (!eventToDelete || !isOrganizer(eventToDelete)) {
+    toast({
+      title: "Permission Denied",
+      description: "Only the organizer can delete this event.",
+      variant: "destructive",
+      duration: 2000,
+    });
+    return;
+  }
+  try {
+    await eventService.deleteEvent(eventId, user.value.userId);
+    toast({
+      title: "Event Deleted",
+      description: "Event deleted successfully.",
+      variant: "default",
+      duration: 2000,
+    });
+    await softReloadEvents();
+  } catch (err: any) {
+    toast({
+      title: "Deletion Failed",
+      description: err.response?.data?.message || err.message,
+      variant: "destructive",
+      duration: 2000,
+    });
+  }
+};
+
+const toggleRowExpansion = async (eventId: number) => {
+  expandedRows.value[eventId] = !expandedRows.value[eventId];
+  // When expanding, fetch the registrations for that event.
+  if (expandedRows.value[eventId]) {
+    await fetchRegistrationsForEvent(eventId);
+  }
+};
+
+const refreshNoBlink = async () => {
+  await softReloadEvents();
+};
+
+onMounted(async () => {
+  await fetchEventsInitially();
+  await fetchAllEventRegistrations();
+
+  pollingInterval = window.setInterval(softReloadEvents, 30000);
+});
+
+onUnmounted(() => {
+  if (pollingInterval) clearInterval(pollingInterval);
+});
+</script>
+
+<style scoped>
+</style>

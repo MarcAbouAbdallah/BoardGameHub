@@ -6,6 +6,7 @@ import { CalendarIcon } from "@heroicons/vue/24/solid";
 import { LogOut } from "lucide-vue-next";
 import { Avatar } from "./ui/avatar";
 import { useAuthStore } from "../stores/authStore";
+import EditProfileSheet from "./EditProfileSheet.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -39,13 +40,15 @@ const navItems = [
               <div>{{ item.label }}</div>
             </a>
           </li>
-          <li
-            v-if="authStore.user.isAuthenticated"
-            class="text-black font-semibold gap-2 cursor-pointer hover:text-gray-500 flex justify-center items-center"
-          >
-            <div>{{ authStore.user.username }}</div>
-            <Avatar class="bg-[#F4F4F5] text-xl hover:text-gray-500 font-bold"> 
-              {{ authStore.user.username ? authStore.user.username.charAt(0).toUpperCase() : "U" }} </Avatar>
+          <li>
+            <EditProfileSheet>
+              <div>{{ authStore.user.username }}</div>
+              <Avatar class="bg-[#F4F4F5] text-xl hover:text-gray-500 font-bold">
+                {{
+                  authStore.user.username ? authStore.user.username.charAt(0).toUpperCase() : "U"
+                }}
+              </Avatar>
+            </EditProfileSheet>
           </li>
         </ul>
       </div>

@@ -8,17 +8,29 @@ import { sampleEvents } from "@/data/sampleEvents";
 import { sampleGameCollection } from "@/data/sampleGames";
 import Toaster from "@/components/ui/toast/Toaster.vue";
 import RecievedBorrowReqTable from "@/components/ReceivedBorrowReqTable.vue";
+import { useAuthStore } from "@/stores/authStore";
+import { onMounted } from "vue";
+import router from "@/router";
+
+const authStore = useAuthStore();
+const isLoggedIn = authStore.user;
+
+console.log("isLoggedIn", isLoggedIn);
+
+onMounted(() => {
+  if (!isLoggedIn.userEmail) {
+    router.push("/");
+  }
+});
 </script>
 
 <template>
   <Header />
   <div class="flex flex-col items-start my-24 mx-10">
     <GamesTable :games="sampleGameCollection" />
+    <MyEventsTable :events="sampleEvents" :is-home-page="true" :title="'My Events'" />
     <RecievedBorrowReqTable />
-    <MyEventsTable :events="sampleEvents" :is-home-page="true" :title="'My Game Events'" />
-    <!--<BorrowRequestTable :-borrow-requests="sampleBorrowRequests" />-->
     <BorrowRequestTable />
-    <!--<GameReviewTable :game-reviews="gameReviews" />-->
     <GameReviewTable />
   </div>
   <Toaster position="top-right" />

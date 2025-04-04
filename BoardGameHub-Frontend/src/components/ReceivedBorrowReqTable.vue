@@ -11,76 +11,124 @@ import {
 import DataTableCard from "./DataTableCard.vue";
 import Alert from "./alert/Alert.vue";
 import { useToast } from "./ui/toast";
-import { ref } from "vue";
+import { NoSymbolIcon, CheckBadgeIcon } from "@heroicons/vue/24/solid";
+import { borrowRequestService } from "@/services/borrowService";
+import { useAuthStore } from "../stores/authStore";
+import { onMounted, ref } from "vue";
 
-import { sampleBorrowRequests } from "@/data/sampleGames";
+const { toast } = useToast();
+const authStore = useAuthStore();
+
+interface BorrowRequest {
+  id: string;
+  gameTitle: string;
+  requesterName: string;
+  startDate: string;
+  endDate: string;
+  comment: string;
+}
 
 const loading = ref(false);
 const error = ref("");
-const { toast } = useToast();
+const borrowRequests = ref<BorrowRequest[]>([]);
 
-const acceptRequest = (requestId: number, gameId: number) => {
-  //TODO: Implement the accept request logic
-  toast({
-    title: "Request Accepted",
-    description: `Request ${requestId} for game ${gameId} has been accepted.`,
-    variant: "default",
-  });
+onMounted(async () => {
+  try {
+    const userId = authStore.user?.userId;
+    if (!userId) throw new Error("Requestee ID missing");
+    borrowRequests.value = await borrowRequestService.getPendingRequestsByRequesteeId(userId); // Only PENDING
+  } catch (err: any) {
+    error.value = err.message || "Failed to load received requests.";
+  } finally {
+    loading.value = false;
+  }
+});
+
+const updateRequestStatus = async (
+  requestId: string,
+  gameTitle: string,
+  newStatus: "ACCEPTED" | "DECLINED"
+) => {
+  try {
+    await borrowRequestService.respondToBorrowRequest(requestId, newStatus);
+
+    borrowRequests.value = borrowRequests.value.filter((r: any) => r.id !== requestId); // Removing the request after action
+
+    toast({
+      title: `Request ${newStatus}`,
+      description: `You have ${newStatus.toLowerCase()} the request for ${gameTitle}.`,
+      variant: newStatus === "ACCEPTED" ? "default" : "destructive",
+    });
+  } catch (err: any) {
+    toast({
+      title: `Failed to ${newStatus.toLowerCase()} request`,
+      description: err.message || "Unexpected error",
+      variant: "destructive",
+    });
+  }
 };
 
-const rejectRequest = (requestId: number, gameId: number) => {
-  //TODO: Implement the accept request logic
-  toast({
-    title: "Request Rejected",
-    description: `Request ${requestId} for game ${gameId} has been rejected.`,
-    variant: "destructive",
-  });
-};
 </script>
 
 <template>
   <div class="p-6 w-9/12 space-y-6 mx-auto">
-    <CustomTableHeader :title="'Received Borrow Requests For Your Games'" />
+    <CustomTableHeader :title="'My Received Requests'" />
     <DataTableCard :is-loading="loading" :error="error">
       <Table class="w-full mt-4">
         <TableHeader>
           <TableRow>
-            <TableHead class="font-bold text-lg text-black">Game Title</TableHead>
-            <TableHead class="font-bold text-lg text-black">Requestee Name</TableHead>
+            <TableHead class="font-bold text-lg text-black">Game</TableHead>
+            <TableHead class="font-bold text-lg text-black">Requester</TableHead>
             <TableHead class="font-bold text-lg text-black">Start Date</TableHead>
             <TableHead class="font-bold text-lg text-black">End Date</TableHead>
-            <TableHead class="font-bold text-lg text-black">Status</TableHead>
+            <TableHead class="font-bold text-lg text-black">Message</TableHead>
             <TableHead class="font-bold text-lg text-black">Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          <template v-for="(request, index) in sampleBorrowRequests" :key="request.id">
+        <TableBody v-if="borrowRequests.length > 0">
+          <template v-for="(request, index) in borrowRequests" :key="request.id">
             <TableRow :class="{ 'bg-gray-50': index % 2 === 0 }">
-              <TableCell class="text-start">{{ request.game }}</TableCell>
-              <TableCell class="text-start">{{ request.user }}</TableCell>
+              <TableCell class="text-start">{{ request.gameTitle }}</TableCell>
+              <TableCell class="text-start">{{ request.requesterName }}</TableCell>
               <TableCell class="text-start">{{ request.startDate }}</TableCell>
               <TableCell class="text-start">{{ request.endDate }}</TableCell>
-              <TableCell class="text-start"
-                ><Badge variant="default">{{ request.comment }}</Badge></TableCell
-              >
+              <TableCell class="text-start"> {{ request.comment || "No message" }}
+              </TableCell>
               <TableCell class="flex space-x-2">
                 <Alert
-                  :action-func="acceptRequest"
+                  :action-func="() => updateRequestStatus(request.id, request.gameTitle, 'ACCEPTED')"
                   :action-text="'Accept'"
                   :description="'Are you sure you want to accept this request?'"
-                  :trigger="'Accept'"
-                  class="bg-green-700 hover:bg-green-900 text-white"
-                />
+                >
+                  <Button
+                    variant="outline"
+                    class="bg-green-700 hover:bg-green-900 text-white flex gap-2 items-center pl-2"
+                  >
+                    <CheckBadgeIcon class="h-4 w-4" />
+                    Accept
+                  </Button>
+                </Alert>
                 <Alert
-                  :action-func="rejectRequest"
+                  :action-func="() => updateRequestStatus(request.id, request.gameTitle, 'DECLINED')"
                   :action-text="'Reject'"
                   :description="'Are you sure you want to reject this request?'"
-                  :trigger="'Reject'"
-                  class="bg-red-700 hover:bg-red-900 text-white ml-2"
-                />
+                >
+                  <Button
+                    variant="destructive"
+                    class="bg-red-700 hover:bg-red-900 text-white flex gap-2 items-center pl-2"
+                  >
+                    <NoSymbolIcon class="h-4 w-4" />
+                    Reject
+                  </Button>
+                </Alert>
               </TableCell>
             </TableRow>
           </template>
+        </TableBody>
+        <TableBody v-else>
+          <TableRow>
+            <TableCell colspan="6" class="text-center"> No incoming requests found. </TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </DataTableCard>
