@@ -136,7 +136,7 @@ public class BorrowingService {
         }
 
         List<BorrowRequest> requests = borrowRequestRepo.findByRequester(requester);
-        if (requests.isEmpty()) {
+        if (requests == null) {
             throw new BoardGameHubException(HttpStatus.NOT_FOUND, "No borrow requests found for requester with ID " + requesterId);
         }
         
