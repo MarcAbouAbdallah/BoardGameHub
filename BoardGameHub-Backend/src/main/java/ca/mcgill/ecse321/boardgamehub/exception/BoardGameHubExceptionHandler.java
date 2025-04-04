@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.boardgamehub.exception;
 
 import java.util.ArrayList;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
@@ -30,9 +31,9 @@ public class BoardGameHubExceptionHandler {
         return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorDto> handleConstraintViolationException(ConstraintViolationException ex) {
-        return new ResponseEntity<ErrorDto>(new ErrorDto(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({DataIntegrityViolationException.class, ConstraintViolationException.class})
+    public ResponseEntity<ErrorDto> handleDataIntegrityViolationException(Exception ex) {
+        return new ResponseEntity<>(new ErrorDto("Database operation not allowed: data integrity violation."), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
