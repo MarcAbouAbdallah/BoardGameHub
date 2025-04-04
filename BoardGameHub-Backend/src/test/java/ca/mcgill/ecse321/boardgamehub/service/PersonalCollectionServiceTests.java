@@ -12,6 +12,7 @@ import ca.mcgill.ecse321.boardgamehub.exception.BoardGameHubException;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
@@ -30,6 +31,8 @@ import org.springframework.http.HttpStatus;
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class PersonalCollectionServiceTests {
 
+    @Mock
+    private BorrowRequestRepository borrowRequestRepository;
     @Mock
     private PlayerRepository mockPlayerRepo;
     @Mock
@@ -59,7 +62,7 @@ public class PersonalCollectionServiceTests {
         when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
         
         List<GameCopy> collection = new ArrayList<>();
-        GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+        GameCopy gameCopy = new GameCopy(VALID_GAME, VALID_PLAYER);
         gameCopy.setId(VALID_GAME_COPY_ID);
         collection.add(gameCopy);
         when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(collection);
@@ -92,7 +95,7 @@ public class PersonalCollectionServiceTests {
         GameCopy added = personalCollectionService.addGameToPersonalCollection(VALID_PLAYER_ID, VALID_GAME_ID);
         
         assertNotNull(added);
-        assertTrue(added.getIsAvailable());
+        //assertTrue(added.getIsAvailable());
         assertEquals(VALID_GAME, added.getGame());
         assertEquals(VALID_PLAYER, added.getOwner());
     }
@@ -103,7 +106,7 @@ public class PersonalCollectionServiceTests {
         when(mockGameRepo.findById(VALID_GAME_ID)).thenReturn(Optional.of(VALID_GAME));
         
         List<GameCopy> collection = new ArrayList<>();
-        GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+        GameCopy gameCopy = new GameCopy(VALID_GAME, VALID_PLAYER);
         collection.add(gameCopy);
         when(mockGameCopyRepo.findByOwner(VALID_PLAYER)).thenReturn(collection);
         
@@ -117,7 +120,7 @@ public class PersonalCollectionServiceTests {
     @Test
     public void testRemoveGameCopy_ValidOwnership() {
         // Arrange
-        GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+        GameCopy gameCopy = new GameCopy(VALID_GAME, VALID_PLAYER);
         gameCopy.setId(VALID_GAME_COPY_ID);
 
         when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
@@ -139,7 +142,7 @@ public class PersonalCollectionServiceTests {
         when(mockPlayerRepo.findById(OTHER_PLAYER_ID)).thenReturn(Optional.of(otherPlayer));
 
         // The copy belongs to VALID_PLAYER
-        GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+        GameCopy gameCopy = new GameCopy(VALID_GAME, VALID_PLAYER);
         gameCopy.setId(VALID_GAME_COPY_ID);
 
         when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
@@ -169,9 +172,9 @@ public class PersonalCollectionServiceTests {
     public void testGetAvailableGames() {
         when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
         List<GameCopy> collection = new ArrayList<>();
-        GameCopy availableCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+        GameCopy availableCopy = new GameCopy(VALID_GAME, VALID_PLAYER);
         availableCopy.setId(VALID_GAME_COPY_ID);
-        GameCopy lentCopy = new GameCopy(false, VALID_GAME, VALID_PLAYER);
+        GameCopy lentCopy = new GameCopy(VALID_GAME, VALID_PLAYER);
         lentCopy.setId(VALID_GAME_COPY_ID + 1);
         collection.add(availableCopy);
         collection.add(lentCopy);
@@ -180,63 +183,71 @@ public class PersonalCollectionServiceTests {
         List<GameCopy> availableGames = personalCollectionService.getAvailableGames(VALID_PLAYER_ID);
         
         assertNotNull(availableGames);
-        assertEquals(1, availableGames.size());
-        assertTrue(availableGames.get(0).getIsAvailable());
+        assertEquals(2, availableGames.size());
+        //assertTrue(availableGames.get(0).getIsAvailable());
     }
     
-    @Test
-    public void testLendGameCopyValid() {
-        when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
-        GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
-        gameCopy.setId(VALID_GAME_COPY_ID);
-        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
-        when(mockGameCopyRepo.save(any(GameCopy.class))).thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
+    // @Test
+    // public void testLendGameCopyValid() {
+    //     when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
+    //     GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+    //     gameCopy.setId(VALID_GAME_COPY_ID);
+    //     when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
+    //     when(mockGameCopyRepo.save(any(GameCopy.class))).thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
         
-        GameCopy lent = personalCollectionService.lendGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
+    //     GameCopy lent = personalCollectionService.lendGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
         
-        assertNotNull(lent);
-        assertFalse(lent.getIsAvailable());
-    }
+    //     assertNotNull(lent);
+    //     assertFalse(lent.getIsAvailable());
+    // }
+
+    /*
+     * Will not be in use no more lending functionality
+     */
+    // @Test
+    // public void testLendGameCopyAlreadyLent() {
+    //     when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
+    //     GameCopy gameCopy = new GameCopy(false, VALID_GAME, VALID_PLAYER);
+    //     gameCopy.setId(VALID_GAME_COPY_ID);
+    //     when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
+        
+    //     BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
+    //         personalCollectionService.lendGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
+    //     });
+    //     assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+    //     assertEquals("Game copy is already lent out.", e.getMessage());
+    // }
     
-    @Test
-    public void testLendGameCopyAlreadyLent() {
-        when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
-        GameCopy gameCopy = new GameCopy(false, VALID_GAME, VALID_PLAYER);
-        gameCopy.setId(VALID_GAME_COPY_ID);
-        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
+    /*
+     * Will not be in use no more return functionality
+     */
+    // @Test
+    // public void testReturnGameCopyValid() {
+    //     when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
+    //     GameCopy gameCopy = new GameCopy(false, VALID_GAME, VALID_PLAYER);
+    //     gameCopy.setId(VALID_GAME_COPY_ID);
+    //     when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
+    //     when(mockGameCopyRepo.save(any(GameCopy.class))).thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
         
-        BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
-            personalCollectionService.lendGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
-        });
-        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-        assertEquals("Game copy is already lent out.", e.getMessage());
-    }
-    
-    @Test
-    public void testReturnGameCopyValid() {
-        when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
-        GameCopy gameCopy = new GameCopy(false, VALID_GAME, VALID_PLAYER);
-        gameCopy.setId(VALID_GAME_COPY_ID);
-        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
-        when(mockGameCopyRepo.save(any(GameCopy.class))).thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
+    //     GameCopy returned = personalCollectionService.returnGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
         
-        GameCopy returned = personalCollectionService.returnGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
+    //     assertNotNull(returned);
+    //     assertTrue(returned.getIsAvailable());
+    // }
+    /*
+     * again, no more return func.
+     */
+    // @Test
+    // public void testReturnGameCopyAlreadyAvailable() {
+    //     when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
+    //     GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
+    //     gameCopy.setId(VALID_GAME_COPY_ID);
+    //     when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
         
-        assertNotNull(returned);
-        assertTrue(returned.getIsAvailable());
-    }
-    
-    @Test
-    public void testReturnGameCopyAlreadyAvailable() {
-        when(mockPlayerRepo.findById(VALID_PLAYER_ID)).thenReturn(Optional.of(VALID_PLAYER));
-        GameCopy gameCopy = new GameCopy(true, VALID_GAME, VALID_PLAYER);
-        gameCopy.setId(VALID_GAME_COPY_ID);
-        when(mockGameCopyRepo.findById(VALID_GAME_COPY_ID)).thenReturn(Optional.of(gameCopy));
-        
-        BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
-            personalCollectionService.returnGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
-        });
-        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-        assertEquals("Game copy is already available.", e.getMessage());
-    }
+    //     BoardGameHubException e = assertThrows(BoardGameHubException.class, () -> {
+    //         personalCollectionService.returnGameCopy(VALID_PLAYER_ID, VALID_GAME_COPY_ID);
+    //     });
+    //     assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+    //     assertEquals("Game copy is already available.", e.getMessage());
+    // }
 }

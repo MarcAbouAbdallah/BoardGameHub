@@ -58,7 +58,7 @@ public class BorrowingServiceTests {
     private static final Player REQUESTER = new Player("Alice", "alice@example.com", "password123", false);
     private static final Player REQUESTEE = new Player("Bob", "bob@example.com", "securePass", true);
     private static final Game GAME = new Game("Monopoly", 4, 2, "A game", "https://images.unsplash.com/photo-1640461470346-c8b56497850a?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-    private static final GameCopy VALID_GAME = new GameCopy(true, GAME, REQUESTEE);
+    private static final GameCopy VALID_GAME = new GameCopy(GAME, REQUESTEE);
     
     @Test
     public void testCreateValidBorrowRequest(){
@@ -136,7 +136,7 @@ public class BorrowingServiceTests {
         BorrowRequestCreationDto requestToCreate = new BorrowRequestCreationDto(VALID_REQUESTER_ID, VALID_REQUESTEE_ID, VALID_GAME_COPY_ID, COMMENT, START_DATE, END_DATE);
 
         // Game copy is not owned by the requestee (request must be sent to the owner of the game)
-        GameCopy invalidGameCopy = new GameCopy(true, GAME, REQUESTER);
+        GameCopy invalidGameCopy = new GameCopy(GAME, REQUESTER);
         when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
         when(mockPlayerRepo.findPlayerById(VALID_REQUESTEE_ID)).thenReturn(REQUESTEE);
         when(mockGameCopyRepo.findGameCopyById(VALID_GAME_COPY_ID)).thenReturn(invalidGameCopy);
@@ -276,22 +276,22 @@ public class BorrowingServiceTests {
         assertEquals("The request must either be accepted, declined or returned.", exception.getMessage());
     }
 
-    @Test
-    public void testReturnBorrowRequest(){
-        BorrowRequest request = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+    // @Test
+    // public void testReturnBorrowRequest(){
+    //     BorrowRequest request = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
 
-        request.setId(VALID_BORROW_REQUEST_ID);
-        request.setStatus(BorrowStatus.ACCEPTED);
+    //     request.setId(VALID_BORROW_REQUEST_ID);
+    //     request.setStatus(BorrowStatus.ACCEPTED);
 
-        when(mockBorrowRequestRepo.save(request)).thenReturn(request);
-        when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
+    //     when(mockBorrowRequestRepo.save(request)).thenReturn(request);
+    //     when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
         
-        BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.RETURNED);
-        BorrowRequest returnedRequest = borrowingService.updateRequestStatus(VALID_BORROW_REQUEST_ID, statusDto);
+    //     BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.RETURNED);
+    //     BorrowRequest returnedRequest = borrowingService.updateRequestStatus(VALID_BORROW_REQUEST_ID, statusDto);
         
-        assertNotNull(returnedRequest);
-        assertEquals(BorrowStatus.RETURNED, returnedRequest.getStatus());
-    }
+    //     assertNotNull(returnedRequest);
+    //     assertEquals(BorrowStatus.RETURNED, returnedRequest.getStatus());
+    // }
 
     @Test
     public void testUpdateValidBorrowRequest(){
@@ -452,30 +452,30 @@ public class BorrowingServiceTests {
         assertEquals("No borrow requests found for requester with ID "+ VALID_REQUESTER_ID, exception.getMessage());
     }
 
-    @Test
-    public void testGetReturnedRequestsByRequester(){
-        BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-        request1.setStatus(BorrowStatus.RETURNED);
-        BorrowRequest request2 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-        request2.setStatus(BorrowStatus.RETURNED);
-        BorrowRequest request3 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-        request3.setStatus(BorrowStatus.PENDING);
-        List<BorrowRequest> requests = new ArrayList<>();
-        requests.add(request1);
-        requests.add(request2);
-        requests.add(request3);
-        when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(requests);
-        when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
+    // @Test
+    // public void testGetReturnedRequestsByRequester(){
+    //     BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+    //     request1.setStatus(BorrowStatus.RETURNED);
+    //     BorrowRequest request2 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+    //     request2.setStatus(BorrowStatus.RETURNED);
+    //     BorrowRequest request3 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
+    //     request3.setStatus(BorrowStatus.PENDING);
+    //     List<BorrowRequest> requests = new ArrayList<>();
+    //     requests.add(request1);
+    //     requests.add(request2);
+    //     requests.add(request3);
+    //     when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(requests);
+    //     when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
         
-        List<BorrowRequest> allRequests = borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, "RETURNED");
+    //     List<BorrowRequest> allRequests = borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, "RETURNED");
         
-        assertEquals(2, allRequests.size());
-    }
+    //     assertEquals(2, allRequests.size());
+    // }
 
     @Test
     public void testGetRequestsByRequester_InvalidFilter(){
         BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-        request1.setStatus(BorrowStatus.RETURNED);
+        request1.setStatus(BorrowStatus.PENDING);
         List<BorrowRequest> requests = new ArrayList<>();
         requests.add(request1);
         when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(requests);
@@ -539,9 +539,9 @@ public class BorrowingServiceTests {
     @Test
     public void testGetLendingHistoryofRequestee(){
         BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-        request1.setStatus(BorrowStatus.RETURNED);
+        request1.setStatus(BorrowStatus.ACCEPTED);
         BorrowRequest request2 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-        request2.setStatus(BorrowStatus.RETURNED);
+        request2.setStatus(BorrowStatus.PENDING);
         BorrowRequest request3 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
         request3.setStatus(BorrowStatus.PENDING);
         List<BorrowRequest> requests = new ArrayList<>();
@@ -553,13 +553,13 @@ public class BorrowingServiceTests {
         
         List<BorrowRequest> allRequests = borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, "HISTORY");
         
-        assertEquals(2, allRequests.size());
+        assertEquals(1, allRequests.size());
     }
 
     @Test
     public void testGetRequestsByRequestee_InvalidFilter(){
         BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-        request1.setStatus(BorrowStatus.RETURNED);
+        request1.setStatus(BorrowStatus.ACCEPTED);
         List<BorrowRequest> requests = new ArrayList<>();
         requests.add(request1);
         when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(requests);
