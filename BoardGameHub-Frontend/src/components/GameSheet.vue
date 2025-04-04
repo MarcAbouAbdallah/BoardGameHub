@@ -24,6 +24,7 @@ import CreateReviewModal from "./popups/CreateReviewModal.vue";
 import UpdateGameModal from "./popups/update/UpdateGameModal.vue";
 import type { Game } from "@/types/Game";
 
+
 const fallback = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzJ4bjU2NWE5YTh1Y3Q1cTVmcHdmOHhrOWo0a3hvN2dwcnNncXhzZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/YORVoIzhBZZaHY7Jp2/giphy.gif";
 
 const { toast } = useToast();
@@ -146,7 +147,7 @@ const handleCreateBorrow = async (request: {
     </SheetTrigger>
     <SheetContent class="w-[600px] sm:max-w-none">
       <SheetHeader class="flex items-center mt-7">
-        <SheetTitle class="text-2xl">{{ props.game.name }}</SheetTitle>
+            <SheetTitle class="text-2xl">{{ props.game.name }}</SheetTitle>
       </SheetHeader>
       <div class="flex flex-col justify-center items-center mt-6">
         <img

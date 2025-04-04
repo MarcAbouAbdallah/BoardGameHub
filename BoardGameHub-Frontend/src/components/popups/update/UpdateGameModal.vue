@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
+import { ref, watch } from "vue";
 import { Pen } from "lucide-vue-next";
 import {
   Dialog,
@@ -11,14 +11,21 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ref } from "vue";
+import { Button } from "@/components/ui/button";
 import DialogClose from "@/components/ui/dialog/DialogClose.vue";
 import type { Game } from "@/types/Game";
-import { defineProps, watch} from "vue";
 import gameService from "@/services/gameService";
-
+import { useToast } from "@/components/ui/toast/use-toast";
 
 const props = defineProps<{ game: Game }>();
+
+const emit = defineEmits<{
+  (e: "game-updated", updatedGame: Game): void;
+}>();
+
+const isOpen = ref(false);
+const { toast } = useToast();
+const error = ref("");
 
 const formData = ref({
   gameName: "",
@@ -28,8 +35,6 @@ const formData = ref({
   gameImage: "",
 });
 
-const isOpen = ref(false);
-
 watch(isOpen, (newVal) => {
   if (newVal) {
     formData.value = {
@@ -37,42 +42,43 @@ watch(isOpen, (newVal) => {
       minPlayers: props.game.minPlayers,
       maxPlayers: props.game.maxPlayers,
       gameDescription: props.game.description,
-      gameImage: props.game.photoURL, // optional – not used by backend right now
+      gameImage: props.game.photoURL ?? "",
     };
   }
 });
 
-
 const close = () => {
   isOpen.value = false;
-  console.log("Dialog closed");
 };
-
-const emit = defineEmits<{
-  (e: "game-updated", updatedGame: Game): void;
-}>();
 
 const handleSubmit = async () => {
   try {
     const updatedFields = {
       name: formData.value.gameName,
       description: formData.value.gameDescription,
-      minPlayers: formData.value.minPlayers,
       maxPlayers: formData.value.maxPlayers,
+      minPlayers: formData.value.minPlayers,
       photoURL: formData.value.gameImage,
     };
 
-    //debug
-    console.log("Sending updatedFields:", updatedFields);
-
     const updatedGame = await gameService.updateGame(props.game.id, updatedFields);
     emit("game-updated", updatedGame);
-    isOpen.value = false;
-  } catch (err) {
-    console.error("Failed to update game:", err);
+
+    toast({
+      title: "Game Updated!",
+      description: `"${updatedGame.name}" has been updated successfully.`,
+      variant: "default",
+    });
+
+    close();
+  } catch (err: any) {
+    toast({
+      title: "Update Failed",
+      description: err,
+      variant: "destructive",
+    });
   }
 };
-
 </script>
 
 <template>
@@ -85,21 +91,15 @@ const handleSubmit = async () => {
     </DialogTrigger>
     <DialogContent :close="close">
       <DialogHeader>
-        <DialogTitle>Edit the game</DialogTitle>
+        <DialogTitle>Edit Game</DialogTitle>
         <DialogDescription>
-          Modify the game details below. Leave any field blank if you want to keep the current
-          value.
+          Modify the game details. All fields are editable.
         </DialogDescription>
       </DialogHeader>
       <form class="flex flex-col gap-4 py-4" @submit.prevent="handleSubmit">
         <div class="flex gap-2 items-center">
           <Label for="game-name" class="w-full">Game Name</Label>
-          <Input
-            v-model="formData.gameName"
-            id="game-name"
-            type="text"
-            placeholder="Enter game name"
-          />
+          <Input v-model="formData.gameName" id="game-name" type="text" placeholder="Enter game name" />
         </div>
         <div class="flex gap-2 items-center">
           <Label for="min-players" class="w-full">Minimum Players</Label>
@@ -111,28 +111,21 @@ const handleSubmit = async () => {
         </div>
         <div class="flex gap-2 items-center">
           <Label for="game-description" class="w-full">Game Description</Label>
-          <Input
-            v-model="formData.gameDescription"
-            id="game-description"
-            type="text"
-            placeholder="Enter game description"
-          />
+          <Input v-model="formData.gameDescription" id="game-description" type="text" placeholder="Description..." />
         </div>
         <div class="flex gap-2 items-center">
           <Label for="game-image" class="w-full">Game Image</Label>
-          <Input
-            v-model="formData.gameImage"
-            id="game-image"
-            type="text"
-            placeholder="Enter game image link"
-          />
+          <Input v-model="formData.gameImage" id="game-image" type="text" placeholder="Enter image URL" />
         </div>
-        <div class="flex gap-2 items-center flex-end">
-          <Button type="submit" class="mt-4 w-fit">Confirm</Button>
-          <DialogClose class="w-fit p-0 mt-4">
-            <Button variant="outline">Cancel</Button>
+
+        <div class="flex justify-end gap-2 mt-4">
+          <DialogClose as-child>
+            <Button variant="secondary">Cancel</Button>
           </DialogClose>
+          <Button type="submit">Submit</Button>
         </div>
+
+        <p v-if="error" class="text-red-500 text-sm mt-2">{{ error }}</p>
       </form>
     </DialogContent>
   </Dialog>
