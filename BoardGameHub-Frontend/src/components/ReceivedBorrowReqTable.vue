@@ -47,7 +47,7 @@ onMounted(async () => {
 const updateRequestStatus = async (
   requestId: string,
   gameTitle: string,
-  newStatus: "ACCEPTED" | "DECLINED"
+  newStatus: "ACCEPTED" | "DECLINED",
 ) => {
   try {
     await borrowRequestService.respondToBorrowRequest(requestId, newStatus);
@@ -67,11 +67,10 @@ const updateRequestStatus = async (
     });
   }
 };
-
 </script>
 
 <template>
-  <div class="p-6 w-9/12 space-y-6 mx-auto">
+  <div class="">
     <CustomTableHeader :title="'My Received Requests'" />
     <DataTableCard :is-loading="loading" :error="error">
       <Table class="w-full mt-4">
@@ -92,11 +91,12 @@ const updateRequestStatus = async (
               <TableCell class="text-start">{{ request.requesterName }}</TableCell>
               <TableCell class="text-start">{{ request.startDate }}</TableCell>
               <TableCell class="text-start">{{ request.endDate }}</TableCell>
-              <TableCell class="text-start"> {{ request.comment || "No message" }}
-              </TableCell>
+              <TableCell class="text-start"> {{ request.comment || "No message" }} </TableCell>
               <TableCell class="flex space-x-2">
                 <Alert
-                  :action-func="() => updateRequestStatus(request.id, request.gameTitle, 'ACCEPTED')"
+                  :action-func="
+                    () => updateRequestStatus(request.id, request.gameTitle, 'ACCEPTED')
+                  "
                   :action-text="'Accept'"
                   :description="'Are you sure you want to accept this request?'"
                 >
@@ -109,7 +109,9 @@ const updateRequestStatus = async (
                   </Button>
                 </Alert>
                 <Alert
-                  :action-func="() => updateRequestStatus(request.id, request.gameTitle, 'DECLINED')"
+                  :action-func="
+                    () => updateRequestStatus(request.id, request.gameTitle, 'DECLINED')
+                  "
                   :action-text="'Reject'"
                   :description="'Are you sure you want to reject this request?'"
                 >

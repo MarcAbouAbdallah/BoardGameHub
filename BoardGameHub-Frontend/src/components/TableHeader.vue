@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
 import { Button } from "./ui/button";
-import { FilterIcon, RefreshCcw, Plus } from "lucide-vue-next";
+import { Plus } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 
 const props = defineProps({
@@ -23,13 +23,6 @@ const isGameHeader = props.title.toString().includes("My Games");
     <Button v-if="isGameHeader" @click="router.push('/games')">
       <Plus class="w-4 h-4" />
       Add Games to your Collection
-    </Button>
-    <Button variant="outline" class="flex items-center mx-3 border-black">
-      <FilterIcon class="w-4 h-4" />Filters
-    </Button>
-    <Button @click="">
-      <RefreshCcw class="h-4 w-4" />
-      Refresh
     </Button>
   </div>
 </template>
