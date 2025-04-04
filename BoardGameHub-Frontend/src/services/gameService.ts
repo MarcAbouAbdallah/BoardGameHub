@@ -50,9 +50,9 @@ const gameService = {
     try {
       const response = await api.delete(`/games/${gameId}`);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting game:", error);
-      throw error;
+      throw error.response.data.errors[0];
     }
   },
 };
