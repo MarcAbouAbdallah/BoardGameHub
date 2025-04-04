@@ -493,7 +493,7 @@ public class BorrowingServiceTests {
         });
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-        assertEquals("Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED.", exception.getMessage());
+        assertEquals("Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED.", exception.getMessage());
     }
 
     @Test
@@ -580,7 +580,7 @@ public class BorrowingServiceTests {
         });
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-        assertEquals("Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED, HISTORY.", exception.getMessage());
+        assertEquals("Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, HISTORY.", exception.getMessage());
     }
 
     @Test

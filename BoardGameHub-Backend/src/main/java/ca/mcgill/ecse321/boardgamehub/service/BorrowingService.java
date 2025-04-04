@@ -91,7 +91,7 @@ public class BorrowingService {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Only pending requests can be accepted or declined.");
         }
 
-        if (overlapsWithExistingRequest(request.getStartDate(), request.getEndDate(), request.getGame())) {
+        if (request.getStatus() == BorrowStatus.PENDING && statusDto.getStatus() == BorrowStatus.ACCEPTED && overlapsWithExistingRequest(request.getStartDate(), request.getEndDate(), request.getGame())) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, "Borrowing dates overlap with another accepted request.");
         }
 
@@ -153,7 +153,7 @@ public class BorrowingService {
                     .collect(Collectors.toList());
         } catch (IllegalArgumentException e) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST, 
-                "Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED.");
+                "Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED.");
         }
     }
 
@@ -189,7 +189,7 @@ public class BorrowingService {
                     .collect(Collectors.toList());
         } catch (IllegalArgumentException e) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
-                    "Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, RETURNED, HISTORY.");
+                    "Invalid status filter. Must be one of: PENDING, ACCEPTED, DECLINED, HISTORY.");
         }
     }
 
@@ -210,7 +210,7 @@ public class BorrowingService {
     private boolean overlapsWithExistingRequest(Date startDate, Date endDate, GameCopy gameCopy) {
         List<BorrowRequest> list = borrowRequestRepo.findByGame(gameCopy);
         for (BorrowRequest b: list) {
-            if (b.getStatus() != BorrowStatus.PENDING && b.getStatus() != BorrowStatus.ACCEPTED) continue;
+            if (b.getStatus() != BorrowStatus.ACCEPTED) continue;
             if ((b.getEndDate().before(endDate) && b.getEndDate().after(startDate)) ||
                 (b.getStartDate().before(endDate) && b.getStartDate().after(startDate)) ||
                 (b.getStartDate().before(startDate) && b.getEndDate().after(endDate)) ||
