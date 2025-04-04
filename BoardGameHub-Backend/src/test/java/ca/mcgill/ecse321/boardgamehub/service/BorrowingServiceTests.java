@@ -406,18 +406,22 @@ public class BorrowingServiceTests {
         assertEquals(3, allRequests.size());
     }
 
-    @Test
-    public void testGetAllRequestsByRequester_EmptyList() {
-        when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
-        when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(List.of());
-        
-        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, null);
-        });
+    /*
+     * The error thrown used in this test is no longer used
+     */
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("No borrow requests found for requester with ID "+ VALID_REQUESTER_ID, exception.getMessage());
-    }
+    // @Test
+    // public void testGetAllRequestsByRequester_EmptyList() {
+    //     when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
+    //     when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(List.of());
+        
+    //     BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+    //         borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, null);
+    //     });
+
+    //     assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    //     assertEquals("No borrow requests found for requester with ID "+ VALID_REQUESTER_ID, exception.getMessage());
+    // }
 
     @Test
     public void testGetAcceptedRequestsByRequester(){
@@ -439,18 +443,21 @@ public class BorrowingServiceTests {
         assertEquals(2, allRequests.size());
     }
 
-    @Test
-    public void testGetAcceptedRequestsByRequester_EmptyList() {
-        when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
-        when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(List.of());
+    /*
+     * The error thrown expected in this test is no longer thrown
+     */
+    // @Test
+    // public void testGetAcceptedRequestsByRequester_EmptyList() {
+    //     when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
+    //     when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(List.of());
         
-        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, "ACCEPTED");
-        });
+    //     BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+    //         borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, "ACCEPTED");
+    //     });
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("No borrow requests found for requester with ID "+ VALID_REQUESTER_ID, exception.getMessage());
-    }
+    //     assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    //     assertEquals("No borrow requests found for requester with ID "+ VALID_REQUESTER_ID, exception.getMessage());
+    // }
 
     // @Test
     // public void testGetReturnedRequestsByRequester(){
@@ -503,18 +510,21 @@ public class BorrowingServiceTests {
         assertEquals(3, allRequests.size());
     }
 
-    @Test
-    public void testGetAllRequestsByRequestee_EmptyList() {
-        when(mockPlayerRepo.findPlayerById(VALID_REQUESTEE_ID)).thenReturn(REQUESTEE);
-        when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(List.of());
+    /*
+     * The error thrown expected in this error is no longer thrown
+     */
+    // @Test
+    // public void testGetAllRequestsByRequestee_EmptyList() {
+    //     when(mockPlayerRepo.findPlayerById(VALID_REQUESTEE_ID)).thenReturn(REQUESTEE);
+    //     when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(List.of());
         
-        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-            borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, null);
-        });
+    //     BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
+    //         borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, null);
+    //     });
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("No borrow requests found for requestee with ID "+ VALID_REQUESTEE_ID, exception.getMessage());
-    }
+    //     assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    //     assertEquals("No borrow requests found for requestee with ID "+ VALID_REQUESTEE_ID, exception.getMessage());
+    // }
 
     @Test
     public void testGetAcceptedRequestsByRequestee(){
