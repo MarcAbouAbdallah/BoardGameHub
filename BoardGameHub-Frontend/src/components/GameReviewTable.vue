@@ -123,9 +123,7 @@ const handleUpdate = async (updatedReview: any) => {
         </TableBody>
         <TableBody v-else>
           <TableRow>
-            <TableCell class="text-center text-xl font-semi-bold" colspan="4">
-              No reviews found.
-            </TableCell>
+            <TableCell colspan="6" class="text-center"> No reviews found. </TableCell>
           </TableRow>
         </TableBody>
       </Table>

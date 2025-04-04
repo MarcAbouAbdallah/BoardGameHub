@@ -15,7 +15,7 @@ const props = defineProps({
   <Card class="w-full">
     <CardHeader>
       <CardTitle class="flex items-center justify-between">
-        <span class="text-lg font-semibold">{{ props.review.reviewerId }}</span>
+        <span class="text-lg font-semibold">{{ props.review.reviewerName }}</span>
         <rating :rating-value="props.review.rating" />
       </CardTitle>
       <CardContent class="p-0">
