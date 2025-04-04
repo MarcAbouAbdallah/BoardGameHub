@@ -45,14 +45,13 @@ export const gameCopyService = {
     }
   },
 
-  // PATCH /gamecopies/{gameCopyId} - update availability
-  async updateGameCopyAvailability(gameCopyId: number, dto: any) {
+  async getPlayerCollection(playerId: number) {
     try {
-      const response = await api.patch(`/gamecopies/${gameCopyId}`, dto);
+      const response = await api.get(`/gamecopies/players/${playerId}`);
       return response.data;
-    } catch (error) {
-      console.error("Error updating game copy availability:", error);
-      throw error;
+    } catch (error: any) {
+      console.error("Error fetching player collection:", error);
+      throw error.response.data.errors[0];
     }
   },
 
@@ -61,9 +60,9 @@ export const gameCopyService = {
     try {
       const response = await api.delete(`/gamecopies/${gameCopyId}?userId=${userId}`);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error removing game copy:", error);
-      throw error;
+      throw error.response.data.errors[0];
     }
   },
 };

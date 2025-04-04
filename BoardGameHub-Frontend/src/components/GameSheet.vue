@@ -55,6 +55,7 @@ interface GameReview {
   comment: string;
   gameName: string;
   reviewDate: string;
+  reviewerName: string;
 }
 
 const gameCopies = ref<GameCopy[]>([]);
