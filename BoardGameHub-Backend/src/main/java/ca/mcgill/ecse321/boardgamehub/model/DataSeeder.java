@@ -120,7 +120,6 @@ public class DataSeeder implements CommandLineRunner {
             Player john = playerRepository.findById(1).orElse(null);
             if (catan != null && john != null) {
                 GameCopy copy1 = new GameCopy();
-                copy1.setIsAvailable(true);
                 copy1.setGame(catan);
                 copy1.setOwner(john);
                 gameCopyRepository.save(copy1);
@@ -130,7 +129,6 @@ public class DataSeeder implements CommandLineRunner {
             Player jane = playerRepository.findById(2).orElse(null);
             if (risk != null && jane != null) {
                 GameCopy copy2 = new GameCopy();
-                copy2.setIsAvailable(true);
                 copy2.setGame(risk);
                 copy2.setOwner(jane);
                 gameCopyRepository.save(copy2);
@@ -140,7 +138,6 @@ public class DataSeeder implements CommandLineRunner {
             Player laura = playerRepository.findById(4).orElse(null);
             if (gloomhaven != null && laura != null) {
                 GameCopy copy3 = new GameCopy();
-                copy3.setIsAvailable(true);
                 copy3.setGame(gloomhaven);
                 copy3.setOwner(laura);
                 gameCopyRepository.save(copy3);
