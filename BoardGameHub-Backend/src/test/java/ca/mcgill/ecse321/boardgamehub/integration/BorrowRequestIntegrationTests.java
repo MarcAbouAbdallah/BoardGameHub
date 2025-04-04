@@ -9,9 +9,13 @@ import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.RegistrationRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
+
 import org.junit.jupiter.api.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +48,15 @@ public class BorrowRequestIntegrationTests {
     @Autowired
     private BorrowRequestRepository borrowRequestRepo;
 
+    @Autowired
+    private RegistrationRepository registrationRepo;
+
+    @Autowired
+    private EventRepository eventRepo;
+
+    @Autowired
+    private ReviewRepository reviewRepo;
+
     private static final Player REQUESTER = new Player("Alice", "alice@mail.com", "password123", false);
     private static final Player REQUESTEE = new Player("Bob", "bob@mail.com", "securePass", true);
     private static final Game GAME = new Game("Catan", 4, 2, "Strategy game", "https://images.unsplash.com/photo-1619163413327-546fdb903195?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
@@ -57,6 +70,7 @@ public class BorrowRequestIntegrationTests {
 
     @BeforeAll
     public void setup() {
+        clearDatabase();
         playerRepo.save(REQUESTER);
         playerRepo.save(REQUESTEE);
         gameRepo.save(GAME);
@@ -65,6 +79,9 @@ public class BorrowRequestIntegrationTests {
 
     @AfterAll
     public void clearDatabase() {
+        reviewRepo.deleteAll();
+        registrationRepo.deleteAll();
+        eventRepo.deleteAll();
         borrowRequestRepo.deleteAll();
         gameCopyRepo.deleteAll();
         gameRepo.deleteAll();

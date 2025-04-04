@@ -32,6 +32,9 @@ import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.RegistrationRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -53,6 +56,15 @@ public class EventIntegrationTests {
 
     @Autowired
     private EventRepository eventRepo;
+
+    @Autowired
+    private ReviewRepository reviewRepo;
+
+    @Autowired
+    private RegistrationRepository registrationRepo;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
 
     private static final Player VALID_ORGANIZER = new Player("John", "john@mail.com", "123", true);
     private static final Game VALID_GAME = new Game("Monopoly", 4, 2, "Fun game.", "https://images.unsplash.com/photo-1640461470346-c8b56497850a?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
@@ -76,11 +88,14 @@ public class EventIntegrationTests {
     }
 
     @AfterAll
-    public void clearDataBase() {
+    public void clearDatabase() {
+        reviewRepo.deleteAll();
+        registrationRepo.deleteAll();
         eventRepo.deleteAll();
+        borrowRequestRepo.deleteAll();
         gameCopyRepo.deleteAll();
-        playerRepo.deleteAll();
         gameRepo.deleteAll();
+        playerRepo.deleteAll();
     }
 
     @Test
