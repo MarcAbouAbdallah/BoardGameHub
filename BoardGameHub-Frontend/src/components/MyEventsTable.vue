@@ -123,13 +123,6 @@
       </Table>
     </DataTableCard>
 
-    <!-- Create Event Modal -->
-    <CreateEventModal
-      v-if="isCreateEventModalOpen"
-      :close="() => { isCreateEventModalOpen = false }"
-      :createEvent="createEvent"
-    />
-
     <!-- Edit Event Modal -->
     <EditEventModal
       v-if="isEditEventModalOpen"
@@ -154,8 +147,6 @@ import {
   FilterIcon,
   ChevronDown,
   ChevronUp,
-  Plus,
-  RefreshCcw,
   Edit,
   Trash2
 } from "lucide-vue-next";
@@ -168,7 +159,6 @@ import {
   TableRow
 } from "@/components/ui/table";
 
-import CreateEventModal from "@/components/popups/CreateEventModal.vue";
 import EditEventModal from "@/components/popups/update/UpdateEventModal.vue";
 
 // Services
@@ -185,7 +175,6 @@ const expandedRows = ref<Record<number, boolean>>({});
 const registrationsByEvent = ref<Record<number, any[]>>({});
 
 // Modal states
-const isCreateEventModalOpen = ref<boolean>(false);
 const isEditEventModalOpen = ref<boolean>(false);
 const editEventData = ref<any | null>(null);
 
@@ -403,9 +392,11 @@ const toggleRowExpansion = async (eventId: number) => {
   }
 };
 
+/*
 const refreshNoBlink = async () => {
   await softReloadEvents();
 };
+*/
 
 onMounted(async () => {
   await fetchEventsInitially();

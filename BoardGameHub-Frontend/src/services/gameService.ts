@@ -28,9 +28,9 @@ const gameService = {
     try {
       const response = await api.post("/games", gameData);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating game:", error);
-      throw error;
+      throw error.response.data.errors[0];
     }
   },
 
@@ -39,9 +39,9 @@ const gameService = {
     try {
       const response = await api.put(`/games/${gameId}`, gameData);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating game:", error);
-      throw error;
+      throw error.response.data.errors[0];
     }
   },
 
@@ -50,9 +50,9 @@ const gameService = {
     try {
       const response = await api.delete(`/games/${gameId}`);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting game:", error);
-      throw error;
+      throw error.response.data.errors[0];
     }
   },
 };

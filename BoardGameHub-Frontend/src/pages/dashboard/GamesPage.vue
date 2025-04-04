@@ -28,9 +28,6 @@ const playerCollectionGameIds = ref<number[]>([]);
 const authStore = useAuthStore();
 
 
-
-
-
 onMounted(async () => {
 
   if (!authStore.user?.userEmail) {

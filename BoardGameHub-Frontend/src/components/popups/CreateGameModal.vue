@@ -13,10 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ref } from "vue";
 import DialogClose from "../ui/dialog/DialogClose.vue";
-
+import { useToast } from "@/components/ui/toast";
 import type { Game } from "@/types/Game";
 import gameService from "@/services/gameService";
 
+const { toast } = useToast();
 
 const formData = ref({
   gameName: "",
@@ -51,6 +52,12 @@ const handleSubmit = async () => {
     const createdGame = await gameService.createGame(gameToSend);
     emit("game-created", createdGame); // Tell parent about it
 
+    toast({
+      title: "Game Created!",
+      description: `"${createdGame.name}" has been successfully added.`,
+      variant: "default",
+    });
+
     // Reset form and close modal
     formData.value = {
       gameName: "",
@@ -61,7 +68,12 @@ const handleSubmit = async () => {
     };
     isOpen.value = false;
 
-  } catch (err) {
+  } catch (err: any) {
+    toast({
+      title: "Failed to Create Game",
+      description: err || "An error occurred. Please try again.",
+      variant: "destructive",
+    });
     console.error("An error occurred. Please try again.", err);
   }
 };
@@ -94,7 +106,7 @@ const handleSubmit = async () => {
           />
         </div>
         <div class="flex gap-2 items-center">
-          <Label for="min-players" class="w-full">Minimum Playerse</Label>
+          <Label for="min-players" class="w-full">Minimum Players</Label>
           <Input
             v-model="formData.minPlayers"
             id="min-players"

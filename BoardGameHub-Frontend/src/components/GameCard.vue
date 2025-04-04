@@ -87,6 +87,7 @@ const handleAddToCollectionClick = async (gameId: number) => {
             class="absolute top-full mt-1 right-0 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             Add to your collection
           </span>
+          
         </template>
       </div>
 
@@ -111,9 +112,8 @@ const handleAddToCollectionClick = async (gameId: number) => {
           {{ props.game.description }}
         </CardDescription>
 
-
       </CardContent>
 
     </Card>
-  </GameSheet>
+  </GameSheet :game="props.game">
 </template>

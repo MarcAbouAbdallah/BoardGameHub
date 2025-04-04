@@ -34,4 +34,28 @@ export const reviewService = {
       throw error.response.data.errors[0];
     }
   },
+
+  async getReviewsByGameName(gameName: string) {
+    try {
+      const response = await api.get(`/reviews/game/${gameName}`);
+      return response.data;
+    }
+    catch (error: any) {
+      console.error("Error fetching reviews by game name:", error);
+      throw error.response.data.errors[0];
+    }
+  },
+
+  async createReview(
+    data: { rating?: number; comment?: string; gameName: String; reviewerId: number},
+  ) {
+    try {
+      const response = await api.post(`/reviews`, data);
+      return response.data;
+    } catch (error: any) {
+      console.error("Error creating review:", error);
+      throw error.response.data.errors[0];
+    }
+  },
+
 };

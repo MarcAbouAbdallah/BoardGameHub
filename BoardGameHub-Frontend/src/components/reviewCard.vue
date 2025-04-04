@@ -15,12 +15,12 @@ const props = defineProps({
   <Card class="w-full">
     <CardHeader>
       <CardTitle class="flex items-center justify-between">
-        <span class="text-lg font-semibold">{{ props.review.reviewer }}</span>
-        <rating :rating-value="props.review.reviewId.toString()" />
+        <span class="text-lg font-semibold">{{ props.review.reviewerId }}</span>
+        <rating :rating-value="props.review.rating" />
       </CardTitle>
       <CardContent class="p-0">
         <CardDescription class="text-sm text-gray-500">
-          {{ props.review.reviewText }}
+          {{ props.review.comment }}
         </CardDescription>
       </CardContent>
     </CardHeader>

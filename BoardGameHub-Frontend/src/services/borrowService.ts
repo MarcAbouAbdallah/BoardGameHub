@@ -41,4 +41,16 @@ export const borrowRequestService = {
       throw error;
     }
   },
+
+  async createBorrowRequest(
+    data: {gameCopyId: string; requesteeId: string; startDate: string; endDate: string; comment: string; requesterId: number },
+  ) {
+    try {
+      const response = await api.post(`/borrow-requests`, data);
+      return response.data;
+    } catch (error: any) {
+      console.error("Error creating borrow request:", error);
+      throw error.response.data.errors[0];
+    }
+  }
 };
