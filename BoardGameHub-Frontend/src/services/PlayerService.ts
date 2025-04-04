@@ -123,4 +123,33 @@ export const playerService = {
       throw error;
     }
   },
+
+  // Delete player by ID
+  async deletePlayer(playerId: number) {
+    try {
+      const response = await api.delete(`/players/${playerId}`);
+      console.log("Player deleted successfully:", response.data);
+      toast({
+        title: "Success",
+        description: "Player account deleted successfully.",
+        variant: "default",
+      });
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        toast({
+          title: "Error",
+          description: "Player not found.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.response?.data.errors?.[0] || "Something went wrong.",
+          variant: "destructive",
+        });
+      }
+      throw error;
+    }
+  }
 };
