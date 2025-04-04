@@ -15,6 +15,7 @@ import { Input } from "./ui/input";
 import Alert from "./alert/Alert.vue";
 import router from "@/router";
 import UpdatePasswordModal from "./popups/update/UpdatePasswordModal.vue";
+import { playerService } from "@/services/PlayerService";
 
 const isUserNameEditing = ref(false);
 const isEmailEditing = ref(false);
@@ -24,22 +25,49 @@ const email = ref("");
 
 const user = useAuthStore().user;
 
-const handleUserNameChange = () => {
-  //TODO: Add API call to update username
-  useAuthStore().changeUsername(userName.value);
-  isUserNameEditing.value = false;
+const handleUserNameChange = async () => {
+  try {
+    if (user?.userId) {
+      const player = {
+        name: userName.value,
+      };
+      await playerService.updatePlayer(user.userId , player);
+
+      useAuthStore().changeUsername(userName.value);
+      isUserNameEditing.value = false;
+    } 
+  } catch (error) {
+    console.error("Failed to update username:", error);
+  }
 };
 
-const handleEmailChange = () => {
-  //TODO: Add API call to update email
-  useAuthStore().changeUserEmail(email.value);
-  isEmailEditing.value = false;
+const handleEmailChange = async () => {
+  try {
+    if (user?.userId) {
+      const player = {
+        email: email.value,
+      };
+      await playerService.updatePlayer(user.userId , player);
+      useAuthStore().changeUserEmail(email.value);
+      isEmailEditing.value = false;
+    }
+  } catch (error) {
+    console.error("Failed to update email:", error);
+  }
 };
 
-const handleDeleteAccount = () => {
-  //TODO: Add API call to delete account
-  useAuthStore().logout();
-  router.push("/");
+const handleDeleteAccount = async () => {
+  try {
+    if (user?.userId) {
+      await playerService.deletePlayer(user.userId);
+      useAuthStore().logout();
+      router.push("/").then(() => {
+      window.location.reload();
+      });
+    }
+  } catch (error) {
+    console.error("Failed to delete account:", error);
+  }
 };
 </script>
 

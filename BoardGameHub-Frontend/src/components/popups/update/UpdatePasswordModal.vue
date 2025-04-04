@@ -13,6 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ref } from "vue";
+import { toast } from "@/components/ui/toast";
+import { useAuthStore } from "@/stores/authStore";
+import { playerService } from "@/services/PlayerService";
 
 const formData = ref({
   currentPassword: "",
@@ -26,13 +29,63 @@ const close = () => {
   console.log("Dialog closed");
 };
 
+const user = useAuthStore().user;
+
 const handleSubmit = async () => {
   try {
-    //TODO: Add change password logic here
-    // Call the API to update the password
-    // await gameService.updatePassword(formData.value);
-    console.log("Password updated successfully", formData.value);
+    if (formData.value.currentPassword == "" || formData.value.newPassword == "" || formData.value.confirmNewPassword == "") {
+      toast({
+        title: "Error",
+        description: "Please fill in all the password fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.value.currentPassword !== user.userPassword) {
+      toast({
+        title: "Error",
+        description: "Current password do not match user password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.value.currentPassword == formData.value.newPassword) {
+      toast({
+        title: "Error",
+        description: "New password can not be same as current password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.value.newPassword !== formData.value.confirmNewPassword) {
+      toast({
+        title: "Error",
+        description: "New password and confirmation do not match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (user?.userId) {
+      const player = {
+      password: formData.value.newPassword,
+      };
+      await playerService.updatePlayer(user.userId, player);
+    toast({
+      title: "Success",
+      description: "Your password has been updated.",
+      variant: "default",
+    });
+
+    useAuthStore().changeUserPassword(formData.value.newPassword);
     close();
+    formData.value.currentPassword = "";
+    formData.value.newPassword = "";
+    formData.value.confirmNewPassword = "";
+    }
   } catch (error) {
     console.error("Error updating password", error);
   }

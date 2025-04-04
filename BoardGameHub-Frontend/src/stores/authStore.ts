@@ -5,6 +5,7 @@ interface User {
   username: string | null;
   userEmail: string | null;
   userId: number | null;
+  userPassword: string | null;
   isAuthenticated: boolean;
 }
 
@@ -13,6 +14,7 @@ export const useAuthStore = defineStore("auth", () => {
     username: null,
     userEmail: null,
     userId: null,
+    userPassword: null,
     isAuthenticated: false,
   });
 
@@ -26,6 +28,7 @@ export const useAuthStore = defineStore("auth", () => {
     user.value.username = name;
     user.value.userEmail = email;
     user.value.userId = id;
+    user.value.userPassword = pwd;
     user.value.isAuthenticated = true;
 
     localStorage.setItem("user", JSON.stringify(user.value));
@@ -35,8 +38,8 @@ export const useAuthStore = defineStore("auth", () => {
     user.value.username = null;
     user.value.userEmail = null;
     user.value.userId = null;
+    user.value.userPassword = null;
     user.value.isAuthenticated = false;
-
     localStorage.removeItem("user");
   }
 
@@ -50,5 +53,10 @@ export const useAuthStore = defineStore("auth", () => {
     localStorage.setItem("user", JSON.stringify(user.value));
   }
 
-  return { user, login, logout, changeUsername, changeUserEmail };
+  function changeUserPassword(newUserPassword: string) {
+    user.value.userPassword = newUserPassword;
+    localStorage.setItem("user", JSON.stringify(user.value));
+  }
+
+  return { user, login, logout, changeUsername, changeUserEmail, changeUserPassword };
 });
