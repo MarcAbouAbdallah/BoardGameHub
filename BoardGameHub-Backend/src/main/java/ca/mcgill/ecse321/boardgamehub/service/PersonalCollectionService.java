@@ -6,10 +6,15 @@ import ca.mcgill.ecse321.boardgamehub.model.BorrowStatus;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.model.Registration;
+import ca.mcgill.ecse321.boardgamehub.model.Event;
 import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.RegistrationRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,6 +31,10 @@ import java.util.ArrayList;
 @Validated
 public class PersonalCollectionService {
 
+    @Autowired
+    private RegistrationRepository registrationRepository;
+    @Autowired
+    private EventRepository eventRepository;
     @Autowired
     private PlayerRepository playerRepository;
     @Autowired
@@ -75,6 +84,19 @@ public class PersonalCollectionService {
         if (toRemove.getOwner() == null || toRemove.getOwner().getId() != userId) {
             throw new BoardGameHubException(HttpStatus.FORBIDDEN,
                     "You are not the owner of this game copy. Deletion is not allowed.");
+        }
+
+        List<BorrowRequest> requests = borrowRequestRepository.findByGame(toRemove);
+        for (BorrowRequest b: requests) {
+            borrowRequestRepository.delete(b);
+        }
+
+        List<Event> events = eventRepository.findByGame(toRemove);
+        for (Event e: events) {
+            for (Registration r: registrationRepository.findByKey_RegisteredEvent(e)) {
+                registrationRepository.delete(r);
+            }
+            eventRepository.delete(e);
         }
 
         gameCopyRepository.delete(toRemove);

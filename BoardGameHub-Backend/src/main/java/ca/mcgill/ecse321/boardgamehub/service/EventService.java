@@ -144,6 +144,11 @@ public class EventService {
                                             "You are not the organizer of this event.");
         }
 
+        List<Registration> regs = registrationRepo.findByKey_RegisteredEvent(event);
+        for (Registration r: regs) {
+            registrationRepo.delete(r);
+        }
+
         eventRepo.delete(event);
     }
 

@@ -1,9 +1,8 @@
 package ca.mcgill.ecse321.boardgamehub.exception;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import jakarta.validation.ConstraintViolationException;
+import org.hibernate.exception.ConstraintViolationException;
 
 import ca.mcgill.ecse321.boardgamehub.dto.ErrorDto;
 
@@ -32,12 +31,9 @@ public class BoardGameHubExceptionHandler {
         return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorDto> handleConstraintViolationException(ConstraintViolationException ex) {
-        List<String> errorMessages = ex.getConstraintViolations().stream()
-                .map(violation -> violation.getMessage())
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(new ErrorDto(errorMessages), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({DataIntegrityViolationException.class, ConstraintViolationException.class})
+    public ResponseEntity<ErrorDto> handleDataIntegrityViolationException(Exception ex) {
+        return new ResponseEntity<>(new ErrorDto("Database operation not allowed: data integrity violation."), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

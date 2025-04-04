@@ -16,6 +16,7 @@ import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,8 @@ import org.springframework.http.HttpStatus;
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class PersonalCollectionServiceTests {
 
+    @Mock
+    private EventRepository mockEventRepo;
     @Mock
     private BorrowRequestRepository borrowRequestRepository;
     @Mock
