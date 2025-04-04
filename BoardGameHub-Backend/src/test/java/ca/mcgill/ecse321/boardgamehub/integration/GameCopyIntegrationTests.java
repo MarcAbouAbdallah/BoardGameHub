@@ -91,7 +91,7 @@ public class GameCopyIntegrationTests {
 
         // Act
         ResponseEntity<GameCopyResponseDto[]> response = client.exchange(
-            createURL("/gamecopies"),
+            createURL("/gamecopies/players/"+testPlayer.getId()),
             HttpMethod.GET,
             requestEntity,
             GameCopyResponseDto[].class
@@ -266,7 +266,7 @@ public class GameCopyIntegrationTests {
         Map<String, Object> searchBody = new HashMap<>();
         searchBody.put("playerId", testPlayer.getId());
         ResponseEntity<GameCopyResponseDto[]> getResponse = client.exchange(
-            createURL("/gamecopies"),
+            createURL("/gamecopies/players/"+testPlayer.getId()),
             HttpMethod.GET,
             new HttpEntity<>(searchBody, headers),
             GameCopyResponseDto[].class

@@ -16,12 +16,13 @@ import java.util.List;
 @RequestMapping("/gamecopies")
 public class GameCopyController {
 
-    private final PersonalCollectionService collectionService;
-
     @Autowired
-    public GameCopyController(PersonalCollectionService collectionService) {
-        this.collectionService = collectionService;
-    }
+    private PersonalCollectionService collectionService;
+
+    
+    // public GameCopyController(PersonalCollectionService collectionService) {
+    //     this.collectionService = collectionService;
+    // }
 
     /**
      * Retrieve the entire personal collection of a given player.

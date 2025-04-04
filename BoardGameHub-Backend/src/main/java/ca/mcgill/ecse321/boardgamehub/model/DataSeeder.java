@@ -13,7 +13,6 @@ import ca.mcgill.ecse321.boardgamehub.repo.RegistrationRepository;
 import java.time.LocalDate;
 import java.sql.Time;
 import java.sql.Date;
-import java.util.stream.StreamSupport;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
