@@ -26,6 +26,7 @@ interface BorrowRequest {
   startDate: string;
   endDate: string;
   status: string;
+  computedStatus: string; // Status itself or RETURNED (if accepted request has expired)
 }
 
 const borrowRequests = ref<BorrowRequest[]>([]);
@@ -36,13 +37,25 @@ onMounted(async () => {
   try {
     const playerId = authStore.user?.userId;
     if (!playerId) throw new Error("Player ID not found");
-    borrowRequests.value = await borrowRequestService.getRequestsByRequesterId(playerId);
+
+    const fetched = await borrowRequestService.getRequestsByRequesterId(playerId);
+    const today = new Date().toISOString().split("T")[0];
+    
+    // Computed status is the same as status unless the request is accepted and the end date has passed (it is returned in that case)
+    borrowRequests.value = fetched.map((req: any) => {
+      const isReturned = req.status === "ACCEPTED" && req.endDate < today;
+      return {
+        ...req,
+        computedStatus: isReturned ? "RETURNED" : req.status,
+      };
+    });
   } catch (err: any) {
     error.value = err || "Failed to load borrow requests";
   } finally {
     loading.value = false;
   }
 });
+
 
 const handleCancel = async (requestId: string) => {
   try {
@@ -51,7 +64,7 @@ const handleCancel = async (requestId: string) => {
 
     await borrowRequestService.cancelBorrowRequest(requestId, userId);
 
-    // Remove request from table
+    // Remove request from table when cancelled
     borrowRequests.value = borrowRequests.value.filter((r: any) => r.id !== requestId);
 
     toast({
@@ -95,18 +108,18 @@ const handleCancel = async (requestId: string) => {
               <TableCell class="text-start">{{ request.startDate }}</TableCell>
               <TableCell class="text-start">{{ request.endDate }}</TableCell>
               <TableCell class="text-start">
-                <Badge v-if="request.status === 'PENDING'" class="bg-gray-500">Pending</Badge>
-                <Badge v-else-if="request.status === 'ACCEPTED'" class="bg-green-800"
+                <Badge v-if="request.computedStatus === 'PENDING'" class="bg-gray-500">Pending</Badge>
+                <Badge v-else-if="request.computedStatus === 'ACCEPTED'" class="bg-green-800"
                   >Accepted</Badge
                 >
-                <Badge v-else-if="request.status === 'RETURNED'" class="bg-blue-800"
+                <Badge v-else-if="request.computedStatus === 'RETURNED'" class="bg-blue-800"
                   >Returned</Badge
                 >
                 <Badge v-else variant="destructive">Rejected</Badge>
               </TableCell>
               <TableCell class="text-start">
                 <Button
-                  v-if="request.status === 'PENDING'"
+                  v-if="request.computedStatus === 'PENDING'"
                   variant="outline"
                   @click="handleCancel(request.id)"
                 >

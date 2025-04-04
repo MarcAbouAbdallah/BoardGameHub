@@ -15,7 +15,6 @@ import Alert from "@/components/alert/Alert.vue";
 
 import { useToast } from "@/components/ui/toast/use-toast";
 
-
 interface MyGame {
   id: number;
   name: string;
