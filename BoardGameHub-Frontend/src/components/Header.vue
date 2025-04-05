@@ -42,7 +42,7 @@ const navItems = [
           </li>
           <li>
             <EditProfileSheet>
-              <div>{{ authStore.user.username }}</div>
+              <div>{{ authStore.user.isGameOwner ? 'GO ' : '' }}{{ authStore.user.username }}</div>
               <Avatar class="bg-[#F4F4F5] text-xl hover:text-gray-500 font-bold">
                 {{
                   authStore.user.username ? authStore.user.username.charAt(0).toUpperCase() : "U"

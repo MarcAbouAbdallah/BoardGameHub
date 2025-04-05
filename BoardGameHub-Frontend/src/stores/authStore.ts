@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
+import { playerService } from "@/services/PlayerService";
 
 interface User {
   username: string | null;
@@ -62,8 +63,8 @@ export const useAuthStore = defineStore("auth", () => {
     localStorage.setItem("user", JSON.stringify(user.value));
   }
 
-  function changeGameOwnerStatus(isGameOwner: boolean) {
-    user.value.isGameOwner = isGameOwner;
+  async function changeGameOwnerStatus(userId: number) {
+    const user = await playerService.getPlayerById(userId);
     localStorage.setItem("user", JSON.stringify(user.value));
   }
 
