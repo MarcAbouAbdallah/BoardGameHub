@@ -30,6 +30,7 @@ const games = ref<MyGame[]>([]);
 const loading = ref(true);
 const error = ref("");
 const authStore = useAuthStore();
+const user = useAuthStore().user;
 const { toast } = useToast();
 
 const expandedRows = ref<Record<number, boolean>>({});
@@ -47,6 +48,8 @@ const handleRemoveGame = async (gameCopyId: number) => {
 
     // Remove from local list
     games.value = games.value.filter((g) => g.id !== gameCopyId);
+
+    useAuthStore().changeGameOwnerStatus(user.isGameOwner);
 
     toast({
       title: "Game Removed",

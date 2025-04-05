@@ -13,6 +13,7 @@ import { watch } from "vue";
 
 const { toast } = useToast();
 const authStore = useAuthStore();
+const user = useAuthStore().user;
 const fallback = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzJ4bjU2NWE5YTh1Y3Q1cTVmcHdmOHhrOWo0a3hvN2dwcnNncXhzZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/YORVoIzhBZZaHY7Jp2/giphy.gif";
 const props = defineProps<{
   game: Game;
@@ -55,6 +56,8 @@ const handleAddToCollectionClick = async (gameId: number) => {
   try {
     await addGameToCollection(playerId, gameId);
     isAdded.value = true;
+
+    useAuthStore().changeGameOwnerStatus(user.isGameOwner);
     toast({
       title: "Game Added!",
       description: "This game is now in your collection.",

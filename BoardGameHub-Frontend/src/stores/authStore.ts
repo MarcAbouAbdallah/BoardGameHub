@@ -62,13 +62,8 @@ export const useAuthStore = defineStore("auth", () => {
     localStorage.setItem("user", JSON.stringify(user.value));
   }
 
-  function changeGameOwnerStatus() {
-    if (user.value.isGameOwner = true) {
-      user.value.isGameOwner = false;
-    }
-    else {
-      user.value.isGameOwner = true;
-    }
+  function changeGameOwnerStatus(isGameOwner: boolean) {
+    user.value.isGameOwner = isGameOwner;
     localStorage.setItem("user", JSON.stringify(user.value));
   }
 
