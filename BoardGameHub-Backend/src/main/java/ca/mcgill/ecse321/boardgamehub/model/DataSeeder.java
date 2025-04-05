@@ -346,7 +346,7 @@ public class DataSeeder implements CommandLineRunner {
             GameCopy riskCopy = gameCopyRepository.findById(2).orElse(null); // Owned by Jane
             GameCopy gloomhavenCopy = gameCopyRepository.findById(3).orElse(null); // Owned by Laura
             GameCopy terraformingMarsCopy = gameCopyRepository.findById(4).orElse(null); // Owned by Michael
-            GameCopy pandemicCopy = gameCopyRepository.findById(5).orElse(null); // Owned by Alice
+            //GameCopy pandemicCopy = gameCopyRepository.findById(5).orElse(null); // Owned by Alice
             
             // Create borrow requests with different statuses
             

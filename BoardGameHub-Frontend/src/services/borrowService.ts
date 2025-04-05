@@ -62,5 +62,16 @@ export const borrowRequestService = {
       console.error("Error fetching borrow requests:", error);
       throw error.response.data.errors[0];
     }
-  }
+  },
+
+  async getAcceptedRequestsByRequesteeId(playerId: number) {
+    try {
+      const response = await api.get(`/borrow-requests/requestee/${playerId}?status=ACCEPTED`);
+      return response.data;
+    } catch (error: any) {
+      console.error("Error fetching borrow requests:", error);
+      throw error.response.data.errors[0];
+    }
+  },
+
 };

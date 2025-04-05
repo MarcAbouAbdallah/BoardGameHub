@@ -121,7 +121,7 @@
           <!-- No events found -->
           <TableRow v-if="!loading && events.length === 0">
             <TableCell colspan="8" class="text-center py-8 text-muted-foreground">
-              No events found. Create your first event by clicking the "Create Event" button.
+              No events found. You can register for events or create your own in the Events page!
             </TableCell>
           </TableRow>
         </TableBody>
