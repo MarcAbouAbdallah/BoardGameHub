@@ -48,6 +48,9 @@ const handleRemoveGame = async (gameCopyId: number) => {
     // Remove from local list
     games.value = games.value.filter((g) => g.id !== gameCopyId);
 
+    useAuthStore().changeGameOwnerStatus(userId);
+    console.log("Current user:", authStore.user);
+
     toast({
       title: "Game Removed",
       description: "The game has been successfully removed from your collection.",

@@ -55,6 +55,10 @@ const handleAddToCollectionClick = async (gameId: number) => {
   try {
     await addGameToCollection(playerId, gameId);
     isAdded.value = true;
+
+    useAuthStore().changeGameOwnerStatus(playerId);
+    console.log("Current user:", authStore.user);
+
     toast({
       title: "Game Added!",
       description: "This game is now in your collection.",

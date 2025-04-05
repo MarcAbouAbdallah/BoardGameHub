@@ -20,7 +20,7 @@ const handleSubmit = async () => {
       password: password.value,
     };
     const response = await playerService.loginPlayer(playerData);
-    authStore.login(response.name, response.email, response.id, playerData.password);
+    authStore.login(response.name, response.email, response.id, playerData.password, response.isGameOwner);
     router.push("/home");
   } catch (err: any) {
     console.error("Error in logging in Player", err);

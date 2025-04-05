@@ -42,12 +42,20 @@ const navItems = [
           </li>
           <li>
             <EditProfileSheet>
-              <div>{{ authStore.user.username }}</div>
-              <Avatar class="bg-[#F4F4F5] text-xl hover:text-gray-500 font-bold">
-                {{
-                  authStore.user.username ? authStore.user.username.charAt(0).toUpperCase() : "U"
-                }}
-              </Avatar>
+              <div class="flex items-center space-x-2">
+                <span v-if="authStore.user.isGameOwner" 
+                      class="text-xs font-bold px-1.5 py-0.5 rounded-full bg-green-200 text-green-900">
+                  GameOwner
+                </span>
+                <span class="max-w-[300px] truncate block">
+                  {{ authStore.user.username }}
+                </span>
+                <Avatar class="bg-[#F4F4F5] text-xl hover:text-gray-500 font-bold">
+                  {{
+                    authStore.user.username ? authStore.user.username.charAt(0).toUpperCase() : "U"
+                  }}
+                </Avatar>
+              </div>
             </EditProfileSheet>
           </li>
         </ul>

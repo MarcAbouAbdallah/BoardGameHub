@@ -67,29 +67,33 @@ export const playerService = {
   },
 
   // Get player by ID
-  async getPlayerById(playerId: number) {
+  async getPlayerById(playerId: number, silent = false) {
     try {
       const response = await api.get(`/players/${playerId}`);
       console.log("Player fetched successfully:", response.data);
-      toast({
-        title: "Success",
-        description: "Player fetched successfully.",
-        variant: "default",
-      });
+      if (!silent) {
+        toast({
+          title: "Success",
+          description: "Player fetched successfully.",
+          variant: "default",
+        });
+      }
       return response.data;
     } catch (error: any) {
-      if (error.response.status === 404) {
-        toast({
-          title: "Error",
-          description: "Player not found.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: error.response.data.errors[0],
-          variant: "destructive",
-        });
+      if (!silent) {
+        if (error.response.status === 404) {
+          toast({
+            title: "Error",
+            description: "Player not found.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: error.response.data.errors[0],
+            variant: "destructive",
+          });
+        }
       }
       throw error;
     }
@@ -151,5 +155,5 @@ export const playerService = {
       }
       throw error;
     }
-  }
+  },
 };
