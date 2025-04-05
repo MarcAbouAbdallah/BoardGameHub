@@ -10,7 +10,6 @@ import type { Game } from "@/types/Game";
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/authStore";
 import { watch } from "vue";
-import { playerService } from "@/services/PlayerService";
 
 const { toast } = useToast();
 const authStore = useAuthStore();
