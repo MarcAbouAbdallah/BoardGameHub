@@ -43,9 +43,11 @@ const navItems = [
           <li>
             <EditProfileSheet>
               <div class="flex items-center space-x-2">
-                <span v-if="authStore.user.isGameOwner" 
-                      class="text-xs font-bold px-1.5 py-0.5 rounded-full bg-green-200 text-green-900">
-                  GameOwner
+                <span
+                  v-if="authStore.user.isGameOwner"
+                  class="text-xs font-bold px-1.5 py-0.5 rounded-full bg-green-200 text-green-900"
+                >
+                  Game Owner
                 </span>
                 <span class="max-w-[300px] truncate block">
                   {{ authStore.user.username }}

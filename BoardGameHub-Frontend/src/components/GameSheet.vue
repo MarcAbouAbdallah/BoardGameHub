@@ -70,7 +70,9 @@ onMounted(async () => {
     loadingReviews.value = true;
 
     // Fetch game copies
-    gameCopies.value = await gameCopyService.getGameCopiesForGame(props.game.id);
+    const allCopies = await gameCopyService.getGameCopiesForGame(props.game.id);
+
+    gameCopies.value = allCopies.filter((copy: any) => copy.ownerId !== authStore.user.userId);
 
     // Fetch game reviews
     gameReviews.value = await reviewService.getReviewsByGameName(props.game.name);
@@ -156,7 +158,7 @@ const handleCreateBorrow = async (request: {
       </SheetDescription>
 
       <div class="flex flex-col items-start mt-4 w-full">
-        <div class="text-lg font-bold">Players who Own the Game:</div>
+        <div class="text-lg font-bold">Other players who Own the Game:</div>
         <div v-if="loadingCopies" class="text-sm text-gray-500 mt-2">Loading copies...</div>
         <div v-else class="overflow-auto max-h-[200px] min-h-[200px] w-full">
           <div v-if="gameCopies.length > 0">

@@ -69,5 +69,13 @@ export const useAuthStore = defineStore("auth", () => {
     localStorage.setItem("user", JSON.stringify(user.value));
   }
 
-  return { user, login, logout, changeUsername, changeUserEmail, changeUserPassword, changeGameOwnerStatus };
+  return {
+    user,
+    login,
+    logout,
+    changeUsername,
+    changeUserEmail,
+    changeUserPassword,
+    changeGameOwnerStatus,
+  };
 });
