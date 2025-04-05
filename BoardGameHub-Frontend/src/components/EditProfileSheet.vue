@@ -12,8 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Check, Pen, X } from "lucide-vue-next";
 import { ref } from "vue";
 import { Input } from "./ui/input";
-import Alert from "./alert/Alert.vue";
-import router from "@/router";
 import UpdatePasswordModal from "./popups/update/UpdatePasswordModal.vue";
 import { playerService } from "@/services/PlayerService";
 
@@ -53,20 +51,6 @@ const handleEmailChange = async () => {
     }
   } catch (error) {
     console.error("Failed to update email:", error);
-  }
-};
-
-const handleDeleteAccount = async () => {
-  try {
-    if (user?.userId) {
-      await playerService.deletePlayer(user.userId);
-      useAuthStore().logout();
-      router.push("/").then(() => {
-      window.location.reload();
-      });
-    }
-  } catch (error) {
-    console.error("Failed to delete account:", error);
   }
 };
 </script>
@@ -161,13 +145,6 @@ const handleDeleteAccount = async () => {
           </div>
         </div>
         <UpdatePasswordModal />
-        <Alert
-          description="Are you sure you want to delete your account?"
-          actionText="Delete Account"
-          :actionFunc="handleDeleteAccount"
-        >
-          <Button variant="destructive" class="w-full"> Delete Account </Button>
-        </Alert>
       </div>
     </SheetContent>
   </Sheet>
