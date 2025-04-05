@@ -11,6 +11,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import Button from "../ui/button/Button.vue";
+
 const isOpen = ref(false);
 
 const props = defineProps<{
@@ -37,9 +39,9 @@ const onAction = () => {
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <button @click="onAction" class="text-white px-4 py-2 text-sm">
+        <Button @click="onAction" variant="default" class="px-4 py-2 text-sm">
           {{ actionText }}
-        </button>
+        </Button>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

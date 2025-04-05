@@ -24,8 +24,8 @@ import CreateReviewModal from "./popups/CreateReviewModal.vue";
 import UpdateGameModal from "./popups/update/UpdateGameModal.vue";
 import type { Game } from "@/types/Game";
 
-
-const fallback = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzJ4bjU2NWE5YTh1Y3Q1cTVmcHdmOHhrOWo0a3hvN2dwcnNncXhzZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/YORVoIzhBZZaHY7Jp2/giphy.gif";
+const fallback =
+  "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzJ4bjU2NWE5YTh1Y3Q1cTVmcHdmOHhrOWo0a3hvN2dwcnNncXhzZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/YORVoIzhBZZaHY7Jp2/giphy.gif";
 
 const { toast } = useToast();
 const authStore = useAuthStore();
@@ -88,12 +88,12 @@ const handleCreateReview = async (newReview: { rating: number; comment: string }
     if (!userId) throw new Error("No user logged in.");
 
     const res = await reviewService.createReview({
-      rating:newReview.rating, 
-      comment:newReview.comment,
-      gameName:props.game.name,
-      reviewerId:userId
-  });
-    
+      rating: newReview.rating,
+      comment: newReview.comment,
+      gameName: props.game.name,
+      reviewerId: userId,
+    });
+
     gameReviews.value.push(res);
 
     toast({
@@ -137,8 +137,6 @@ const handleCreateBorrow = async (request: {
     });
   }
 };
-
-
 </script>
 
 <template>
@@ -148,14 +146,10 @@ const handleCreateBorrow = async (request: {
     </SheetTrigger>
     <SheetContent class="w-[600px] sm:max-w-none">
       <SheetHeader class="flex items-center mt-7">
-            <SheetTitle class="text-2xl">{{ props.game.name }}</SheetTitle>
+        <SheetTitle class="text-2xl">{{ props.game.name }}</SheetTitle>
       </SheetHeader>
       <div class="flex flex-col justify-center items-center mt-6">
-        <img
-          :src="props.game.photoURL || fallback"
-          alt="Game Image"
-          class="w-40 object-cover"
-        />
+        <img :src="props.game.photoURL || fallback" alt="Game Image" class="w-40 object-cover" />
       </div>
       <SheetDescription class="text-center text-ellipsis font-bold text-md my-2">
         {{ props.game.description }}
@@ -164,7 +158,7 @@ const handleCreateBorrow = async (request: {
       <div class="flex flex-col items-start mt-4 w-full">
         <div class="text-lg font-bold">Players who Own the Game:</div>
         <div v-if="loadingCopies" class="text-sm text-gray-500 mt-2">Loading copies...</div>
-        <div v-else class="overflow-scroll max-h-[200px] w-full">
+        <div v-else class="overflow-auto max-h-[200px] min-h-[200px] w-full">
           <div v-if="gameCopies.length > 0">
             <div
               v-for="copy in gameCopies"
@@ -175,7 +169,7 @@ const handleCreateBorrow = async (request: {
                 <UserCircle2Icon class="h-8 w-8 text-gray-500" />
                 <span class="text-lg font-semibold">{{ copy.ownerName }}</span>
               </div>
-              <BorrowReqModal 
+              <BorrowReqModal
                 :gameCopyId="copy.gameCopyId"
                 :requesteeId="copy.ownerId"
                 @create="handleCreateBorrow"
@@ -184,7 +178,6 @@ const handleCreateBorrow = async (request: {
           </div>
           <div v-else class="text-gray-500 italic mt-2">No one owns this game yet.</div>
         </div>
-
       </div>
 
       <div class="flex flex-col items-start mt-4 w-full">
@@ -194,7 +187,7 @@ const handleCreateBorrow = async (request: {
         </div>
 
         <div v-if="loadingReviews" class="text-sm text-gray-500 mt-2">Loading reviews...</div>
-        <div v-else class="overflow-scroll max-h-[300px] w-full">
+        <div v-else class="overflow-auto max-h-[300px] w-full">
           <div v-if="gameReviews.length > 0">
             <div
               v-for="review in gameReviews"
@@ -209,7 +202,6 @@ const handleCreateBorrow = async (request: {
       </div>
 
       <UpdateGameModal :game="props.game" @game-updated="handleGameUpdated" />
-
     </SheetContent>
   </Sheet>
 </template>

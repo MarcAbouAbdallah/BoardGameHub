@@ -2,16 +2,8 @@
   <Header />
   <Toaster position="top-right" />
 
-  <div class="p-6 space-y-6 mt-24 w-9/12 mx-auto">
-    <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Game Events</h1>
-      <div class="flex items-center gap-2">
-        <Button variant="outline" class="flex items-center border-black">
-          <FilterIcon class="h-4 w-4" />
-          Filters
-        </Button>
-      </div>
-    </div>
+  <div class="p-6 space-y-6 w-9/12 mx-auto">
+    <CustomTableHeader title="My Events" />
 
     <DataTableCard :is-loading="loading" :error="error">
       <Table>
@@ -53,7 +45,12 @@
               <TableCell class="text-start">
                 <div class="flex items-center gap-2 w-48 justify-between">
                   <!-- Register or Opt Out based on isRegistered -->
-                  <Button variant="outline" size="sm" v-if="!isRegistered(event.id)" @click="registerEvent(event.id)">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    v-if="!isRegistered(event.id)"
+                    @click="registerEvent(event.id)"
+                  >
                     Register
                   </Button>
                   <Button variant="outline" size="sm" v-else @click="unregisterEvent(event.id)">
@@ -61,10 +58,20 @@
                   </Button>
 
                   <!-- Organizer-only buttons -->
-                  <Button variant="outline" size="icon" v-if="isOrganizer(event)" @click="openEditEventModal(event)">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    v-if="isOrganizer(event)"
+                    @click="openEditEventModal(event)"
+                  >
                     <Edit class="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" v-if="isOrganizer(event)" @click="deleteEvent(event.id)">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    v-if="isOrganizer(event)"
+                    @click="deleteEvent(event.id)"
+                  >
                     <Trash2 class="h-4 w-4" />
                   </Button>
                 </div>
@@ -104,9 +111,7 @@
                         </li>
                       </ul>
                     </span>
-                    <span v-else>
-                      None
-                    </span>
+                    <span v-else> None </span>
                   </p>
                 </div>
               </TableCell>
@@ -143,20 +148,15 @@ import { useAuthStore } from "@/stores/authStore";
 
 import { Button } from "@/components/ui/button";
 import DataTableCard from "@/components/DataTableCard.vue";
-import {
-  FilterIcon,
-  ChevronDown,
-  ChevronUp,
-  Edit,
-  Trash2
-} from "lucide-vue-next";
+import { ChevronDown, ChevronUp, Edit, Trash2 } from "lucide-vue-next";
+import CustomTableHeader from "@/components/TableHeader.vue";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 
 import EditEventModal from "@/components/popups/update/UpdateEventModal.vue";
@@ -182,9 +182,7 @@ const { toast } = useToast();
 let pollingInterval: number | undefined;
 
 const filteredEvents = computed(() =>
-  events.value.filter(
-    (event) => isRegistered(event.id) || isOrganizer(event)
-  )
+  events.value.filter((event) => isRegistered(event.id) || isOrganizer(event)),
 );
 
 const softReloadEvents = async () => {
@@ -247,7 +245,9 @@ const isRegistered = (eventId: number) => {
   const regs = registrationsByEvent.value[eventId];
   if (!regs || !user.value?.userId) return false;
   // Adjust this condition to match your backend fields:
-  return regs.some(reg => reg.registrantId === user.value.userId || reg.registrant === user.value.username);
+  return regs.some(
+    (reg) => reg.registrantId === user.value.userId || reg.registrant === user.value.username,
+  );
 };
 
 const registerEvent = async (eventId: number) => {
@@ -355,7 +355,7 @@ const deleteEvent = async (eventId: number) => {
     });
     return;
   }
-  const eventToDelete = events.value.find(e => e.id === eventId);
+  const eventToDelete = events.value.find((e) => e.id === eventId);
   if (!eventToDelete || !isOrganizer(eventToDelete)) {
     toast({
       title: "Permission Denied",
@@ -410,5 +410,4 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

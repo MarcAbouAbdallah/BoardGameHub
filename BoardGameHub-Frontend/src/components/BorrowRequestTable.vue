@@ -40,7 +40,7 @@ onMounted(async () => {
 
     const fetched = await borrowRequestService.getRequestsByRequesterId(playerId);
     const today = new Date().toISOString().split("T")[0];
-    
+
     // Computed status is the same as status unless the request is accepted and the end date has passed (it is returned in that case)
     borrowRequests.value = fetched.map((req: any) => {
       const isReturned = req.status === "ACCEPTED" && req.endDate < today;
@@ -55,7 +55,6 @@ onMounted(async () => {
     loading.value = false;
   }
 });
-
 
 const handleCancel = async (requestId: string) => {
   try {
@@ -86,7 +85,7 @@ const handleCancel = async (requestId: string) => {
 </script>
 
 <template>
-  <div class="p-6 space-y-6 w-9/12 mx-auto">
+  <div class="">
     <CustomTableHeader :title="'My Sent Requests'" />
     <DataTableCard :is-loading="loading" :error="error">
       <Table class="w-full mt-4">
@@ -108,7 +107,9 @@ const handleCancel = async (requestId: string) => {
               <TableCell class="text-start">{{ request.startDate }}</TableCell>
               <TableCell class="text-start">{{ request.endDate }}</TableCell>
               <TableCell class="text-start">
-                <Badge v-if="request.computedStatus === 'PENDING'" class="bg-gray-500">Pending</Badge>
+                <Badge v-if="request.computedStatus === 'PENDING'" class="bg-gray-500"
+                  >Pending</Badge
+                >
                 <Badge v-else-if="request.computedStatus === 'ACCEPTED'" class="bg-green-800"
                   >Accepted</Badge
                 >

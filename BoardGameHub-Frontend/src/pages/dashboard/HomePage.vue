@@ -2,11 +2,10 @@
 import Header from "../../components/Header.vue";
 import MyEventsTable from "@/components/MyEventsTable.vue";
 import GamesTable from "@/components/GamesTable.vue";
-import BorrowRequestTable from "@/components/BorrowRequestTable.vue";
 import GameReviewTable from "@/components/GameReviewTable.vue";
 import Toaster from "@/components/ui/toast/Toaster.vue";
-import ReceivedBorrowReqTable from "@/components/ReceivedBorrowReqTable.vue";
 import { useAuthStore } from "@/stores/authStore";
+import BorrowReqTabs from "@/components/BorrowReqTabs.vue";
 import { onMounted } from "vue";
 import router from "@/router";
 
@@ -27,8 +26,7 @@ onMounted(() => {
   <div class="flex flex-col items-start my-24 mx-10">
     <GamesTable />
     <MyEventsTable :is-home-page="true" :title="'My Events'" />
-    <ReceivedBorrowReqTable />
-    <BorrowRequestTable />
+    <BorrowReqTabs />
     <GameReviewTable />
   </div>
   <Toaster position="top-right" />
