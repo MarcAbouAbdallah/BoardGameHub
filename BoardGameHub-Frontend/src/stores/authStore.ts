@@ -64,7 +64,8 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function changeGameOwnerStatus(userId: number) {
-    const user = await playerService.getPlayerById(userId);
+    const updatedUser = await playerService.getPlayerById(userId, true);
+    user.value.isGameOwner = updatedUser.isGameOwner;
     localStorage.setItem("user", JSON.stringify(user.value));
   }
 
