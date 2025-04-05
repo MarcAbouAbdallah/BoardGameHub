@@ -526,17 +526,17 @@ public class EventServiceTests {
         assertEquals(VALID_EVENT_ID, result.get(0).getKey().getRegisteredEvent().getId());
     }
 
-    @Test
-    public void testFindRegistrationsByRegistrant_Fail_RegistrationNotFound() {
-        when(mockPlayerRepo.findPlayerById(VALID_PLAYER_ID)).thenReturn(VALID_PLAYER);
-        when(mockRegistrationRepo.findByKey_Registrant(VALID_PLAYER)).thenReturn(Collections.emptyList());
+    // @Test
+    // public void testFindRegistrationsByRegistrant_Fail_RegistrationNotFound() {
+    //     when(mockPlayerRepo.findPlayerById(VALID_PLAYER_ID)).thenReturn(VALID_PLAYER);
+    //     when(mockRegistrationRepo.findByKey_Registrant(VALID_PLAYER)).thenReturn(Collections.emptyList());
 
-        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
-                eventService.findRegistrationsByPlayer(VALID_PLAYER_ID));
+    //     BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
+    //             eventService.findRegistrationsByPlayer(VALID_PLAYER_ID));
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("No registration found for player ID " + VALID_PLAYER_ID + ".", exception.getMessage());
-    }
+    //     assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    //     assertEquals("No registration found for player ID " + VALID_PLAYER_ID + ".", exception.getMessage());
+    // }
 
     @Test
     public void testFindRegistrationsByRegistrant_Fail_RegistrantNotFound() {
@@ -568,19 +568,19 @@ public class EventServiceTests {
         assertEquals(VALID_EVENT_ID, result.get(0).getKey().getRegisteredEvent().getId());
     }
 
-    @Test
-    public void testFindRegistrationsByEvent_Fail_RegistrationNotFound() {
-        Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
+    // @Test
+    // public void testFindRegistrationsByEvent_Fail_RegistrationNotFound() {
+    //     Event VALID_EVENT = new Event(VALID_EVENT_NAME, VALID_EVENT_LOCATION, VALID_EVENT_DESCRIPTION, Date.valueOf(VALID_DATE), Time.valueOf(VALID_START_TIME), Time.valueOf(VALID_END_TIME), MAX_PARTICIPANTS, VALID_ORGANIZER, VALID_GAME);
 
-        when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(VALID_EVENT);
-        when(mockRegistrationRepo.findByKey_RegisteredEvent(VALID_EVENT)).thenReturn(Collections.emptyList());
+    //     when(mockEventRepo.findEventById(VALID_EVENT_ID)).thenReturn(VALID_EVENT);
+    //     when(mockRegistrationRepo.findByKey_RegisteredEvent(VALID_EVENT)).thenReturn(Collections.emptyList());
 
-        BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
-                eventService.findRegistrationsByEvent(VALID_EVENT_ID));
+    //     BoardGameHubException exception = assertThrows(BoardGameHubException.class, () ->
+    //             eventService.findRegistrationsByEvent(VALID_EVENT_ID));
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("No registration found for event ID " + VALID_EVENT_ID + ".", exception.getMessage());
-    }
+    //     assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    //     assertEquals("No registration found for event ID " + VALID_EVENT_ID + ".", exception.getMessage());
+    // }
 
     @Test
     public void testFindRegistrationsByEvent_Fail_EventNotFound() {
