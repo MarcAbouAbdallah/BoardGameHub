@@ -24,16 +24,25 @@ import ca.mcgill.ecse321.boardgamehub.model.Event;
 public class EventRepositoryTests {
 
     @Autowired
-    private EventRepository EventRepo;
+    private PlayerRepository playerRepo;
 
     @Autowired
-    private PlayerRepository playerRepo;
+    private GameRepository gameRepo;
 
     @Autowired
     private GameCopyRepository gameCopyRepo;
 
     @Autowired
-    private GameRepository gameRepo;
+    private EventRepository eventRepo;
+
+    @Autowired
+    private ReviewRepository reviewRepo;
+
+    @Autowired
+    private RegistrationRepository registrationRepo;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
 
     private Player john;
     
@@ -41,8 +50,20 @@ public class EventRepositoryTests {
 
     private GameCopy monopolyCopy;
 
+    @AfterEach
+    public void clearDatabase() {
+        reviewRepo.deleteAll();
+        registrationRepo.deleteAll();
+        eventRepo.deleteAll();
+        borrowRequestRepo.deleteAll();
+        gameCopyRepo.deleteAll();
+        gameRepo.deleteAll();
+        playerRepo.deleteAll();
+    }
+
     @BeforeEach
     public void setup() {
+        clearDataBase();
         john = new Player(
                             "John",
                             "john@email.com",
@@ -63,7 +84,7 @@ public class EventRepositoryTests {
 
     @AfterEach
     public void clearDataBase() {
-        EventRepo.deleteAll();
+        eventRepo.deleteAll();
         gameCopyRepo.deleteAll();
         playerRepo.deleteAll();
         gameRepo.deleteAll();
@@ -82,10 +103,10 @@ public class EventRepositoryTests {
 
         Event monopolyEvent = new Event(name,location,description,date,startTime,endTime,maxParticipants,john,monopolyCopy);
         
-        monopolyEvent = EventRepo.save(monopolyEvent);
+        monopolyEvent = eventRepo.save(monopolyEvent);
 
         //Act
-        Event monopolyEventFromDb = EventRepo.findEventById(monopolyEvent.getId());
+        Event monopolyEventFromDb = eventRepo.findEventById(monopolyEvent.getId());
 
         //Assert
         assertNotNull(monopolyEventFromDb);
@@ -115,7 +136,7 @@ public class EventRepositoryTests {
 
         Event monopolyEvent = new Event(name,location,description,today,startTime,endTime,maxParticipants,john,monopolyCopy);
         
-        monopolyEvent = EventRepo.save(monopolyEvent);
+        monopolyEvent = eventRepo.save(monopolyEvent);
 
         String newName = "Monopoly Event 2";
         String newLocation = "Concordia";
@@ -132,9 +153,9 @@ public class EventRepositoryTests {
         monopolyEvent.setStartTime(newStartTime);
         monopolyEvent.setEndTime(newEndTime);
         monopolyEvent.setMaxParticipants(newMaxParticipants);
-        monopolyEvent = EventRepo.save(monopolyEvent);
+        monopolyEvent = eventRepo.save(monopolyEvent);
 
-        Event monopolyEventFromDb = EventRepo.findEventById(monopolyEvent.getId());
+        Event monopolyEventFromDb = eventRepo.findEventById(monopolyEvent.getId());
 
         assertNotNull(monopolyEventFromDb);
 
@@ -160,12 +181,12 @@ public class EventRepositoryTests {
 
         Event monopolyEvent = new Event(name,location,description,today,startTime,endTime,maxParticipants,john,monopolyCopy);
         
-        monopolyEvent = EventRepo.save(monopolyEvent);
+        monopolyEvent = eventRepo.save(monopolyEvent);
 
-        EventRepo.delete(monopolyEvent);
+        eventRepo.delete(monopolyEvent);
 
         //Assert
-        Event monopolyEventFromDb = EventRepo.findEventById(monopolyEvent.getId());
+        Event monopolyEventFromDb = eventRepo.findEventById(monopolyEvent.getId());
         assertNull(monopolyEventFromDb);
     }
 
@@ -181,9 +202,9 @@ public class EventRepositoryTests {
 
         Event monopolyEvent = new Event(name,location,description,today,startTime,endTime,maxParticipants,john,monopolyCopy);
         
-        monopolyEvent = EventRepo.save(monopolyEvent);
+        monopolyEvent = eventRepo.save(monopolyEvent);
 
-        List<Event> playerEvent = EventRepo.findByOrganizer(john);
+        List<Event> playerEvent = eventRepo.findByOrganizer(john);
 
         assertFalse(playerEvent.isEmpty());
         assertEquals(1, playerEvent.size());

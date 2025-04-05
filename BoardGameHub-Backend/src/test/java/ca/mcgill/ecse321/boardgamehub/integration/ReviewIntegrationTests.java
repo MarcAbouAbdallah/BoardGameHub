@@ -31,8 +31,12 @@ import ca.mcgill.ecse321.boardgamehub.dto.ReviewResponseDto;
 import ca.mcgill.ecse321.boardgamehub.dto.ReviewUpdateDto;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.RegistrationRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -49,11 +53,23 @@ public class ReviewIntegrationTests {
     @Autowired
     private PlayerRepository playerRepo;
 
-    @Autowired 
+    @Autowired
     private GameRepository gameRepo;
 
     @Autowired
+    private GameCopyRepository gameCopyRepo;
+
+    @Autowired
+    private EventRepository eventRepo;
+
+    @Autowired
     private ReviewRepository reviewRepo;
+
+    @Autowired
+    private RegistrationRepository registrationRepo;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
 
     private int createdReviewId;//What?
 
@@ -67,15 +83,20 @@ public class ReviewIntegrationTests {
 
     @BeforeAll
     public void setup() {
+        clearDatabase();
         playerRepo.save(VALID_PLAYER);
         gameRepo.save(VALID_GAME);
     }
 
     @AfterAll
-    public void clearDataBase() {
+    public void clearDatabase() {
         reviewRepo.deleteAll();
-        playerRepo.deleteAll();
+        registrationRepo.deleteAll();
+        eventRepo.deleteAll();
+        borrowRequestRepo.deleteAll();
+        gameCopyRepo.deleteAll();
         gameRepo.deleteAll();
+        playerRepo.deleteAll();
     }
 
     @Test

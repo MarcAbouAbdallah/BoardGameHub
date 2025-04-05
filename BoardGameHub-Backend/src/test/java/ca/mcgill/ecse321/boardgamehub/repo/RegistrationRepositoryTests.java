@@ -23,15 +23,25 @@ import ca.mcgill.ecse321.boardgamehub.model.Registration;
 @SpringBootTest
 public class RegistrationRepositoryTests {
     @Autowired
-    private RegistrationRepository registrationRepo;
-    @Autowired
-    private PlayerRepository personRepo;
-    @Autowired
-    private EventRepository eventRepo;
+    private PlayerRepository playerRepo;
+
     @Autowired
     private GameRepository gameRepo;
+
     @Autowired
     private GameCopyRepository gameCopyRepo;
+
+    @Autowired
+    private EventRepository eventRepo;
+
+    @Autowired
+    private ReviewRepository reviewRepo;
+
+    @Autowired
+    private RegistrationRepository registrationRepo;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
 
     private Player john;
     private Game hangman;
@@ -40,13 +50,24 @@ public class RegistrationRepositoryTests {
     private Registration registration;
     private Registration.Key key;
 
+    public void clearData() {
+        reviewRepo.deleteAll();
+        registrationRepo.deleteAll();
+        eventRepo.deleteAll();
+        borrowRequestRepo.deleteAll();
+        gameCopyRepo.deleteAll();
+        gameRepo.deleteAll();
+        playerRepo.deleteAll();
+    }
+
     @BeforeEach
     public void setup() {
+        clearData();
         john = new Player("John",
                           "john@gmail.com", 
                           "John@123",
                           true);
-        john = personRepo.save(john);
+        john = playerRepo.save(john);
 
         hangman = new Game("Hangman",
                            4, 
@@ -75,12 +96,7 @@ public class RegistrationRepositoryTests {
 
     @AfterEach
     public void clearDatabase() {
-        registrationRepo.deleteAll();
-        eventRepo.deleteAll();
-        gameCopyRepo.deleteAll();
-        personRepo.deleteAll();
-        gameRepo.deleteAll();
-
+        clearData();
     }
 
     @Test
@@ -122,7 +138,7 @@ public class RegistrationRepositoryTests {
                           "avery@gmail.com", 
                           "Avery@123",
                           true);
-        avery = personRepo.save(avery);
+        avery = playerRepo.save(avery);
         
         Registration.Key testKey = new Registration.Key(avery, hanging);
 

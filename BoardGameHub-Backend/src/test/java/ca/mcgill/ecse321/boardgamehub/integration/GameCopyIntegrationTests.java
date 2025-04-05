@@ -5,9 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import ca.mcgill.ecse321.boardgamehub.dto.GameCopyResponseDto;
 import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
+import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.RegistrationRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -37,6 +42,18 @@ public class GameCopyIntegrationTests {
     @Autowired
     private GameCopyRepository gameCopyRepo;
 
+    @Autowired
+    private EventRepository eventRepo;
+
+    @Autowired
+    private ReviewRepository reviewRepo;
+
+    @Autowired
+    private RegistrationRepository registrationRepo;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
+
     private Player testPlayer;
     private Game testGame;
 
@@ -45,9 +62,7 @@ public class GameCopyIntegrationTests {
     @BeforeAll
     public void setup() {
         // Arrange: clear all data
-        gameCopyRepo.deleteAll();
-        gameRepo.deleteAll();
-        playerRepo.deleteAll();
+        clearDatabase();
 
         // Create test player
         testPlayer = new Player("Test Player", "testplayer@example.com", "password", false);
@@ -68,10 +83,12 @@ public class GameCopyIntegrationTests {
         // Clean up game copies between tests
         gameCopyRepo.deleteAll();
     }
-
     @AfterAll
-    public void cleanup() {
-        // Final cleanup
+    public void clearDatabase() {
+        reviewRepo.deleteAll();
+        registrationRepo.deleteAll();
+        eventRepo.deleteAll();
+        borrowRequestRepo.deleteAll();
         gameCopyRepo.deleteAll();
         gameRepo.deleteAll();
         playerRepo.deleteAll();

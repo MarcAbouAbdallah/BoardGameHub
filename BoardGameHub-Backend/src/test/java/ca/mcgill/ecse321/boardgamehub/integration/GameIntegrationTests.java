@@ -26,8 +26,13 @@ import ca.mcgill.ecse321.boardgamehub.dto.ErrorDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameResponseDto;
 import ca.mcgill.ecse321.boardgamehub.dto.GameUpdateDto;
+import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.RegistrationRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -46,6 +51,21 @@ public class GameIntegrationTests {
     @Autowired
     private GameRepository gameRepo;
 
+    @Autowired
+    private GameCopyRepository gameCopyRepo;
+
+    @Autowired
+    private EventRepository eventRepo;
+
+    @Autowired
+    private ReviewRepository reviewRepo;
+
+    @Autowired
+    private RegistrationRepository registrationRepo;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
+
     private static final String NAME = "Catan";
     private static final String DESCRIPTION = "Strategy Game";
     private static final String PHOTO_URL = "https://images.unsplash.com/photo-1606733847546-db8546099013?q=80&w=1572&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
@@ -56,11 +76,16 @@ public class GameIntegrationTests {
 
     @BeforeAll
     public void setup() {
-        gameRepo.deleteAll();
+        clearDatabase();
     }
 
     @AfterAll
     public void clearDatabase() {
+        reviewRepo.deleteAll();
+        registrationRepo.deleteAll();
+        eventRepo.deleteAll();
+        borrowRequestRepo.deleteAll();
+        gameCopyRepo.deleteAll();
         gameRepo.deleteAll();
         playerRepo.deleteAll();
     }

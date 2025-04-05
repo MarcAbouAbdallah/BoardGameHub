@@ -26,7 +26,13 @@ import ca.mcgill.ecse321.boardgamehub.dto.PlayerCreationDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerLoginDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerResponseDto;
 import ca.mcgill.ecse321.boardgamehub.dto.PlayerUpdateDto;
+import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.RegistrationRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
 
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -39,6 +45,24 @@ public class PlayerIntegrationTests {
     @Autowired
     private PlayerRepository playerRepo;
 
+    @Autowired
+    private GameRepository gameRepo;
+
+    @Autowired
+    private GameCopyRepository gameCopyRepo;
+
+    @Autowired
+    private EventRepository eventRepo;
+
+    @Autowired
+    private ReviewRepository reviewRepo;
+
+    @Autowired
+    private RegistrationRepository registrationRepo;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
+
     private final String VALID_NAME = "John Doe";
     private final String VALID_EMAIL = "john.doe@gmail.com";
     private final String VALID_PASSWORD = "password";
@@ -47,12 +71,18 @@ public class PlayerIntegrationTests {
     private final int INVALID_ID = 0;
     private int VALID_ID;
 
-
     @BeforeAll
     @AfterAll
-    public void clearDataBase() {
+    public void clearDatabase() {
+        reviewRepo.deleteAll();
+        registrationRepo.deleteAll();
+        eventRepo.deleteAll();
+        borrowRequestRepo.deleteAll();
+        gameCopyRepo.deleteAll();
+        gameRepo.deleteAll();
         playerRepo.deleteAll();
     }
+
     
     
     @Test

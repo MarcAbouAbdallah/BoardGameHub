@@ -19,16 +19,25 @@ import ca.mcgill.ecse321.boardgamehub.model.*;
 public class BorrowRequestRepositoryTest {
 
     @Autowired
-    private BorrowRequestRepository borrowRequestRepository;
+    private PlayerRepository playerRepository;
 
     @Autowired
-    private PlayerRepository playerRepository;
+    private GameRepository gameRepository;
 
     @Autowired
     private GameCopyRepository gameCopyRepository;
 
     @Autowired
-    private GameRepository gameRepository;
+    private EventRepository eventRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private RegistrationRepository registrationRepository;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepository;
 
     private Player requester;
     private Player requestee;
@@ -36,8 +45,20 @@ public class BorrowRequestRepositoryTest {
     private GameCopy gameCopy;
     private BorrowRequest borrowRequest;
 
+    @AfterEach
+    public void clearDatabase() {
+        reviewRepository.deleteAll();
+        registrationRepository.deleteAll();
+        eventRepository.deleteAll();
+        borrowRequestRepository.deleteAll();
+        gameCopyRepository.deleteAll();
+        gameRepository.deleteAll();
+        playerRepository.deleteAll();
+    }
+
     @BeforeEach
     public void setup() {
+        clearDatabase();
         requester = new Player("Alice", "alice@example.com", "password123", false);
         playerRepository.save(requester);
 

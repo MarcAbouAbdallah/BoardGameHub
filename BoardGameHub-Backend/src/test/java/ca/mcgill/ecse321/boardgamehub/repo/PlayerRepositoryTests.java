@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,38 @@ public class PlayerRepositoryTests {
     @Autowired
     private PlayerRepository playerRepository;
 
+    @Autowired
+    private GameRepository gameRepository;
+
+    @Autowired
+    private GameCopyRepository gameCopyRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private RegistrationRepository registrationRepository;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepository;
+
+    @BeforeEach
+    public void clearData() {
+        reviewRepository.deleteAll();
+        registrationRepository.deleteAll();
+        eventRepository.deleteAll();
+        borrowRequestRepository.deleteAll();
+        gameCopyRepository.deleteAll();
+        gameRepository.deleteAll();
+        playerRepository.deleteAll();
+    }
 
     @AfterEach
     public void clearDatabase() {
-        playerRepository.deleteAll();
+        clearData();
     }
 
     @Test

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,42 @@ import ca.mcgill.ecse321.boardgamehub.model.Game;
 public class GameRepositoryTests {
 
     @Autowired
+    private PlayerRepository playerRepository;
+
+    @Autowired
     private GameRepository gameRepository;
+
+    @Autowired
+    private GameCopyRepository gameCopyRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private RegistrationRepository registrationRepository;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepository;
 
     private Game chess;
 
+    @BeforeEach
+    public void clearData() {
+        reviewRepository.deleteAll();
+        registrationRepository.deleteAll();
+        eventRepository.deleteAll();
+        borrowRequestRepository.deleteAll();
+        gameCopyRepository.deleteAll();
+        gameRepository.deleteAll();
+        playerRepository.deleteAll();
+    }
+
     @AfterEach
     public void clearDatabase() {
-        gameRepository.deleteAll();
+        clearData();
     }
 
     @Test
