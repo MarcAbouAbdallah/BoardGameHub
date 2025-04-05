@@ -30,11 +30,13 @@ import ca.mcgill.ecse321.boardgamehub.model.Game;
 import ca.mcgill.ecse321.boardgamehub.model.GameCopy;
 import ca.mcgill.ecse321.boardgamehub.model.Player;
 import ca.mcgill.ecse321.boardgamehub.model.Registration;
+import ca.mcgill.ecse321.boardgamehub.repo.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.EventRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameCopyRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.GameRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.PlayerRepository;
 import ca.mcgill.ecse321.boardgamehub.repo.RegistrationRepository;
+import ca.mcgill.ecse321.boardgamehub.repo.ReviewRepository;
 
 import org.springframework.http.HttpMethod;
 
@@ -50,16 +52,22 @@ public class RegistrationIntegrationTest {
     private PlayerRepository playerRepo;
 
     @Autowired
-    private EventRepository eventRepo;
-
-    @Autowired
     private GameRepository gameRepo;
 
     @Autowired
     private GameCopyRepository gameCopyRepo;
 
     @Autowired
+    private EventRepository eventRepo;
+
+    @Autowired
+    private ReviewRepository reviewRepo;
+
+    @Autowired
     private RegistrationRepository registrationRepo;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
 
     private static final String VALID_DESCRIPTION_STRING = "Going to play monopoly";
     private static final LocalDate VALID_DATE = LocalDate.of(2026, 5, 1);
@@ -74,6 +82,7 @@ public class RegistrationIntegrationTest {
 
     @BeforeAll
     public void setup() {
+        clearDatabase();
         gameRepo.save(VALID_GAME);
         VALID_PLAYER.setId(playerRepo.save(VALID_PLAYER).getId());
         gameCopyRepo.save(VALID_GAMECOPY);
@@ -82,12 +91,13 @@ public class RegistrationIntegrationTest {
 
     @AfterAll
     public void clearDatabase() {
+        reviewRepo.deleteAll();
         registrationRepo.deleteAll();
         eventRepo.deleteAll();
+        borrowRequestRepo.deleteAll();
         gameCopyRepo.deleteAll();
-        playerRepo.deleteAll();
         gameRepo.deleteAll();
-
+        playerRepo.deleteAll();
     }
 
     @Test

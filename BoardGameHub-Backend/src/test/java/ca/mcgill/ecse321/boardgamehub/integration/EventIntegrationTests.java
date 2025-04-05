@@ -82,6 +82,7 @@ public class EventIntegrationTests {
 
     @BeforeAll
     public void setup() {
+        clearDatabase();
         playerRepo.save(VALID_ORGANIZER);
         gameRepo.save(VALID_GAME);
         gameCopyRepo.save(VALID_GAMECOPY);

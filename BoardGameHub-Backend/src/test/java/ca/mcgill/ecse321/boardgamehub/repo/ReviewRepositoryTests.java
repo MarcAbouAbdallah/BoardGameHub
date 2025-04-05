@@ -23,20 +23,44 @@ import ca.mcgill.ecse321.boardgamehub.model.Review;
 public class ReviewRepositoryTests {
 
     @Autowired
-    private ReviewRepository reviewRepo;
-
-    @Autowired
     private PlayerRepository playerRepo;
 
     @Autowired
     private GameRepository gameRepo;
 
+    @Autowired
+    private GameCopyRepository gameCopyRepo;
+
+    @Autowired
+    private EventRepository eventRepo;
+
+    @Autowired
+    private ReviewRepository reviewRepo;
+
+    @Autowired
+    private RegistrationRepository registrationRepo;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepo;
+
     private Player john;
     
     private Game monopoly;
 
+    @AfterEach
+    public void clearData() {
+        reviewRepo.deleteAll();
+        registrationRepo.deleteAll();
+        eventRepo.deleteAll();
+        borrowRequestRepo.deleteAll();
+        gameCopyRepo.deleteAll();
+        gameRepo.deleteAll();
+        playerRepo.deleteAll();
+    }
+
     @BeforeEach
     public void setup() {
+        clearData();
         john = new Player(
                             "John",
                             "john@email.com",
@@ -47,12 +71,6 @@ public class ReviewRepositoryTests {
         gameRepo.save(monopoly);
     }
 
-    @AfterEach
-    public void clearDataBase() {
-        reviewRepo.deleteAll();
-        playerRepo.deleteAll();
-        gameRepo.deleteAll();
-    }
 
     @Test
     public void testCreateAndReadReview() {

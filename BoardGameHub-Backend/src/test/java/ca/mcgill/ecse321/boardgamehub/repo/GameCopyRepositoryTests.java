@@ -21,20 +21,44 @@ import ca.mcgill.ecse321.boardgamehub.model.Player;
 public class GameCopyRepositoryTests {
 
     @Autowired
-    private GameCopyRepository gameCopyRepository;
+    private PlayerRepository playerRepository;
 
     @Autowired
     private GameRepository gameRepository;
 
     @Autowired
-    private PlayerRepository playerRepository;
+    private GameCopyRepository gameCopyRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private RegistrationRepository registrationRepository;
+
+    @Autowired
+    private BorrowRequestRepository borrowRequestRepository;
 
     private Game chess;
     private GameCopy chessCopy;
     private Player Sleepy;
 
+    @AfterEach
+    public void clearData() {
+        reviewRepository.deleteAll();
+        registrationRepository.deleteAll();
+        eventRepository.deleteAll();
+        borrowRequestRepository.deleteAll();
+        gameCopyRepository.deleteAll();
+        gameRepository.deleteAll();
+        playerRepository.deleteAll();
+    }
+
     @BeforeEach
     public void setup() {
+        clearData();
         chess = new Game("Chess",
                         2,
                         2,
