@@ -53,10 +53,10 @@ public class PlayerUpdateDto {
         if (name != null && name.isBlank()) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST,"Player name cannot be blank.");
         }
-        if (email != null && email.isBlank() && !email.contains("@")) {
+        if (email != null && (email.isBlank() || !email.contains("@"))) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST,"Email is invalid.");
         }
-        if (password != null && password.isBlank() && password.length() < 8) {
+        if (password != null && (password.isBlank() || password.length() < 8)) {
             throw new BoardGameHubException(HttpStatus.BAD_REQUEST,"Password must be at least 8 characters long.");
         }
 
