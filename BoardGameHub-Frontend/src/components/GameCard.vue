@@ -101,7 +101,7 @@ const handleAddToCollectionClick = async (gameId: number) => {
 
       <!-- TEXT -->
       <CardContent class="p-2">
-        <div class="flex gap-2 flex-wrap ml-4 mb-8">
+        <div class="flex gap-2 flex-wrap ml-4 mb-8 justify-center">
           <Badge v-if="isBorrowed">Borrowed</Badge>
           <Badge> {{ props.game.minPlayers }} - {{ props.game.maxPlayers }} Players</Badge>
         </div>

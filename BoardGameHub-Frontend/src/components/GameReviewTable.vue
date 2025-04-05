@@ -123,7 +123,7 @@ const handleUpdate = async (updatedReview: any) => {
         </TableBody>
         <TableBody v-else>
           <TableRow>
-            <TableCell colspan="6" class="text-center"> No reviews found. </TableCell>
+            <TableCell colspan="6" class="text-center py-8 text-muted-foreground"> No reviews found. </TableCell>
           </TableRow>
         </TableBody>
       </Table>

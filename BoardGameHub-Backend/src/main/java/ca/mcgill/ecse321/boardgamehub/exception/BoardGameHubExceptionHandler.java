@@ -38,7 +38,7 @@ public class BoardGameHubExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDto> handleGenericException(Exception ex) {
-        ErrorDto responseBody = new ErrorDto(ex.getMessage());
+        ErrorDto responseBody = new ErrorDto(ex.getMessage().toString().split(":")[1].trim());
         return new ResponseEntity<ErrorDto>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -192,7 +192,7 @@ onMounted(async () => {
 
         <TableBody v-else>
           <TableRow>
-            <TableCell colspan="8" class="text-center"> No borrowed or owned games found. </TableCell>
+            <TableCell colspan="8" class="text-center py-8 text-muted-foreground"> No borrowed or owned games found. </TableCell>
           </TableRow>
         </TableBody>
       </Table>

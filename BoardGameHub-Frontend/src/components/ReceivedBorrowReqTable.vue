@@ -129,7 +129,7 @@ const updateRequestStatus = async (
         </TableBody>
         <TableBody v-else>
           <TableRow>
-            <TableCell colspan="6" class="text-center"> No incoming requests found. </TableCell>
+            <TableCell colspan="6" class="text-center py-8 text-muted-foreground"> No incoming requests found. </TableCell>
           </TableRow>
         </TableBody>
       </Table>

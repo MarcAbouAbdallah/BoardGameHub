@@ -6,10 +6,6 @@
     <div class="flex justify-between items-center">
       <h1 class="text-2xl font-bold">Game Events</h1>
       <div class="flex items-center gap-2">
-        <Button variant="outline" class="flex items-center border-black">
-          <FilterIcon class="h-4 w-4" />
-          Filters
-        </Button>
         <Button class="pl-3" @click="isCreateEventModalOpen = true">
           <Plus class="h-4 w-4" />
           Create Event
@@ -155,11 +151,9 @@ import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
 import DataTableCard from "@/components/DataTableCard.vue";
 import {
-  FilterIcon,
   ChevronDown,
   ChevronUp,
   Plus,
-  //RefreshCcw,
   Edit,
   Trash2
 } from "lucide-vue-next";

@@ -32,7 +32,7 @@ onMounted(async () => {
   try {
     const userId = authStore.user?.userId;
     if (!userId) throw new Error("Requestee ID missing");
-    borrowRequests.value = await borrowRequestService.getAcceptedRequestsByRequesterId(userId); // Only ACCEPTED
+    borrowRequests.value = await borrowRequestService.getAcceptedRequestsByRequesteeId(userId); // Only ACCEPTED
   } catch (err: any) {
     error.value = err.message || "Failed to load received requests.";
   } finally {
@@ -68,8 +68,8 @@ onMounted(async () => {
         </TableBody>
         <TableBody v-else>
           <TableRow>
-            <TableCell colspan="6" class="text-center">
-              You have not lent your games to anyone in the past
+            <TableCell colspan="6" class="text-center py-8 text-muted-foreground">
+              You have not lent your games to anyone in the past.
             </TableCell>
           </TableRow>
         </TableBody>
