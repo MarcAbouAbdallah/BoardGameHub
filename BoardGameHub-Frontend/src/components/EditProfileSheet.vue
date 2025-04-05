@@ -10,7 +10,7 @@ import {
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
 import { Check, Pen, X } from "lucide-vue-next";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { Input } from "./ui/input";
 import UpdatePasswordModal from "./popups/update/UpdatePasswordModal.vue";
 import { playerService } from "@/services/PlayerService";
@@ -22,6 +22,9 @@ const userName = ref("");
 const email = ref("");
 
 const user = useAuthStore().user;
+
+const usernameTitle = computed(() => user.username ?? "");
+const emailTitle = computed(() => user.userEmail ?? "");
 
 const handleUserNameChange = async () => {
   try {
@@ -80,7 +83,8 @@ const handleEmailChange = async () => {
         <div class="flex flex-col items-start gap-2">
           <div class="text-lg font-semibold">Username:</div>
           <div class="flex justify-between w-full" v-if="!isUserNameEditing">
-            <div class="text-lg">{{ user.username }}</div>
+            <div class="text-lg truncate max-w-[300px] overflow-hidden whitespace-nowrap"
+              :title="usernameTitle">{{ user.username }}</div>
             <Button
               class="flex"
               variant="outline"
@@ -116,7 +120,8 @@ const handleEmailChange = async () => {
         <div class="flex flex-col items-start gap-2">
           <div class="text-lg font-semibold">Email:</div>
           <div class="flex justify-between w-full" v-if="!isEmailEditing">
-            <div class="text-lg">{{ user.userEmail }}</div>
+            <div class="text-lg truncate max-w-[300px] overflow-hidden whitespace-nowrap"
+              :title="emailTitle">{{ user.userEmail }}</div>
             <Button
               class="flex"
               variant="outline"

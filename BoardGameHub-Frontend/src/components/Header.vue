@@ -47,7 +47,9 @@ const navItems = [
                       class="text-xs font-bold px-1.5 py-0.5 rounded-full bg-green-200 text-green-900">
                   GameOwner
                 </span>
-                <span>{{ authStore.user.username }}</span>
+                <span class="max-w-[300px] truncate block">
+                  {{ authStore.user.username }}
+                </span>
                 <Avatar class="bg-[#F4F4F5] text-xl hover:text-gray-500 font-bold">
                   {{
                     authStore.user.username ? authStore.user.username.charAt(0).toUpperCase() : "U"
