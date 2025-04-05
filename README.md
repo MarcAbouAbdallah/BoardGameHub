@@ -35,7 +35,7 @@ The scope of this deliverable includes the whole implementation of the frontend 
 |Jerome Courtemanche||||
 |Bora Denizasan||||
 |Mubeen Mohammed||||
-|Raphaël Verger||||
+|Raphaël Verger|Developer|Implemented 'Events' page and 'My Events' table in the homepage - connecting it to the backend. Created DataSeeder and contributed to project documentation.  |~20h|
 ***
 ### Deliverable 2
 The scope of this deliverable includes completing service & controller layers with a RESTful API, documenting and testing them thoroughly. We implemented all the required service and controller classes as well as the required DTO's and Exception classes. These were then tested thoroughly through unit and integration tests using JUnit5. Please visit the deliverable 2 section of the [wiki](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki) for all project documentation and design decisions. Information on project setup and installation can be found on the [Build System](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Build-System) page of the wiki. Information regarding team member roles, individual tasks and time allocation breakdown can be found in the table below.\
