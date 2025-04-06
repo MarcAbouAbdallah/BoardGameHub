@@ -19,10 +19,10 @@ import java.util.stream.StreamSupport;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
-
+    
     // Flag to control whether data should be seeded
     private final boolean shouldSeedData = true;  // Set to false to disable seeding
-
+    
     @Autowired
     private PlayerRepository playerRepository;
     
@@ -44,7 +44,7 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private BorrowRequestRepository borrowRequestRepository;
     
-
+    
     @Override
     public void run(String... args) throws Exception {
         // Only proceed with seeding if the flag is set to true
@@ -52,7 +52,7 @@ public class DataSeeder implements CommandLineRunner {
             System.out.println("Data seeding is disabled");
             return;
         }
-
+        
         System.out.println("Starting to seed data...");
         System.out.println(playerRepository.count());
         System.out.println(gameRepository.count());
@@ -61,7 +61,7 @@ public class DataSeeder implements CommandLineRunner {
         System.out.println(registrationRepository.count());
         System.out.println(reviewRepository.count());
         System.out.println(borrowRequestRepository.count());
-
+        
         
         // Seed Players if none exist
         if (playerRepository.count() == 0) {
@@ -70,43 +70,43 @@ public class DataSeeder implements CommandLineRunner {
             john.setEmail("john.smith@test.com");
             john.setPassword("password");
             john = playerRepository.save(john);
-
+            
             Player jane = new Player();
             jane.setName("Jane Doe");
             jane.setEmail("jane.doe@example.com");
             jane.setPassword("password");
             jane = playerRepository.save(jane);
-
+            
             Player michael = new Player();
             michael.setName("Michael Johnson");
             michael.setEmail("michael.johnson@example.com");
             michael.setPassword("password");
             michael = playerRepository.save(michael);
-
+            
             Player laura = new Player();
             laura.setName("Laura Williams");
             laura.setEmail("laura.williams@example.com");
             laura.setPassword("password");
             laura = playerRepository.save(laura);
-
+            
             Player alice = new Player();
             alice.setName("Alice Brown");
             alice.setEmail("alice.brown@example.com");
             alice.setPassword("password");
             alice = playerRepository.save(alice);
-
+            
             Player bob = new Player();
             bob.setName("Bob Miller");
             bob.setEmail("bob.miller@example.com");
             bob.setPassword("password");
             bob = playerRepository.save(bob);
-
+            
             Player charlie = new Player();
             charlie.setName("Charlie Davis");
             charlie.setEmail("charlie.davis@example.com");
             charlie.setPassword("password");
             charlie = playerRepository.save(charlie);
-
+            
             Player olivia = new Player();
             olivia.setName("Olivia Wilson");
             olivia.setEmail("olivia.wilson@example.com");
@@ -118,25 +118,25 @@ public class DataSeeder implements CommandLineRunner {
         if (gameRepository.count() == 0) {
             Game catan = new Game("Catan", 4, 3, "A strategy game where players collect resources and build settlements to earn points.", "https://www.calendarclub.ca/cdn/shop/files/EB0D1F84-48D3-48C1-890B-3879B397011A_5926567e-0a4e-471c-8af1-f7b64bbfdf0f.jpg?v=1727169556&width=2048");
             gameRepository.save(catan);
-
+            
             Game risk = new Game("Risk", 6, 2, "A classic game of global domination where players conquer territories through strategic battles.", "https://assetsio.gnwcdn.com/risk-board-game-layout.jpg?width=1200&height=1200&fit=bounds&quality=70&format=jpg&auto=webp");
             gameRepository.save(risk);
-
+            
             Game terraformingMars = new Game("Terraforming Mars", 5, 1, "A sci-fi strategy game where players work to make Mars habitable by managing resources and projects.", "https://i5.walmartimages.com/asr/b0b87b20-865c-48e2-81d2-70d9d836089a_1.9e2be516e00b0604a255a3050796a4d6.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF");
             gameRepository.save(terraformingMars);
-
+            
             Game monopoly = new Game("Monopoly", 8, 2, "A classic real estate trading game where players buy, sell, and trade properties to bankrupt opponents.", "https://cdn.shoplw.ca/images/2022/06/650-0701-2.jpeg");
             gameRepository.save(monopoly);
-
+            
             Game gloomhaven = new Game("Gloomhaven", 4, 2, "A cooperative dungeon-crawling adventure game with tactical combat and a branching storyline.", "https://m.media-amazon.com/images/I/81ZWsTe5YHL.jpg");
             gameRepository.save(gloomhaven);
-
+            
             Game ticketToRide = new Game("Ticket to Ride", 5, 2, "A railway-themed board game where players collect cards to claim train routes across a map.", "https://i.ebayimg.com/images/g/~0UAAOSwXlNhUz9u/s-l1200.jpg");
             gameRepository.save(ticketToRide);
-
+            
             Game codenames = new Game("Codenames", 8, 2, "A word association game where players give clues to help their team guess the correct words.", "https://i5.walmartimages.com/asr/71eb2489-1cc9-4f4e-aee0-2f9a3226bc88.78ee7e533ef6f388e53b67246b2a8975.png?odnHeight=768&odnWidth=768&odnBg=FFFFFF");
             gameRepository.save(codenames);
-
+            
             Game pandemic = new Game("Pandemic", 4, 2, "A cooperative game where players work together to stop the spread of diseases and save the world.", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLqv0R_SNtkXRG22ZmCE6F0GJNgIcMqcNE98341qM46BExtX-eCk1ubUlzeFx1lOC9JKo&usqp=CAU");
             gameRepository.save(pandemic);
         }
@@ -151,7 +151,7 @@ public class DataSeeder implements CommandLineRunner {
                 copy1.setOwner(john);
                 gameCopyRepository.save(copy1);
             }
-
+            
             Game risk = gameRepository.findById(2).orElse(null);
             Player jane = playerRepository.findById(2).orElse(null);
             if (risk != null && jane != null) {
@@ -160,7 +160,7 @@ public class DataSeeder implements CommandLineRunner {
                 copy2.setOwner(jane);
                 gameCopyRepository.save(copy2);
             }
-
+            
             Game gloomhaven = gameRepository.findById(5).orElse(null);
             Player laura = playerRepository.findById(4).orElse(null);
             if (gloomhaven != null && laura != null) {
@@ -170,10 +170,65 @@ public class DataSeeder implements CommandLineRunner {
                 gameCopyRepository.save(copy3);
             }
         }
-
+        
         // Seed Events if none exist
         if (eventRepository.count() == 0) {
             Player eventOrg1 = playerRepository.findById(1).orElse(null); // John
+            
+            // Add more Events organized by John
+            if (eventOrg1 != null) {
+                GameCopy johnsCatanCopy = gameCopyRepository.findById(1).orElse(null);
+                if (johnsCatanCopy != null) {
+                    Event johnsEvent1 = new Event();
+                    johnsEvent1.setName("Catan Tournament");
+                    johnsEvent1.setLocation("John's Place");
+                    johnsEvent1.setDescription("Join us for a competitive Catan tournament with prizes!");
+                    johnsEvent1.setDate(Date.valueOf(LocalDate.now().plusDays(14)));
+                    johnsEvent1.setStartTime(Time.valueOf("19:00:00"));
+                    johnsEvent1.setEndTime(Time.valueOf("23:00:00"));
+                    johnsEvent1.setMaxParticipants(16);
+                    johnsEvent1.setOrganizer(eventOrg1);
+                    johnsEvent1.setGame(johnsCatanCopy);
+                    eventRepository.save(johnsEvent1);
+                }
+                
+                GameCopy johnsTicketToRideCopy = gameCopyRepository.findByOwner(eventOrg1).stream()
+                .filter(copy -> copy.getGame().getName().equals("Ticket to Ride"))
+                .findFirst().orElse(null);
+                
+                if (johnsTicketToRideCopy != null) {
+                    Event johnsEvent2 = new Event();
+                    johnsEvent2.setName("Ticket to Ride Night");
+                    johnsEvent2.setLocation("Community Library");
+                    johnsEvent2.setDescription("Learn and play Ticket to Ride with John! Beginners welcome.");
+                    johnsEvent2.setDate(Date.valueOf(LocalDate.now().plusDays(21)));
+                    johnsEvent2.setStartTime(Time.valueOf("18:00:00"));
+                    johnsEvent2.setEndTime(Time.valueOf("21:00:00"));
+                    johnsEvent2.setMaxParticipants(8);
+                    johnsEvent2.setOrganizer(eventOrg1);
+                    johnsEvent2.setGame(johnsTicketToRideCopy);
+                    eventRepository.save(johnsEvent2);
+                }
+                
+                GameCopy johnsCodenamesCopy = gameCopyRepository.findByOwner(eventOrg1).stream()
+                .filter(copy -> copy.getGame().getName().equals("Codenames"))
+                .findFirst().orElse(null);
+                
+                if (johnsCodenamesCopy != null) {
+                    Event johnsEvent3 = new Event();
+                    johnsEvent3.setName("Codenames Party");
+                    johnsEvent3.setLocation("Board Game Cafe");
+                    johnsEvent3.setDescription("Team-based word game night! Bring your thinking caps.");
+                    johnsEvent3.setDate(Date.valueOf(LocalDate.now().plusDays(3)));
+                    johnsEvent3.setStartTime(Time.valueOf("20:00:00"));
+                    johnsEvent3.setEndTime(Time.valueOf("22:30:00"));
+                    johnsEvent3.setMaxParticipants(12);
+                    johnsEvent3.setOrganizer(eventOrg1);
+                    johnsEvent3.setGame(johnsCodenamesCopy);
+                    eventRepository.save(johnsEvent3);
+                }
+            }
+            
             GameCopy copyForEvent1 = gameCopyRepository.findById(1).orElse(null);
             if (eventOrg1 != null && copyForEvent1 != null) {
                 Event event1 = new Event();
@@ -188,7 +243,7 @@ public class DataSeeder implements CommandLineRunner {
                 event1.setGame(copyForEvent1);
                 eventRepository.save(event1);
             }
-
+            
             Player eventOrg2 = playerRepository.findById(2).orElse(null); // Jane
             GameCopy copyForEvent2 = gameCopyRepository.findById(2).orElse(null);
             if (eventOrg2 != null && copyForEvent2 != null) {
@@ -204,7 +259,7 @@ public class DataSeeder implements CommandLineRunner {
                 event2.setGame(copyForEvent2);
                 eventRepository.save(event2);
             }
-
+            
             Player eventOrg3 = playerRepository.findById(4).orElse(null); // Laura
             GameCopy copyForEvent3 = gameCopyRepository.findById(3).orElse(null);
             if (eventOrg3 != null && copyForEvent3 != null) {
@@ -235,22 +290,89 @@ public class DataSeeder implements CommandLineRunner {
                 Registration reg2 = new Registration(new Registration.Key(laura, firstEvent));
                 registrationRepository.save(reg2);
             }
-
+            
             Event secondEvent = eventRepository.findById(2).orElse(null);
             Player john = playerRepository.findById(1).orElse(null);
             if (secondEvent != null && john != null) {
                 Registration reg3 = new Registration(new Registration.Key(john, secondEvent));
                 registrationRepository.save(reg3);
             }
+            // Add some registrations for John's events
+            //Player jane = playerRepository.findById(2).orElse(null);
+            Player michael = playerRepository.findById(3).orElse(null);
+            //Player laura = playerRepository.findById(4).orElse(null);
+            Player alice = playerRepository.findById(5).orElse(null);
+            Player bob = playerRepository.findById(6).orElse(null);
+            Player charlie = playerRepository.findById(7).orElse(null);
+            Player olivia = playerRepository.findById(8).orElse(null);
+            // Find John's events
+            Event codenamesEvent = StreamSupport.stream(eventRepository.findAll().spliterator(), false)
+            .filter(event -> event.getName().equals("Codenames Party"))
+            .findFirst().orElse(null);
+            
+            if (codenamesEvent != null) {
+                if (codenamesEvent != null) {
+                    if (jane != null) registrationRepository.save(new Registration(new Registration.Key(jane, codenamesEvent)));
+                    if (michael != null) registrationRepository.save(new Registration(new Registration.Key(michael, codenamesEvent)));
+                    if (laura != null) registrationRepository.save(new Registration(new Registration.Key(laura, codenamesEvent)));
+                    if (alice != null) registrationRepository.save(new Registration(new Registration.Key(alice, codenamesEvent)));
+                    if (charlie != null) registrationRepository.save(new Registration(new Registration.Key(charlie, codenamesEvent)));
+                }
+                Event catanEvent = StreamSupport.stream(eventRepository.findAll().spliterator(), false)
+                .filter(event -> event.getName().equals("Catan Tournament"))
+                .findFirst().orElse(null);
+                
+                if (catanEvent != null) {
+                    if (catanEvent != null) {
+                        if (jane != null) registrationRepository.save(new Registration(new Registration.Key(jane, catanEvent)));
+                        if (bob != null) registrationRepository.save(new Registration(new Registration.Key(bob, catanEvent)));
+                        if (charlie != null) registrationRepository.save(new Registration(new Registration.Key(charlie, catanEvent)));
+                        if (olivia != null) registrationRepository.save(new Registration(new Registration.Key(olivia, catanEvent)));
+                    }
+                }
+            }
+            
         }
         
         // Seed more Game Copies if only a few exist
         if (gameCopyRepository.count() <= 3) {
             // Add more copies of existing games
             
+            // Add more Game Copies for John (as the demo account)
+            Player john = playerRepository.findById(1).orElse(null);
+            if (john != null) {
+                john.setIsGameOwner(true);
+                playerRepository.save(john);
+                Game ticketToRide = gameRepository.findById(6).orElse(null);
+                if (ticketToRide != null) {
+                    GameCopy johnsCopy1 = new GameCopy();
+                    johnsCopy1.setGame(ticketToRide);
+                    johnsCopy1.setOwner(john);
+                    gameCopyRepository.save(johnsCopy1);
+                }
+                
+                Game codenames = gameRepository.findById(7).orElse(null);
+                if (codenames != null) {
+                    GameCopy johnsCopy2 = new GameCopy();
+                    johnsCopy2.setGame(codenames);
+                    johnsCopy2.setOwner(john);
+                    gameCopyRepository.save(johnsCopy2);
+                }
+                
+                Game pandemic = gameRepository.findById(8).orElse(null);
+                if (pandemic != null) {
+                    GameCopy johnsCopy3 = new GameCopy();
+                    johnsCopy3.setGame(pandemic);
+                    johnsCopy3.setOwner(john);
+                    gameCopyRepository.save(johnsCopy3);
+                }
+            }
+            
             Game terraformingMars = gameRepository.findById(3).orElse(null);
             Player michael = playerRepository.findById(3).orElse(null);
             if (terraformingMars != null && michael != null) {
+                michael.setIsGameOwner(true);
+                playerRepository.save(michael);
                 GameCopy copy4 = new GameCopy();
                 copy4.setGame(terraformingMars);
                 copy4.setOwner(michael);
@@ -260,6 +382,8 @@ public class DataSeeder implements CommandLineRunner {
             Game pandemic = gameRepository.findById(8).orElse(null);
             Player alice = playerRepository.findById(5).orElse(null);
             if (pandemic != null && alice != null) {
+                alice.setIsGameOwner(true);
+                playerRepository.save(alice);
                 GameCopy copy5 = new GameCopy();
                 copy5.setGame(pandemic);
                 copy5.setOwner(alice);
@@ -269,6 +393,8 @@ public class DataSeeder implements CommandLineRunner {
             Game ticketToRide = gameRepository.findById(6).orElse(null);
             Player bob = playerRepository.findById(6).orElse(null);
             if (ticketToRide != null && bob != null) {
+                bob.setIsGameOwner(true);
+                playerRepository.save(bob);
                 GameCopy copy6 = new GameCopy();
                 copy6.setGame(ticketToRide);
                 copy6.setOwner(bob);
@@ -278,6 +404,8 @@ public class DataSeeder implements CommandLineRunner {
             Game codenames = gameRepository.findById(7).orElse(null);
             Player charlie = playerRepository.findById(7).orElse(null);
             if (codenames != null && charlie != null) {
+                charlie.setIsGameOwner(true);
+                playerRepository.save(charlie);
                 GameCopy copy7 = new GameCopy();
                 copy7.setGame(codenames);
                 copy7.setOwner(charlie);
@@ -287,6 +415,8 @@ public class DataSeeder implements CommandLineRunner {
             Game monopoly = gameRepository.findById(4).orElse(null);
             Player olivia = playerRepository.findById(8).orElse(null);
             if (monopoly != null && olivia != null) {
+                olivia.setIsGameOwner(true);
+                playerRepository.save(olivia);
                 GameCopy copy8 = new GameCopy();
                 copy8.setGame(monopoly);
                 copy8.setOwner(olivia);
@@ -339,6 +469,37 @@ public class DataSeeder implements CommandLineRunner {
                 Review review6 = new Review(5, "The cooperative gameplay is refreshing. Really challenging but rewarding when you win!", Date.valueOf(LocalDate.now().minusDays(20)), john, pandemic);
                 reviewRepository.save(review6);
             }
+            
+            // Add more Reviews by John
+            if (john != null) {
+                Game risk2 = gameRepository.findById(2).orElse(null);
+                if (risk2 != null) {
+                    Review johnsReview1 = new Review(4, "Risk is a great classic, but can take too long sometimes. Still worth playing!", 
+                    Date.valueOf(LocalDate.now().minusDays(25)), john, risk2);
+                    reviewRepository.save(johnsReview1);
+                }
+                
+                Game terraformingMars2 = gameRepository.findById(3).orElse(null);
+                if (terraformingMars2 != null) {
+                    Review johnsReview2 = new Review(5, "Absolutely fantastic game with endless replayability. One of the best strategy games I've played.", 
+                    Date.valueOf(LocalDate.now().minusDays(12)), john, terraformingMars2);
+                    reviewRepository.save(johnsReview2);
+                }
+                
+                Game ticketToRide2 = gameRepository.findById(6).orElse(null);
+                if (ticketToRide2 != null) {
+                    Review johnsReview3 = new Review(5, "Perfect gateway game! Easy to learn but has enough strategy to keep experienced players engaged.", 
+                    Date.valueOf(LocalDate.now().minusDays(8)), john, ticketToRide2);
+                    reviewRepository.save(johnsReview3);
+                }
+                
+                Game codenames2 = gameRepository.findById(7).orElse(null);
+                if (codenames2 != null) {
+                    Review johnsReview4 = new Review(5, "Great party game that works with any crowd. Always leads to laughs and memorable moments!", 
+                    Date.valueOf(LocalDate.now().minusDays(3)), john, codenames2);
+                    reviewRepository.save(johnsReview4);
+                }
+            }
         }
         
         // Seed Borrow Requests if none exist
@@ -361,26 +522,27 @@ public class DataSeeder implements CommandLineRunner {
             // Pending requests
             if (jane != null && john != null && catanCopy != null) {
                 BorrowRequest request1 = new BorrowRequest(jane, john, catanCopy, 
-                        "I've heard great things about Catan and would love to try it!", 
-                        Date.valueOf(LocalDate.now().plusDays(3)), 
-                        Date.valueOf(LocalDate.now().plusDays(10)));
+                "I've heard great things about Catan and would love to try it!", 
+                Date.valueOf(LocalDate.now().minusDays(3)), 
+                Date.valueOf(LocalDate.now().plusDays(10)));
+                request1.setStatus(BorrowStatus.ACCEPTED);
                 borrowRequestRepository.save(request1);
             }
             
             if (michael != null && jane != null && riskCopy != null) {
                 BorrowRequest request2 = new BorrowRequest(michael, jane, riskCopy, 
-                        "Planning a game night this weekend, Risk would be perfect!", 
-                        Date.valueOf(LocalDate.now().plusDays(5)), 
-                        Date.valueOf(LocalDate.now().plusDays(8)));
+                "Planning a game night this weekend, Risk would be perfect!", 
+                Date.valueOf(LocalDate.now().plusDays(5)), 
+                Date.valueOf(LocalDate.now().plusDays(8)));
                 borrowRequestRepository.save(request2);
             }
             
             // Approved request
             if (alice != null && laura != null && gloomhavenCopy != null) {
                 BorrowRequest request3 = new BorrowRequest(alice, laura, gloomhavenCopy, 
-                        "My group wants to start a Gloomhaven campaign.", 
-                        Date.valueOf(LocalDate.now().plusDays(7)), 
-                        Date.valueOf(LocalDate.now().plusDays(28)));
+                "My group wants to start a Gloomhaven campaign.", 
+                Date.valueOf(LocalDate.now().plusDays(7)), 
+                Date.valueOf(LocalDate.now().plusDays(28)));
                 request3.setStatus(BorrowStatus.ACCEPTED);
                 borrowRequestRepository.save(request3);
             }
@@ -388,14 +550,99 @@ public class DataSeeder implements CommandLineRunner {
             // Rejected request
             if (laura != null && michael != null && terraformingMarsCopy != null) {
                 BorrowRequest request4 = new BorrowRequest(laura, michael, terraformingMarsCopy, 
-                        "Would love to borrow this for my birthday party!", 
-                        Date.valueOf(LocalDate.now().plusDays(2)), 
-                        Date.valueOf(LocalDate.now().plusDays(4)));
+                "Would love to borrow this for my birthday party!", 
+                Date.valueOf(LocalDate.now().plusDays(2)), 
+                Date.valueOf(LocalDate.now().plusDays(4)));
                 request4.setStatus(BorrowStatus.DECLINED);
                 borrowRequestRepository.save(request4);
             }
             
-        }
+            // Add more Borrow Requests related to John (both as requester and requestee)
+            if (john != null) {
+                // John as requester
+                Player bob = playerRepository.findById(6).orElse(null);
+                GameCopy bobsTicketToRideCopy = gameCopyRepository.findByOwner(bob).stream()
+                .filter(copy -> copy.getGame().getName().equals("Ticket to Ride"))
+                .findFirst().orElse(null);
+                
+                if (bob != null && bobsTicketToRideCopy != null) {
+                    BorrowRequest johnsRequest1 = new BorrowRequest(john, bob, bobsTicketToRideCopy,
+                    "I'd like to compare the Europe version with my US version. Would be great for my game night!",
+                    Date.valueOf(LocalDate.now().plusDays(9)),
+                    Date.valueOf(LocalDate.now().plusDays(16)));
+                    borrowRequestRepository.save(johnsRequest1);
+                }
+                
+                Player charlie = playerRepository.findById(7).orElse(null);
+                GameCopy charliesCodenamesCopy = gameCopyRepository.findByOwner(charlie).stream()
+                .filter(copy -> copy.getGame().getName().equals("Codenames"))
+                .findFirst().orElse(null);
+                
+                if (charlie != null && charliesCodenamesCopy != null) {
+                    BorrowRequest johnsRequest2 = new BorrowRequest(john, charlie, charliesCodenamesCopy,
+                    "Hosting a big party next weekend and would love to have two Codenames sets to play simultaneously!",
+                    Date.valueOf(LocalDate.now().plusDays(12)),
+                    Date.valueOf(LocalDate.now().plusDays(15)));
+                    johnsRequest2.setStatus(BorrowStatus.ACCEPTED);
+                    borrowRequestRepository.save(johnsRequest2);
+                }
+                
+                // John as requestee (others requesting John's games)
+                Player michael2 = playerRepository.findById(3).orElse(null);
+                GameCopy johnsPandemicCopy = gameCopyRepository.findByOwner(john).stream()
+                .filter(copy -> copy.getGame().getName().equals("Pandemic"))
+                .findFirst().orElse(null);
+                
+                if (michael2 != null && johnsPandemicCopy != null) {
+                    BorrowRequest requestToJohn1 = new BorrowRequest(michael2, john, johnsPandemicCopy,
+                    "Would love to try this classic cooperative game with my family this weekend.",
+                    Date.valueOf(LocalDate.now().plusDays(4)),
+                    Date.valueOf(LocalDate.now().plusDays(11)));
+                    borrowRequestRepository.save(requestToJohn1);
+                }
+                
+                Player alice2 = playerRepository.findById(5).orElse(null);
+                GameCopy johnsCodenamesCopy = gameCopyRepository.findByOwner(john).stream()
+                .filter(copy -> copy.getGame().getName().equals("Codenames"))
+                .findFirst().orElse(null);
+                
+                if (alice2 != null && johnsCodenamesCopy != null) {
+                    BorrowRequest requestToJohn2 = new BorrowRequest(alice2, john, johnsCodenamesCopy,
+                    "Having a birthday party and Codenames would be perfect! Promise to take good care of it.",
+                    Date.valueOf(LocalDate.now().plusDays(8)),
+                    Date.valueOf(LocalDate.now().plusDays(10)));
+                    requestToJohn2.setStatus(BorrowStatus.ACCEPTED);
+                    borrowRequestRepository.save(requestToJohn2);
+                }
+                
+                Player laura2 = playerRepository.findById(4).orElse(null);
+                GameCopy johnsCatanCopy = gameCopyRepository.findById(1).orElse(null);
+                
+                if (laura2 != null && johnsCatanCopy != null) {
+                    BorrowRequest requestToJohn3 = new BorrowRequest(laura2, john, johnsCatanCopy,
+                    "Want to introduce my niece and nephew to Catan during their visit. Would be much appreciated!",
+                    Date.valueOf(LocalDate.now().plusDays(15)),
+                    Date.valueOf(LocalDate.now().plusDays(22)));
+                    requestToJohn3.setStatus(BorrowStatus.DECLINED);
+                    borrowRequestRepository.save(requestToJohn3);
+                }
+                
+                Player jane2 = playerRepository.findById(2).orElse(null);
+                GameCopy johnsTicketToRideCopy = gameCopyRepository.findByOwner(john).stream()
+                .filter(copy -> copy.getGame().getName().equals("Ticket to Ride"))
+                .findFirst().orElse(null);
+                
+                if (jane2 != null && johnsTicketToRideCopy != null) {
+                    BorrowRequest completedRequest = new BorrowRequest(jane2, john, johnsTicketToRideCopy,
+                    "Would love to borrow this for my family reunion last month.",
+                    Date.valueOf(LocalDate.now().minusDays(30)),
+                    Date.valueOf(LocalDate.now().minusDays(23)));
+                    completedRequest.setStatus(BorrowStatus.PENDING);
+                    borrowRequestRepository.save(completedRequest);
+                }
+            }
+            
+        }        
         System.out.println("Data seeding complete!");
     }
 }
