@@ -70,17 +70,4 @@ public class GameCopyResponseDto {
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
     }
-    
-    //This function is not in use due to the new way we check for availability.
-
-    // public static GameCopyResponseDto fromGameCopy(GameCopy copy) {
-    //     GameCopyResponseDto dto = new GameCopyResponseDto();
-    //     dto.setGameCopyId(copy.getId());
-    //     dto.setIsAvailable(copy.getIsAvailable());
-    //     dto.setGameId(copy.getGame().getId());
-    //     dto.setGameName(copy.getGame().getName());
-    //     dto.setOwnerId(copy.getOwner().getId());
-    //     dto.setOwnerName(copy.getOwner().getName());
-    //     return dto;
-    // }
 }

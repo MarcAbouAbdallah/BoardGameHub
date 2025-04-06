@@ -127,53 +127,6 @@ public class PersonalCollectionService {
         return gameCopyRepository.findByGame(game);
     }
 
-    /*
-     * The following service method is not in use due to changes in the way we check
-     * for availability and return games
-     */
-
-    // @Transactional
-    // public GameCopy lendGameCopy(int playerId, int gameCopyId) {
-    // Player player = findPlayerOrThrow(playerId);
-    // GameCopy target = findGameCopyOrThrow(gameCopyId);
-
-    // if (target.getOwner().getId() != player.getId()) {
-    // throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
-    // "Game copy does not belong to the specified player.");
-    // }
-    // if (!target.getIsAvailable()) {
-    // throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
-    // "Game copy is already lent out.");
-    // }
-
-    // target.setIsAvailable(false);
-    // return gameCopyRepository.save(target);
-    // }
-
-    /*
-     * The following service method is not in use due to changes in the way we check
-     * for availability and return games
-     * THIS ONE MIGHT BE USED IF RETURN FUNCTIONALITY IS LATER IMPLEMENTED
-     */
-
-    // @Transactional
-    // public GameCopy returnGameCopy(int playerId, int gameCopyId) {
-    // Player player = findPlayerOrThrow(playerId);
-    // GameCopy target = findGameCopyOrThrow(gameCopyId);
-
-    // if (target.getOwner().getId() != player.getId()) {
-    // throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
-    // "Game copy does not belong to the specified player.");
-    // }
-    // if (target.getIsAvailable()) {
-    // throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
-    // "Game copy is already available.");
-    // }
-
-    // target.setIsAvailable(true);
-    // return gameCopyRepository.save(target);
-    // }
-
     @Transactional(readOnly = true)
     public GameCopy getGameCopyById(int gameCopyId) {
         return findGameCopyOrThrow(gameCopyId);

@@ -384,24 +384,6 @@ public class BorrowRequestIntegrationTests {
         assertTrue(error.contains("Only pending requests can be accepted or declined."));
     }
 
-    // @Test
-    // @Order(13)
-    // public void testReturnBorrowRequest() {
-    //     BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.RETURNED);
-
-    //     String url = "/borrow-requests/" + createdBorrowRequestId + "/status";
-
-    //     ResponseEntity<BorrowRequestResponseDto> response = client.exchange(
-    //             url, HttpMethod.PUT, new HttpEntity<>(statusDto), BorrowRequestResponseDto.class);
-
-    //     assertNotNull(response);
-    //     assertEquals(HttpStatus.OK, response.getStatusCode());
-
-    //     BorrowRequestResponseDto updatedRequest = response.getBody();
-    //     assertNotNull(updatedRequest);
-    //     assertEquals(BorrowStatus.RETURNED, updatedRequest.getStatus());
-    // }
-
     @Test
     @Order(14)
     public void testDeleteBorrowRequest_Unauthorized() {
