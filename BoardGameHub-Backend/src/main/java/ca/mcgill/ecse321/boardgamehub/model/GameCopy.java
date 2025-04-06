@@ -11,8 +11,6 @@ public class GameCopy {
     @GeneratedValue
     private int id;
 
-    //private boolean isAvailable;
-
     @ManyToOne
     private Game game;
 
@@ -23,7 +21,6 @@ public class GameCopy {
     }
 
     public GameCopy(Game game, Player owner) {
-        //this.isAvailable = isAvailable;
         this.game = game;
         this.owner = owner;
     }
@@ -31,10 +28,6 @@ public class GameCopy {
     public int getId(){
         return id;
     }
-
-    // public boolean getIsAvailable(){
-    //     return isAvailable;
-    // }
 
     public Game getGame(){
         return game;
@@ -48,11 +41,6 @@ public class GameCopy {
         this.id = aId;
         return true;
     }
-
-    // public boolean setIsAvailable(boolean aIsAvailable){
-    //     this.isAvailable = aIsAvailable;
-    //     return true;
-    // }
 
     public void setGame(Game game) {
         this.game = game;

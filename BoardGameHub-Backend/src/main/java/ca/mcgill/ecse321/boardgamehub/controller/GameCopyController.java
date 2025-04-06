@@ -19,11 +19,6 @@ public class GameCopyController {
     @Autowired
     private PersonalCollectionService collectionService;
 
-    
-    // public GameCopyController(PersonalCollectionService collectionService) {
-    //     this.collectionService = collectionService;
-    // }
-
     /**
      * Retrieve the entire personal collection of a given player.
      *
@@ -98,32 +93,6 @@ public class GameCopyController {
         GameCopy newCopy = collectionService.addGameToPersonalCollection(creationDto.getPlayerId(), creationDto.getGameId());
         return new GameCopyResponseDto(newCopy, collectionService.isAvailable(newCopy));
     }
-
-    //Endpoint removed as functionality is no longer used
-    // /**
-    //  * Update the availability of a specific GameCopy using its game copy ID.
-    //  * If isAvailable = false, the game copy is lent out; if true, it is returned.
-    //  *
-    //  * @param gameCopyId The ID of the GameCopy to update.
-    //  * @param dto        A DTO containing the new availability status and the ownerId (for permission checking).
-    //  * @return The updated GameCopy as a GameCopyResponseDto.
-    //  */
-    // @PatchMapping("/{gameCopyId}")
-    // @ResponseStatus(HttpStatus.OK)
-    // public GameCopyResponseDto updateGameAvailability(
-    //         @PathVariable int gameCopyId,
-    //         @RequestBody GameCopyResponseDto dto
-    // ) {
-    //     int playerId = dto.getOwnerId();
-    //     boolean isAvailable = dto.getIsAvailable();
-    //     GameCopy updated;
-    //     if (isAvailable) {
-    //         updated = collectionService.returnGameCopy(playerId, gameCopyId);
-    //     } else {
-    //         updated = collectionService.lendGameCopy(playerId, gameCopyId);
-    //     }
-    //     return GameCopyResponseDto.fromGameCopy(updated);
-    // }
 
     /**
      * Remove a GameCopy from the player's personal collection by game copy ID.

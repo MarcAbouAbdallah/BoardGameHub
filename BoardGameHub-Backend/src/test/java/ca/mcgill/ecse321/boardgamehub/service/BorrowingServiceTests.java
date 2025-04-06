@@ -276,23 +276,6 @@ public class BorrowingServiceTests {
         assertEquals("The request must either be accepted, declined or returned.", exception.getMessage());
     }
 
-    // @Test
-    // public void testReturnBorrowRequest(){
-    //     BorrowRequest request = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-
-    //     request.setId(VALID_BORROW_REQUEST_ID);
-    //     request.setStatus(BorrowStatus.ACCEPTED);
-
-    //     when(mockBorrowRequestRepo.save(request)).thenReturn(request);
-    //     when(mockBorrowRequestRepo.findBorrowRequestById(VALID_BORROW_REQUEST_ID)).thenReturn(request);
-        
-    //     BorrowStatusUpdateDto statusDto = new BorrowStatusUpdateDto(BorrowStatus.RETURNED);
-    //     BorrowRequest returnedRequest = borrowingService.updateRequestStatus(VALID_BORROW_REQUEST_ID, statusDto);
-        
-    //     assertNotNull(returnedRequest);
-    //     assertEquals(BorrowStatus.RETURNED, returnedRequest.getStatus());
-    // }
-
     @Test
     public void testUpdateValidBorrowRequest(){
         BorrowRequest request = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
@@ -406,23 +389,6 @@ public class BorrowingServiceTests {
         assertEquals(3, allRequests.size());
     }
 
-    /*
-     * The error thrown used in this test is no longer used
-     */
-
-    // @Test
-    // public void testGetAllRequestsByRequester_EmptyList() {
-    //     when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
-    //     when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(List.of());
-        
-    //     BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-    //         borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, null);
-    //     });
-
-    //     assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-    //     assertEquals("No borrow requests found for requester with ID "+ VALID_REQUESTER_ID, exception.getMessage());
-    // }
-
     @Test
     public void testGetAcceptedRequestsByRequester(){
         BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
@@ -442,42 +408,6 @@ public class BorrowingServiceTests {
         
         assertEquals(2, allRequests.size());
     }
-
-    /*
-     * The error thrown expected in this test is no longer thrown
-     */
-    // @Test
-    // public void testGetAcceptedRequestsByRequester_EmptyList() {
-    //     when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
-    //     when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(List.of());
-        
-    //     BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-    //         borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, "ACCEPTED");
-    //     });
-
-    //     assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-    //     assertEquals("No borrow requests found for requester with ID "+ VALID_REQUESTER_ID, exception.getMessage());
-    // }
-
-    // @Test
-    // public void testGetReturnedRequestsByRequester(){
-    //     BorrowRequest request1 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-    //     request1.setStatus(BorrowStatus.RETURNED);
-    //     BorrowRequest request2 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-    //     request2.setStatus(BorrowStatus.RETURNED);
-    //     BorrowRequest request3 = new BorrowRequest(REQUESTER, REQUESTEE, VALID_GAME, COMMENT, Date.valueOf(START_DATE), Date.valueOf(END_DATE));
-    //     request3.setStatus(BorrowStatus.PENDING);
-    //     List<BorrowRequest> requests = new ArrayList<>();
-    //     requests.add(request1);
-    //     requests.add(request2);
-    //     requests.add(request3);
-    //     when(mockBorrowRequestRepo.findByRequester(REQUESTER)).thenReturn(requests);
-    //     when(mockPlayerRepo.findPlayerById(VALID_REQUESTER_ID)).thenReturn(REQUESTER);
-        
-    //     List<BorrowRequest> allRequests = borrowingService.getRequestsByRequester(VALID_REQUESTER_ID, "RETURNED");
-        
-    //     assertEquals(2, allRequests.size());
-    // }
 
     @Test
     public void testGetRequestsByRequester_InvalidFilter(){
@@ -509,22 +439,6 @@ public class BorrowingServiceTests {
         
         assertEquals(3, allRequests.size());
     }
-
-    /*
-     * The error thrown expected in this error is no longer thrown
-     */
-    // @Test
-    // public void testGetAllRequestsByRequestee_EmptyList() {
-    //     when(mockPlayerRepo.findPlayerById(VALID_REQUESTEE_ID)).thenReturn(REQUESTEE);
-    //     when(mockBorrowRequestRepo.findByRequestee(REQUESTEE)).thenReturn(List.of());
-        
-    //     BoardGameHubException exception = assertThrows(BoardGameHubException.class, () -> {
-    //         borrowingService.getRequestsByRequestee(VALID_REQUESTEE_ID, null);
-    //     });
-
-    //     assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-    //     assertEquals("No borrow requests found for requestee with ID "+ VALID_REQUESTEE_ID, exception.getMessage());
-    // }
 
     @Test
     public void testGetAcceptedRequestsByRequestee(){
