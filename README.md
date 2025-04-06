@@ -34,7 +34,7 @@ The scope of this deliverable includes the whole implementation of the frontend 
 | Deon Aftahi ||||
 |Jerome Courtemanche||||
 |Bora Denizasan||||
-|Mubeen Mohammed||||
+|Mubeen Mohammed|Developer|Desgined and implemented the whole UI for the application. Connected some components to the backend like login and signup. Reviewed teammates PR|~24h|
 |Raphaël Verger|Developer|Implemented 'Events' page and 'My Events' table in the homepage - connecting it to the backend. Created DataSeeder and contributed to project documentation.  |~20h|
 ***
 ### Deliverable 2
