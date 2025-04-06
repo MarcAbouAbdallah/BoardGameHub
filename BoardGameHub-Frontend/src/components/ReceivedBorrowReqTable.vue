@@ -15,6 +15,7 @@ import { NoSymbolIcon, CheckBadgeIcon } from "@heroicons/vue/24/solid";
 import { borrowRequestService } from "@/services/borrowService";
 import { useAuthStore } from "../stores/authStore";
 import { onMounted, ref } from "vue";
+import { Button } from "./ui/button";
 
 const { toast } = useToast();
 const authStore = useAuthStore();
@@ -102,7 +103,7 @@ const updateRequestStatus = async (
                 >
                   <Button
                     variant="outline"
-                    class="bg-green-700 hover:bg-green-900 text-white flex gap-2 items-center pl-2"
+                    class="bg-green-700 hover:bg-green-900 text-white hover:text-white flex gap-2 items-center pl-2"
                   >
                     <CheckBadgeIcon class="h-4 w-4" />
                     Accept
@@ -129,7 +130,9 @@ const updateRequestStatus = async (
         </TableBody>
         <TableBody v-else>
           <TableRow>
-            <TableCell colspan="6" class="text-center py-8 text-muted-foreground"> No incoming requests found. </TableCell>
+            <TableCell colspan="6" class="text-center py-8 text-muted-foreground">
+              No incoming requests found.
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>

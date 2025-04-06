@@ -43,17 +43,22 @@
               </TableCell>
               <TableCell class="text-start">{{ event.maxParticipants }}</TableCell>
               <TableCell class="text-start">
-                <div class="flex items-center gap-2 w-48 justify-between">
+                <div class="flex items-center gap-4 w-48">
                   <!-- Register or Opt Out based on isRegistered -->
                   <Button
                     variant="outline"
                     size="sm"
-                    v-if="!isRegistered(event.id)"
+                    v-if="!isRegistered(event.id) && !isOrganizer(event)"
                     @click="registerEvent(event.id)"
                   >
                     Register
                   </Button>
-                  <Button variant="outline" size="sm" v-else @click="unregisterEvent(event.id)">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    v-else-if="!isOrganizer(event)"
+                    @click="unregisterEvent(event.id)"
+                  >
                     Opt Out
                   </Button>
 
