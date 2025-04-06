@@ -57,21 +57,16 @@ public class PersonalCollectionService {
 
         // If owner currently has no games, set game owner to true
         List<GameCopy> copies = gameCopyRepository.findByOwner(player);
-        if (copies.size() == 0 && player.getIsGameOwner() == false) {
+        // Check if owner already has game
+        for (GameCopy copy : copies) {
+            if (copy.getGame().getId() == game.getId()) {
+                throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
+                        "Player already owns this game.");
+            }
+        }
+        if (player.getIsGameOwner() == false) {
             player.setIsGameOwner(true);
             playerRepository.save(player);
-        } else {
-            // Check if owner already has game
-            for (GameCopy copy : copies) {
-                if (copy.getGame().getId() == game.getId()) {
-                    throw new BoardGameHubException(HttpStatus.BAD_REQUEST,
-                            "Player already owns this game.");
-                }
-            }
-            if (player.getIsGameOwner() == false) {
-                player.setIsGameOwner(true);
-                playerRepository.save(player);
-            }
         }
         // Create and persist a new GameCopy with default availability true
         GameCopy newCopy = new GameCopy(game, player);
