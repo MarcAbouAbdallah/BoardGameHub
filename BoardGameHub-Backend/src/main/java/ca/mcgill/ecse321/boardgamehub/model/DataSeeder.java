@@ -21,7 +21,7 @@ import java.util.stream.StreamSupport;
 public class DataSeeder implements CommandLineRunner {
     
     // Flag to control whether data should be seeded
-    private final boolean shouldSeedData = false;  // Set to false to disable seeding
+    private final boolean shouldSeedData = false;  // Set to true to enable seeding
     
     @Autowired
     private PlayerRepository playerRepository;

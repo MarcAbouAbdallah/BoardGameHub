@@ -25,18 +25,18 @@ Mubeen is a third year software engineering student. His interest in AI applicat
 Raphaël is a third year computer engineering student. He is mainly focused on machine learning, data analysis and software development. Outside of the classroom, he enjoys traveling and taking pictures!
 ***
 ### Deliverable 3
-The scope of this deliverable includes the whole implementation of the frontend of our application. We started by creating a plan using a Miro board, followed up by creating the design using vue and the necessary typescript scripts, and finished by connecting our UI to the controller layer of our backend. More information information about design decisions can be found in the [project report](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report-3) and [meeting minutes](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki) in the [wiki](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki) of the project.\
+This deliverable covers the complete implementation of the frontend for our application. We began by outlining a development plan using a Miro board, then proceeded to design and build the interface using Vue and TypeScript. The frontend was finalized by integrating the UI with the controller layer of our backend. Additional details about our design decisions can be found in the [project report](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Project-Report-3) available in the [wiki](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki).\
 \
 **Overview table:**
 |Team member|Role|Tasks|Time spent|
 | --- | --- | --- | --- |
-|Marc Abou Abdallah||||
-| Deon Aftahi ||||
-|Jerome Courtemanche||||
-|Bora Denizasan||||
-|Marleine|Developer|Implemented the 'Specific Game' pages in the Games page - connecting them to backend. Contributed to final testing and project Documentation.|~19h|
-|Mubeen Mohammed|Developer|Desgined and implemented the whole UI for the application. Connected some components to the backend like login and signup. Reviewed teammates PR|~24h|
-|Raphaël Verger|Developer|Implemented 'Events' page and 'My Events' table in the homepage - connecting it to the backend. Created DataSeeder and contributed to project documentation.  |~20h|
+|Marc Abou Abdallah|Fullstack Developer|Implemented the game, borrow request, and review tables on the Homepage. Fixed game sheet functionalities (borrow requests, reviews, editing). Assisted with backend modifications. Contributed to wiki documentation (user guide, design decisions, build system) and PR reviews.|~23h|
+|Deon Aftahi|Frontend Developer|Implemented and designed the games page, including search functionality, api integration, UI design, and UX functionality.|~21h|
+|Marleine|Frontend Developer|Implemented the 'Specific Game' pages in the Games page - connecting them to backend. Contributed to final testing and project Documentation.|~19h|
+|Jerome Courtemanche|Backend Maintainer, Documenter, Test Engineer|Adding new endpoints and service methods, altering the logic of the application, changing tests and making sure they still pass, managing the data seeder, documenting meeting minutes and project report, maintaining issue backlog.|~22h|
+|Bora Denizasan|Frontend Developer|Implemented user profile features and storage of user attributes to be used by different pages. Helped with GameUI.|~21h|
+|Mubeen Mohammed|Fullstack Developer, UI/UX Designer|Designed and implemented the whole UI for the application. Connected some components to the backend like login and signup. Reviewed teammates PRs.|~24h|
+|Raphaël Verger|Fullstack Developer|Implemented 'Events' page and 'My Events' table in the homepage - connecting it to the backend. Created DataSeeder and contributed to project documentation.|~22h|
 ***
 ### Deliverable 2
 The scope of this deliverable includes completing service & controller layers with a RESTful API, documenting and testing them thoroughly. We implemented all the required service and controller classes as well as the required DTO's and Exception classes. These were then tested thoroughly through unit and integration tests using JUnit5. Please visit the deliverable 2 section of the [wiki](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki) for all project documentation and design decisions. Information on project setup and installation can be found on the [Build System](https://github.com/McGill-ECSE321-Winter2025/Group-5/wiki/Build-System) page of the wiki. Information regarding team member roles, individual tasks and time allocation breakdown can be found in the table below.\
