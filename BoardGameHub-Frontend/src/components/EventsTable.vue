@@ -53,7 +53,12 @@
               <TableCell class="text-start">
                 <div class="flex items-center gap-2 w-48 justify-between">
                   <!-- Register or Opt Out based on isRegistered -->
-                  <Button variant="outline" size="sm" v-if="!isRegistered(event.id)" @click="registerEvent(event.id)">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    v-if="!isRegistered(event.id)"
+                    @click="registerEvent(event.id)"
+                  >
                     Register
                   </Button>
                   <Button variant="outline" size="sm" v-else @click="unregisterEvent(event.id)">
@@ -61,10 +66,20 @@
                   </Button>
 
                   <!-- Organizer-only buttons -->
-                  <Button variant="outline" size="icon" v-if="isOrganizer(event)" @click="openEditEventModal(event)">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    v-if="isOrganizer(event)"
+                    @click="openEditEventModal(event)"
+                  >
                     <Edit class="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" v-if="isOrganizer(event)" @click="deleteEvent(event.id)">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    v-if="isOrganizer(event)"
+                    @click="deleteEvent(event.id)"
+                  >
                     <Trash2 class="h-4 w-4" />
                   </Button>
                 </div>
@@ -104,9 +119,7 @@
                         </li>
                       </ul>
                     </span>
-                    <span v-else>
-                      None
-                    </span>
+                    <span v-else> None </span>
                   </p>
                 </div>
               </TableCell>
@@ -126,7 +139,11 @@
     <!-- Create Event Modal -->
     <CreateEventModal
       v-if="isCreateEventModalOpen"
-      :close="() => { isCreateEventModalOpen = false }"
+      :close="
+        () => {
+          isCreateEventModalOpen = false;
+        }
+      "
       :createEvent="createEvent"
     />
 
@@ -150,20 +167,14 @@ import { useAuthStore } from "@/stores/authStore";
 
 import { Button } from "@/components/ui/button";
 import DataTableCard from "@/components/DataTableCard.vue";
-import {
-  ChevronDown,
-  ChevronUp,
-  Plus,
-  Edit,
-  Trash2
-} from "lucide-vue-next";
+import { ChevronDown, ChevronUp, Plus, Edit, Trash2 } from "lucide-vue-next";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 
 import CreateEventModal from "@/components/popups/CreateEventModal.vue";
@@ -249,7 +260,7 @@ const isOrganizer = (event: any) => {
 const isRegistered = (eventId: number) => {
   const regs = registrationsByEvent.value[eventId];
   if (!regs || !user.value?.userId) return false;
-  return regs.some(r => r.registrantId === user.value.userId);
+  return regs.some((r) => r.registrantId === user.value.userId);
 };
 
 const createEvent = async (eventData: any) => {
@@ -383,7 +394,7 @@ const deleteEvent = async (eventId: number) => {
     });
     return;
   }
-  const eventToDelete = events.value.find(e => e.id === eventId);
+  const eventToDelete = events.value.find((e) => e.id === eventId);
   if (!eventToDelete || !isOrganizer(eventToDelete)) {
     toast({
       title: "Permission Denied",
@@ -437,5 +448,4 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
