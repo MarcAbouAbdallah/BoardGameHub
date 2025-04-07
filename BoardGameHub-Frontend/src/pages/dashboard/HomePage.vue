@@ -25,7 +25,7 @@ onMounted(() => {
   <Header />
   <div class="flex flex-col items-start my-24 mx-10">
     <GamesTable />
-    <MyEventsTable :is-home-page="true" :title="'My Events'" />
+    <MyEventsTable />
     <BorrowReqTabs />
     <GameReviewTable />
   </div>
